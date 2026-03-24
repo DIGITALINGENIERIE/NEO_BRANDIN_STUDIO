@@ -1,0 +1,80 @@
+je ne pense pas ke c ce ke je voulais, en fait, je voulais un formulaire commun kon rempli et ki nourrit chaque module lors de la generation du prompt en ajoutant klkes parametres supplémentaires pour chaque module,
+
+Je comprends — tu veux un formulaire global unique (le brief de marque) qu'on remplit une seule fois, et chaque module l'utilise comme base + ajoute ses propres paramètres spécifiques. Laisse-moi d'abord examiner comment les modules fonctionnent actuellement.
+
+Je vois le problème clairement. Chaque module a son propre formulaire complet qui re-demande brand_name, sector, etc. — alors que tu veux un seul brief global rempli une fois, et chaque module ne demande que ses paramètres spécifiques. Laisse-moi voir les autres modules pour comprendre ce qui est partagé vs spécifique.
+
+Maintenant j'ai une vision complète. La situation réelle :
+
+✅ BrandBriefPanel existe (formulaire global complet)
+✅ BrandContext avec tous les champs
+❌ BrandBriefPanel n'est jamais affiché dans home.tsx
+❌ Chaque module a son propre formulaire qui re-demande les champs partagés
+Il faut lire les modules restants pour voir les appels API avant de refactoriser.
+
+J'ai maintenant une image complète. Le BrandBriefPanel existe mais n'est pas affiché, et chaque module re-demande les champs du brief. Je vais tout refactoriser :
+
+Afficher le BrandBriefPanel dans home.tsx
+Chaque module garde uniquement ses paramètres spécifiques
+Laisse-moi lire les modules 04 à 10 pour ne pas casser les appels API.
+
+Parfait, j'ai maintenant tout compris. Voici exactement ce qui doit être fait :
+
+Ce qui existe mais manque :
+
+BrandBriefPanel n'est jamais rendu dans home.tsx
+Champs spécifiques à chaque module :
+
+Module 01 : style_pref
+Module 02 : product_type, carousel_style
+Module 03 : year, duration_days, teaser_style, thumbnail_type
+Module 04 : duration_days, problem
+Module 05 : has_ugc_audio, needs_vocal_separation
+Modules 06–10 : aucun (tout vient du brief)
+Je lance la refactorisation complète maintenant.
+
+J'ai tout ce qu'il faut. Je commence la refactorisation complète — tous les fichiers en parallèle.
+
+Maintenant je crée le composant BriefSummaryBanner réutilisable, puis je refactorise chaque module.
+
+Maintenant je refactorise chaque module, en commençant par le plus simple (01) jusqu'au plus lourd (06-10). Je travaille en parallèle sur les modules qui ne dépendent pas les uns des autres.
+
+Maintenant je dois mettre à jour l'interface du formulaire de chaque module. Laisse-moi lire les sections UI des modules 01 à 05 en parallèle.
+
+J'ai tout ce qu'il faut. Maintenant je fais toutes les modifications de l'interface du formulaire en parallèle sur les 5 premiers modules.
+
+Module 01 — remplacer les champs partagés du formulaire par BriefSummaryBanner + style_pref uniquement :
+
+Module 01 terminé. Maintenant je lis les UI forms des modules 02 à 05 en parallèle pour faire les remplacements.
+
+Je vais maintenant faire toutes les modifications de formSchema, defaultValues, onSubmit et UI pour les modules 02 à 05 en séries efficaces.
+
+Module 02 — schéma et logique :
+
+Maintenant je fais toutes les modifications pour les modules 02 à 05 en séries parallèles efficaces.
+
+Module 02 — import + formSchema + setup :
+
+formSchema + form setup pour modules 02, 03, 04, 05 :
+
+Maintenant les form defaultValues + suppression useEffect + API calls (en parallèle) :
+
+Maintenant je fais les corrections des fonctions download et affichage résultats, puis les form setup pour modules 03, 04, 05 :
+
+Module 02 terminé. Je continue avec les modules 03, 04, 05 en parallèle pour les changements restants.
+
+Il y a un problème avec le remplacement sur module-04. Laisse-moi lire et corriger immédiatement.
+
+Maintenant je corrige les API calls de module-03, les downloads de module-04, et module-05 en parallèle :
+
+Bien. Maintenant je corrige les API calls de module-05, downloads de module-03/04, et l'affichage résultats de module-04/05 en parallèle :
+
+Maintenant je corrige les en-têtes de résultats pour modules 03, 04, 05, et les downloads module-04, 05 en parallèle :
+
+Maintenant je mets à jour les formulaires UI pour remplacer les champs partagés par BriefSummaryBanner dans les modules 02, 03, 04, 05. Je lis les sections actuelles :
+
+Maintenant je fais le remplacement de l'UI du formulaire module-02 (supprimer les champs partagés, ajouter BriefSummaryBanner) :
+
+Module-02 terminé. Maintenant je mets à jour les UI de modules 03, 04, 05 en parallèle :
+
+Maintenant je vérifie les imports BriefSummaryBanner dans les modules 03-05 et je lis les modules 06-10 :

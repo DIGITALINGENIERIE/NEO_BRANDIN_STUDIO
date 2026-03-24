@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -66,13 +67,7 @@ const TARGET_AUDIENCES = ["femmes_18_25", "femmes_25_45", "femmes_35_50", "homme
 const CAROUSEL_STYLES = ["auto", "luxe", "probleme_solution", "storytelling", "education"];
 
 const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  sector: z.string().min(1),
-  product_type: z.string().min(1),
-  product_name: z.string().min(2, "Nom du produit requis"),
-  product_colors: z.string().default(""),
-  product_materials: z.string().default(""),
-  target_audience: z.string().min(1),
+  product_type: z.string().min(1).default("bijou"),
   carousel_style: z.string().default("auto"),
 });
 
@@ -175,31 +170,12 @@ export default function Module02() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", sector: brief.sector || "luxe", product_type: "bijou",
-      product_name: brief.product_name || "", product_colors: brief.product_colors || "", product_materials: brief.product_materials || "",
-      target_audience: brief.target_audience || "femmes_25_45", carousel_style: "auto",
-    },
+    defaultValues: { product_type: "bijou", carousel_style: "auto" },
   });
 
-  React.useEffect(() => {
-    if (brief.brand_name || brief.product_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        sector: brief.sector || "luxe",
-        product_type: form.getValues("product_type") || "bijou",
-        product_name: brief.product_name || "",
-        product_colors: brief.product_colors || "",
-        product_materials: brief.product_materials || "",
-        target_audience: brief.target_audience || "femmes_25_45",
-        carousel_style: form.getValues("carousel_style") || "auto",
-      });
-    }
-  }, [brief.brand_name, brief.sector, brief.product_name, brief.product_colors, brief.product_materials, brief.target_audience]);
-
   const generateWithAI = async (data: FormValues) => {
-    const colors = data.product_colors.split(",").map((c) => c.trim()).filter(Boolean);
-    const materials = data.product_materials.split(",").map((m) => m.trim()).filter(Boolean);
+    const colors = brief.product_colors.split(",").map((c) => c.trim()).filter(Boolean);
+    const materials = brief.product_materials.split(",").map((m) => m.trim()).filter(Boolean);
 
     setStreamState({ sections: {}, activeSection: null });
     setSections([]);
@@ -208,13 +184,13 @@ export default function Module02() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        brand_name: data.brand_name,
-        sector: data.sector,
+        brand_name: brief.brand_name,
+        sector: brief.sector,
         product_type: data.product_type,
-        product_name: data.product_name,
+        product_name: brief.product_name,
         product_colors: colors,
         product_materials: materials,
-        target_audience: data.target_audience,
+        target_audience: brief.target_audience,
         carousel_style: data.carousel_style === "auto" ? null : data.carousel_style,
       }),
     });
@@ -289,7 +265,6 @@ export default function Module02() {
   const SECTION_ORDER = ["product_photos", "lifestyle_photos", "detail_photos", "before_after", "virtual_tryon", "carousel"];
 
   const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, sector: data.sector, product_name: data.product_name, product_colors: data.product_colors, product_materials: data.product_materials, target_audience: data.target_audience });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);
@@ -304,8 +279,8 @@ export default function Module02() {
   };
 
   const handleDownloadTXT = () => {
-    if (!sections.length || !formData) return;
-    let txt = `================================================================================\nPROMPTS MODULE 02 — VISUAL CONTENT — ROBONEO.COM\nMarque: ${formData.brand_name} | Produit: ${formData.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
+    if (!sections.length) return;
+    let txt = `================================================================================\nPROMPTS MODULE 02 — VISUAL CONTENT — ROBONEO.COM\nMarque: ${brief.brand_name} | Produit: ${brief.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
 
     for (const sec of sections) {
       txt += `\n--- ${sec.label.toUpperCase()} ---\nAgent: ${sec.agent}\n\n`;
@@ -316,16 +291,16 @@ export default function Module02() {
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-    a.download = `prompts_m02_${formData.brand_name.toLowerCase()}.txt`;
+    a.download = `prompts_m02_${brief.brand_name.toLowerCase()}.txt`;
     a.click();
   };
 
   const handleDownloadJSON = () => {
-    if (!sections.length || !formData) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: formData.brand_name, product: formData.product_name, sections };
+    if (!sections.length) return;
+    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, product: brief.product_name, sections };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
-    a.download = `prompts_m02_${formData.brand_name.toLowerCase()}.json`;
+    a.download = `prompts_m02_${brief.brand_name.toLowerCase()}.json`;
     a.click();
   };
 
@@ -343,58 +318,14 @@ export default function Module02() {
             </CardHeader>
             <CardContent>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                    {form.formState.errors.brand_name && <p className="text-destructive text-xs">{form.formState.errors.brand_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Secteur <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("sector")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {SECTORS.map((s) => <option key={s} value={s} className="bg-card">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
+                <BriefSummaryBanner />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Type de produit <span className="text-primary">*</span></label>
+                    <label className="text-sm font-medium text-foreground">Type de produit</label>
                     <div className="relative">
                       <select {...form.register("product_type")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
                         {PRODUCT_TYPES.map((t) => <option key={t} value={t} className="bg-card">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom du produit <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: Montre Élégance Or Rose" {...form.register("product_name")} className="bg-black/20" />
-                    {form.formState.errors.product_name && <p className="text-destructive text-xs">{form.formState.errors.product_name.message}</p>}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Couleurs du produit</label>
-                  <Input placeholder="ex: or rose, noir, blanc ivoire" {...form.register("product_colors")} className="bg-black/20" />
-                  <p className="text-xs text-muted-foreground">Séparez par des virgules.</p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Matériaux du produit</label>
-                  <Input placeholder="ex: acier inoxydable, verre saphir, cuir" {...form.register("product_materials")} className="bg-black/20" />
-                  <p className="text-xs text-muted-foreground">Séparez par des virgules. (2 premiers utilisés pour les photos détail)</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Audience cible <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("target_audience")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {TARGET_AUDIENCES.map((a) => <option key={a} value={a} className="bg-card">{a.replace(/_/g, " ")}</option>)}
                       </select>
                       <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
                     </div>
@@ -445,8 +376,8 @@ export default function Module02() {
                 </span>
               </div>
               <p className="text-muted-foreground">
-                <span className="text-primary font-semibold">{formData?.brand_name}</span>
-                {" — "}{formData?.product_name}
+                <span className="text-primary font-semibold">{brief.brand_name}</span>
+                {" — "}{brief.product_name}
                 {isStreaming && <span className="ml-2 text-xs text-primary animate-pulse">● Génération en cours...</span>}
               </p>
             </div>

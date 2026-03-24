@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { generatePrompts, type BrandBrief, type GenerationResult, generateTxtExport } from "@/lib/prompt-generator";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
 const TONES = ["luxe", "minimal", "street", "tech", "artisanal", "vintage", "playful", "corporate", "nature", "editorial", "futuristic", "ethnic"];
@@ -31,10 +32,6 @@ const SECTION_PARAMS: Record<string, Record<string, unknown>> = {
 };
 
 const formSchema = z.object({
-  brand_name: z.string().min(2, "Le nom de la marque est requis"),
-  sector: z.string().min(1, "Le secteur est requis"),
-  tone: z.string().min(1, "Le ton est requis"),
-  values: z.string().min(2, "Veuillez entrer au moins une valeur"),
   style_pref: z.string().optional().default("auto-detect"),
 });
 
@@ -60,29 +57,17 @@ export default function Module01() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { brand_name: brief.brand_name || "", sector: brief.sector || "luxe", tone: brief.tone || "luxe", values: brief.values || "", style_pref: "auto-detect" },
+    defaultValues: { style_pref: "auto-detect" },
   });
 
-  React.useEffect(() => {
-    if (brief.brand_name) {
-      form.reset({
-        brand_name: brief.brand_name,
-        sector: brief.sector || "luxe",
-        tone: brief.tone || "luxe",
-        values: brief.values || "",
-        style_pref: form.getValues("style_pref") || "auto-detect",
-      });
-    }
-  }, [brief.brand_name, brief.sector, brief.tone, brief.values]);
-
   const generateWithAI = async (data: FormValues) => {
-    const values = data.values.split(",").map((v) => v.trim()).filter(Boolean);
+    const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
     setStreamState({ prompts: {}, activeSection: null, completedSections: new Set() });
 
     const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brand_name: data.brand_name, sector: data.sector, tone: data.tone, values, style_pref: data.style_pref === "auto-detect" ? null : data.style_pref }),
+      body: JSON.stringify({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values, style_pref: data.style_pref === "auto-detect" ? null : data.style_pref }),
     });
 
     if (!response.ok || !response.body) throw new Error("Erreur API");
@@ -123,7 +108,7 @@ export default function Module01() {
     const generated: GenerationResult = {
       generated_at: new Date().toISOString(),
       version: "1.0.0",
-      brand: { brand_name: data.brand_name, sector: data.sector, tone: data.tone, values: data.values, parsed_values: values, style_pref: data.style_pref },
+      brand: { brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values: brief.values, parsed_values: values, style_pref: data.style_pref },
       modules: {
         brand_identity: {
           logo: { agent: SECTION_LABELS.logo.agent, prompt: finalPrompts.logo ?? "", parameters: { ...SECTION_PARAMS.logo, style: data.style_pref } },
@@ -137,11 +122,10 @@ export default function Module01() {
   };
 
   const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, sector: data.sector, tone: data.tone, values: data.values });
     setIsGenerating(true);
     setFormData(data);
     try {
-      const generated = useAI ? await generateWithAI(data) : generatePrompts(data as BrandBrief);
+      const generated = useAI ? await generateWithAI(data) : generatePrompts({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values: brief.values, style_pref: data.style_pref } as BrandBrief);
       if (!useAI) await new Promise((r) => setTimeout(r, 400));
       setResult(generated);
       toast({ title: useAI ? "Prompts IA générés !" : "Prompts générés !" });
@@ -197,34 +181,7 @@ export default function Module01() {
             </CardHeader>
             <CardContent>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                  <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                  {form.formState.errors.brand_name && <p className="text-destructive text-sm">{form.formState.errors.brand_name.message}</p>}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { label: "Secteur d'activité", name: "sector", options: SECTORS },
-                    { label: "Ton de communication", name: "tone", options: TONES },
-                  ].map(({ label, name, options }) => (
-                    <div key={name} className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">{label} <span className="text-primary">*</span></label>
-                      <div className="relative">
-                        <select {...form.register(name as any)} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                          {options.map((o) => <option key={o} value={o} className="bg-card">{o.charAt(0).toUpperCase() + o.slice(1)}</option>)}
-                        </select>
-                        <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Valeurs fondamentales <span className="text-primary">*</span></label>
-                  <Textarea placeholder="ex: excellence, prestige, authenticité..." {...form.register("values")} className="bg-black/20" />
-                  <p className="text-xs text-muted-foreground">Séparez les valeurs par des virgules.</p>
-                </div>
+                <BriefSummaryBanner />
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">Style de Logo</label>
@@ -265,7 +222,7 @@ export default function Module01() {
                 {useAI && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold"><Brain className="w-3 h-3" /> IA</span>}
               </div>
               <p className="text-muted-foreground">
-                <span className="text-primary font-semibold">{formData?.brand_name}</span>
+                <span className="text-primary font-semibold">{brief.brand_name}</span>
                 {isStreaming && <span className="ml-2 text-xs text-primary animate-pulse">● En cours...</span>}
               </p>
             </div>

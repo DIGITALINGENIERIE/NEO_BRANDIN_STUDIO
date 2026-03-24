@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -208,11 +209,6 @@ const TONES = ["luxe", "professionnel", "dynamique", "naturel", "fun", "sérieux
 const TARGET_AUDIENCES = ["femmes_18_25", "femmes_25_45", "femmes_35_50", "hommes_25_40", "mixte"];
 
 const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  sector: z.string().min(1),
-  tone: z.string().min(1),
-  values: z.string().default(""),
-  target_audience: z.string().min(1),
   has_ugc_audio: z.boolean().default(false),
   needs_vocal_separation: z.boolean().default(false),
 });
@@ -233,29 +229,10 @@ export default function Module05() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
-      values: brief.values || "", target_audience: brief.target_audience || "femmes_25_45",
-      has_ugc_audio: false, needs_vocal_separation: false,
-    },
+    defaultValues: { has_ugc_audio: false, needs_vocal_separation: false },
   });
 
-  React.useEffect(() => {
-    if (brief.brand_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        sector: brief.sector || "bijou",
-        tone: brief.tone || "luxe",
-        values: brief.values || "",
-        target_audience: brief.target_audience || "femmes_25_45",
-        has_ugc_audio: form.getValues("has_ugc_audio"),
-        needs_vocal_separation: form.getValues("needs_vocal_separation"),
-      });
-    }
-  }, [brief.brand_name, brief.sector, brief.tone, brief.values, brief.target_audience]);
-
   const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, sector: data.sector, tone: data.tone, values: data.values, target_audience: data.target_audience });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);
@@ -263,17 +240,17 @@ export default function Module05() {
     setSections([]);
 
     try {
-      const valuesList = data.values.split(",").map((v) => v.trim()).filter(Boolean);
+      const valuesList = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
 
       const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts-sound`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          brand_name: data.brand_name,
-          sector: data.sector,
-          tone: data.tone,
+          brand_name: brief.brand_name,
+          sector: brief.sector,
+          tone: brief.tone,
           values: valuesList,
-          target_audience: data.target_audience,
+          target_audience: brief.target_audience,
           has_ugc_audio: data.has_ugc_audio,
           needs_vocal_separation: data.needs_vocal_separation,
         }),
@@ -333,8 +310,8 @@ export default function Module05() {
   const allDone = sections.length === SECTION_ORDER.length;
 
   const handleDownloadTXT = () => {
-    if (!sections.length || !formData) return;
-    let txt = `================================================================================\nPROMPTS MODULE 05 — BRAND SOUND — NEO BRANDING STUDIO\nMarque: ${formData.brand_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
+    if (!sections.length) return;
+    let txt = `================================================================================\nPROMPTS MODULE 05 — BRAND SOUND — NEO BRANDING STUDIO\nMarque: ${brief.brand_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
     for (const sec of sections) {
       txt += `\n--- ${sec.label.toUpperCase()} ---\nAgent: ${sec.agent}\n\n`;
       for (const [k, v] of Object.entries(sec.data)) {
@@ -345,16 +322,16 @@ export default function Module05() {
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-    a.download = `prompts_m05_${formData.brand_name.toLowerCase()}.txt`;
+    a.download = `prompts_m05_${brief.brand_name.toLowerCase()}.txt`;
     a.click();
   };
 
   const handleDownloadJSON = () => {
-    if (!sections.length || !formData) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: formData.brand_name, sections };
+    if (!sections.length ) return;
+    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, sections };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
-    a.download = `prompts_m05_${formData.brand_name.toLowerCase()}.json`;
+    a.download = `prompts_m05_${brief.brand_name.toLowerCase()}.json`;
     a.click();
   };
 
@@ -369,53 +346,7 @@ export default function Module05() {
             </CardHeader>
             <CardContent>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-                {/* Marque + secteur */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                    {form.formState.errors.brand_name && <p className="text-destructive text-xs">{form.formState.errors.brand_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Secteur <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("sector")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {SECTORS.map((s) => <option key={s} value={s} className="bg-card">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Ton + audience */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Ton de marque</label>
-                    <div className="relative">
-                      <select {...form.register("tone")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {TONES.map((t) => <option key={t} value={t} className="bg-card">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Audience cible</label>
-                    <div className="relative">
-                      <select {...form.register("target_audience")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {TARGET_AUDIENCES.map((a) => <option key={a} value={a} className="bg-card">{a.replace(/_/g, " ")}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Valeurs */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Valeurs de marque</label>
-                  <Input placeholder="ex: excellence, prestige, authenticité, élégance" {...form.register("values")} className="bg-black/20" />
-                  <p className="text-xs text-muted-foreground">Séparées par virgules</p>
-                </div>
+                <BriefSummaryBanner />
 
                 {/* Options audio */}
                 <div className="space-y-3">
@@ -454,8 +385,8 @@ export default function Module05() {
           {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 className="text-xl font-bold text-foreground">{formData?.brand_name} — Brand Sound</h2>
-              <p className="text-sm text-muted-foreground">{formData?.sector} · Ton {formData?.tone}</p>
+              <h2 className="text-xl font-bold text-foreground">{brief.brand_name} — Brand Sound</h2>
+              <p className="text-sm text-muted-foreground">{brief.sector} · Ton {brief.tone}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => { setShowResults(false); setSections([]); setStreamState({ sections: {}, activeSection: null }); }}>

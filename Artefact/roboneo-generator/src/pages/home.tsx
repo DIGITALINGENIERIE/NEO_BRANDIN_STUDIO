@@ -5,6 +5,7 @@ import {
   ShoppingBag, MessageSquare, BarChart2, Mail, Share2,
   Globe, Users, Music2, Zap, FileText, Rocket, MessageCircle, ShoppingCart
 } from "lucide-react";
+import BrandBriefPanel from "@/components/brand-brief-panel";
 import Module01 from "./module-01";
 import Module02 from "./module-02";
 import Module03 from "./module-03";
@@ -547,6 +548,7 @@ export default function Home() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
               >
+                <BrandBriefPanel />
                 <ModuleHeader mod={activeModule} />
 
                 {ActiveComponent ? (

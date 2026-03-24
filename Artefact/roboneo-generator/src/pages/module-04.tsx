@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -212,17 +213,7 @@ const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare
 const TARGET_AUDIENCES = ["femmes_18_25", "femmes_25_45", "femmes_35_50", "hommes_25_40", "mixte"];
 
 const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  sector: z.string().min(1),
-  product_name: z.string().min(2, "Nom du produit requis"),
-  product_description: z.string().default(""),
-  benefits: z.string().default(""),
-  target_audience: z.string().min(1),
-  colors: z.string().default(""),
-  promo_code: z.string().default(""),
-  discount: z.string().default("20"),
   duration_days: z.string().default("7"),
-  free_shipping: z.string().default("100"),
   stock: z.string().default("50"),
   problem: z.string().default(""),
 });
@@ -242,36 +233,10 @@ export default function Module04() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", sector: brief.sector || "bijou", product_name: brief.product_name || "",
-      product_description: brief.product_description || "", benefits: brief.benefits || "", target_audience: brief.target_audience || "femmes_25_45",
-      colors: brief.product_colors || "", promo_code: brief.promo_code || "", discount: brief.discount || "20",
-      duration_days: "7", free_shipping: brief.free_shipping || "100", stock: "50", problem: "",
-    },
+    defaultValues: { duration_days: "7", stock: "50", problem: "" },
   });
 
-  React.useEffect(() => {
-    if (brief.brand_name || brief.product_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        sector: brief.sector || "bijou",
-        product_name: brief.product_name || "",
-        product_description: brief.product_description || "",
-        benefits: brief.benefits || "",
-        target_audience: brief.target_audience || "femmes_25_45",
-        colors: brief.product_colors || "",
-        promo_code: brief.promo_code || "",
-        discount: brief.discount || "20",
-        duration_days: form.getValues("duration_days") || "7",
-        free_shipping: brief.free_shipping || "100",
-        stock: form.getValues("stock") || "50",
-        problem: form.getValues("problem") || "",
-      });
-    }
-  }, [brief.brand_name, brief.sector, brief.product_name, brief.product_description, brief.benefits, brief.target_audience, brief.product_colors, brief.promo_code, brief.discount, brief.free_shipping]);
-
   const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, sector: data.sector, product_name: data.product_name, product_description: data.product_description, benefits: data.benefits, target_audience: data.target_audience, product_colors: data.colors, promo_code: data.promo_code, discount: data.discount, free_shipping: data.free_shipping });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);
@@ -279,24 +244,24 @@ export default function Module04() {
     setSections([]);
 
     try {
-      const benefitsList = data.benefits.split(",").map((b) => b.trim()).filter(Boolean);
-      const colorsList = data.colors.split(",").map((c) => c.trim()).filter(Boolean);
+      const benefitsList = brief.benefits.split(",").map((b) => b.trim()).filter(Boolean);
+      const colorsList = brief.product_colors.split(",").map((c) => c.trim()).filter(Boolean);
 
       const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts-ads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          brand_name: data.brand_name,
-          sector: data.sector,
-          product_name: data.product_name,
-          product_description: data.product_description,
+          brand_name: brief.brand_name,
+          sector: brief.sector,
+          product_name: brief.product_name,
+          product_description: brief.product_description,
           benefits: benefitsList,
-          target_audience: data.target_audience,
+          target_audience: brief.target_audience,
           colors: colorsList,
-          promo_code: data.promo_code,
-          discount: Number(data.discount),
+          promo_code: brief.promo_code,
+          discount: Number(brief.discount) || 20,
           duration_days: data.duration_days,
-          free_shipping: Number(data.free_shipping),
+          free_shipping: Number(brief.free_shipping) || 100,
           stock: Number(data.stock),
           problem: data.problem,
         }),
@@ -356,8 +321,8 @@ export default function Module04() {
   const allDone = sections.length === 6;
 
   const handleDownloadTXT = () => {
-    if (!sections.length || !formData) return;
-    let txt = `================================================================================\nPROMPTS MODULE 04 — AD CREATIVES — NEO BRANDING STUDIO\nMarque: ${formData.brand_name} | Produit: ${formData.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
+    if (!sections.length) return;
+    let txt = `================================================================================\nPROMPTS MODULE 04 — AD CREATIVES — NEO BRANDING STUDIO\nMarque: ${brief.brand_name} | Produit: ${brief.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
     for (const sec of sections) {
       txt += `\n--- ${sec.label.toUpperCase()} ---\nAgent: ${sec.agent}\n\n`;
       for (const [k, v] of Object.entries(sec.data)) {
@@ -368,16 +333,16 @@ export default function Module04() {
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-    a.download = `prompts_m04_${formData.brand_name.toLowerCase()}.txt`;
+    a.download = `prompts_m04_${brief.brand_name.toLowerCase()}.txt`;
     a.click();
   };
 
   const handleDownloadJSON = () => {
-    if (!sections.length || !formData) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: formData.brand_name, product: formData.product_name, sections };
+    if (!sections.length) return;
+    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, product: brief.product_name, sections };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
-    a.download = `prompts_m04_${formData.brand_name.toLowerCase()}.json`;
+    a.download = `prompts_m04_${brief.brand_name.toLowerCase()}.json`;
     a.click();
   };
 
@@ -392,62 +357,7 @@ export default function Module04() {
             </CardHeader>
             <CardContent>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-                {/* Marque + secteur */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                    {form.formState.errors.brand_name && <p className="text-destructive text-xs">{form.formState.errors.brand_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Secteur <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("sector")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {SECTORS.map((s) => <option key={s} value={s} className="bg-card">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Produit + audience */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom du produit <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: Montre Élégance Or Rose" {...form.register("product_name")} className="bg-black/20" />
-                    {form.formState.errors.product_name && <p className="text-destructive text-xs">{form.formState.errors.product_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Audience cible</label>
-                    <div className="relative">
-                      <select {...form.register("target_audience")} className="flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors">
-                        {TARGET_AUDIENCES.map((a) => <option key={a} value={a} className="bg-card">{a.replace(/_/g, " ")}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Description du produit</label>
-                  <Textarea placeholder="ex: Montre automatique or rose, mouvement suisse, bracelet cuir..." {...form.register("product_description")} className="bg-black/20 h-20" />
-                </div>
-
-                {/* Bénéfices + couleurs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Bénéfices clés</label>
-                    <Input placeholder="ex: élégance, précision, durabilité" {...form.register("benefits")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparés par virgules</p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Couleurs de la marque</label>
-                    <Input placeholder="ex: or rose, noir, blanc" {...form.register("colors")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparées par virgules</p>
-                  </div>
-                </div>
+                <BriefSummaryBanner />
 
                 {/* Problème client */}
                 <div className="space-y-2">
@@ -455,22 +365,14 @@ export default function Module04() {
                   <Input placeholder="ex: bijoux qui ternissent, manque d'élégance au quotidien..." {...form.register("problem")} className="bg-black/20" />
                 </div>
 
-                {/* Paramètres offre */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Paramètres campagne spécifiques */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Code promo</label>
-                    <Input placeholder="ex: LUXEOR20" {...form.register("promo_code")} className="bg-black/20" />
+                    <label className="text-sm font-medium text-foreground">Durée campagne (jours)</label>
+                    <Input placeholder="7" {...form.register("duration_days")} className="bg-black/20" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Remise (%)</label>
-                    <Input placeholder="20" {...form.register("discount")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Livraison offerte (€)</label>
-                    <Input placeholder="100" {...form.register("free_shipping")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Stock (unités)</label>
+                    <label className="text-sm font-medium text-foreground">Stock disponible (unités)</label>
                     <Input placeholder="50" {...form.register("stock")} className="bg-black/20" />
                   </div>
                 </div>
@@ -491,8 +393,8 @@ export default function Module04() {
           {/* Header résultats */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 className="text-xl font-bold text-foreground">{formData?.brand_name} — Ad Creatives</h2>
-              <p className="text-sm text-muted-foreground">{formData?.product_name} · {formData?.sector}</p>
+              <h2 className="text-xl font-bold text-foreground">{brief.brand_name} — Ad Creatives</h2>
+              <p className="text-sm text-muted-foreground">{brief.product_name} · {brief.sector}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => { setShowResults(false); setSections([]); setStreamState({ sections: {}, activeSection: null }); }}>

@@ -1,0 +1,765 @@
+Voici le **prompt pour installer le Module 04 — Ad Creatives** dans l'architecture existante.
+
+---
+
+# PROMPT — INSTALLATION MODULE 04 — AD CREATIVES
+
+```
+Ajoute le MODULE 04 — AD CREATIVES au projet existant.
+
+Le Module 04 génère des prompts optimisés pour RoboNeo.com afin de créer toutes les créations publicitaires d'une marque: Meta Ads (feed, stories, reels), Google Display (6 formats), TikTok Ads, Carousel Ads, Ad Copy (4 variantes), et Performance Predictor.
+
+Le module doit s'intégrer avec les Modules 01, 02 et 03 déjà installés.
+
+## STRUCTURE À AJOUTER
+
+Ajoute ce dossier et ces fichiers:
+
+```
+modules/module_04_ad_creatives/
+├── __init__.py
+├── orchestrator.py
+└── prompts.py
+```
+
+## 1. FICHIER modules/module_04_ad_creatives/__init__.py
+
+```python
+from .orchestrator import AdCreativesOrchestrator
+
+__all__ = ["AdCreativesOrchestrator"]
+```
+
+## 2. FICHIER modules/module_04_ad_creatives/prompts.py
+
+```python
+# ============================================================
+# MODULE 04 — AD CREATIVES — PROMPTS ROBONEO
+# ============================================================
+
+# MOD-04.1 — Meta Ads Formats
+META_ADS_PROMPTS = {
+    "feed_image": """
+Crée une publicité Meta (Facebook/Instagram) format image feed:
+- Dimensions: 1080x1080 (1:1)
+- Format: JPG ou PNG
+- Texte overlay maximum: 20% de la surface
+- Éléments: produit principal, texte accrocheur, logo
+- Style: {style} adapté au secteur {sector}
+- CTA: {cta}
+- Couleurs: {colors}
+""",
+    
+    "feed_video": """
+Crée une publicité Meta (Facebook/Instagram) format vidéo feed:
+- Dimensions: 1080x1080 (1:1)
+- Durée: 15-30 secondes
+- Format: MP4
+- Éléments: produit en action, témoignage ou démonstration
+- Style: {style} adapté au secteur {sector}
+- CTA visuel en fin de vidéo
+- Sous-titres inclus
+""",
+    
+    "stories": """
+Crée une publicité Meta (Facebook/Instagram) format stories:
+- Dimensions: 1080x1920 (9:16)
+- Format: JPG, PNG ou MP4
+- Zone de sécurité: éviter les zones de texte en haut et en bas (15% de marge)
+- Éléments: produit en plein écran, texte percutant, logo
+- Style: {style} adapté au secteur {sector}
+- CTA: swipe up ou lien
+- Durée vidéo: 15 secondes max
+""",
+    
+    "reels": """
+Crée une publicité Instagram format Reels:
+- Dimensions: 1080x1920 (9:16)
+- Durée: 15-30 secondes
+- Format: MP4
+- Son: musique tendance ou originale
+- Éléments: rythme dynamique, transitions rapides
+- Style: {style} adapté au secteur {sector}
+- CTA: lien en bio
+- Sous-titres optionnels
+"""
+}
+
+# MOD-04.2 — Google Display Formats
+GOOGLE_DISPLAY_PROMPTS = {
+    "leaderboard": """
+Crée une bannière Google Display:
+- Dimensions: 728x90 (leaderboard)
+- Format: JPG, PNG ou HTML5
+- Texte: court et percutant (max 30 caractères)
+- Logo: visible
+- CTA: bouton clair
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+""",
+    
+    "medium_rectangle": """
+Crée une bannière Google Display:
+- Dimensions: 300x250 (medium rectangle)
+- Format: JPG, PNG ou HTML5
+- Texte: titre (max 25 caractères) + description courte
+- Logo: en haut ou à gauche
+- CTA: bouton en bas
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+""",
+    
+    "large_rectangle": """
+Crée une bannière Google Display:
+- Dimensions: 336x280 (large rectangle)
+- Format: JPG, PNG ou HTML5
+- Texte: titre (max 28 caractères) + description
+- Produit: visible en évidence
+- CTA: bouton contrasté
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+""",
+    
+    "mobile_banner": """
+Crée une bannière Google Display mobile:
+- Dimensions: 320x100 (large mobile banner)
+- Format: JPG, PNG ou HTML5
+- Texte: ultra court (max 20 caractères)
+- Logo: petit mais lisible
+- CTA: texte clair
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+""",
+    
+    "half_page": """
+Crée une bannière Google Display:
+- Dimensions: 300x600 (half page)
+- Format: JPG, PNG ou HTML5
+- Texte: titre + description détaillée
+- Produit: plusieurs angles ou variantes
+- CTA: en bas
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+""",
+    
+    "billboard": """
+Crée une bannière Google Display:
+- Dimensions: 970x250 (billboard)
+- Format: JPG, PNG ou HTML5
+- Texte: accroche large
+- Produit: grand format
+- CTA: visible
+- Style: {style} adapté au secteur {sector}
+- Palette: {colors}
+"""
+}
+
+# MOD-04.3 — TikTok Ads
+TIKTOK_ADS_PROMPTS = """
+Crée une publicité TikTok:
+- Dimensions: 1080x1920 (9:16)
+- Durée: 15-30 secondes (recommandé: 21-34s)
+- Format: MP4
+- Son: musique tendance (obligatoire)
+- Éléments:
+  * 0-3s: hook immédiat, accroche visuelle
+  * 3-15s: démonstration produit, bénéfices
+  * 15-25s: témoignage ou preuve sociale
+  * 25-30s: CTA + lien
+- Effets: filtres tendance, transitions rapides
+- Texte overlay: courts, dynamiques
+- Style: {style} adapté au secteur {sector}
+- Hashtags suggérés: #{sector}, #{product}, #{brand}
+"""
+
+# MOD-04.4 — Carousel Ads
+CAROUSEL_ADS_PROMPTS = {
+    "slide_1_hook": """
+Slide 1/5 - Hook:
+- Visuel: accrocheur, produit en situation lifestyle
+- Texte: question ou affirmation percutante
+- Objectif: arrêter le scroll
+- Dimensions: 1080x1080 (1:1)
+- Style: {style}
+""",
+    
+    "slide_2_problem": """
+Slide 2/5 - Problème:
+- Visuel: avant utilisation, situation sans produit
+- Texte: identifier la douleur du client
+- Objectif: créer une connexion émotionnelle
+- Dimensions: 1080x1080 (1:1)
+- Style: {style}
+""",
+    
+    "slide_3_solution": """
+Slide 3/5 - Solution:
+- Visuel: produit mis en avant, bénéfice principal
+- Texte: présenter la solution
+- Objectif: montrer la réponse au problème
+- Dimensions: 1080x1080 (1:1)
+- Style: {style}
+""",
+    
+    "slide_4_proof": """
+Slide 4/5 - Preuve:
+- Visuel: before/after, témoignage, statistique
+- Texte: preuve sociale, résultat
+- Objectif: crédibiliser, rassurer
+- Dimensions: 1080x1080 (1:1)
+- Style: {style}
+""",
+    
+    "slide_5_cta": """
+Slide 5/5 - Call to Action:
+- Visuel: logo + produit + offre
+- Texte: CTA clair, urgence, offre limitée
+- Objectif: convertir
+- Dimensions: 1080x1080 (1:1)
+- Style: {style}
+"""
+}
+
+# MOD-04.5 — Ad Copy Templates (4 variantes par format)
+AD_COPY_TEMPLATES = {
+    "meta_feed": {
+        "primary_text": [
+            "✨ Découvrez {product} — {benefit_1} comme jamais auparavant. Code {code} pour -20% ⭐",
+            "Stop aux {problem}. {product} change la donne. {benefit_2} garantie. 🚀",
+            "Offre limitée : -20% sur {product}. Code: {code} ⏰ Dépêchez-vous !",
+            "Les avis sont unanimes: {product} est le meilleur choix. ⭐⭐⭐⭐⭐"
+        ],
+        "headline": [
+            "{benefit_1} en {duration}",
+            "Jusqu'à {discount}% de réduction",
+            "Nouveau: {product}",
+            "Offre exclusive -{discount}%"
+        ],
+        "description": [
+            "Livraison offerte dès {free_shipping}€",
+            "Satisfait ou remboursé {days} jours",
+            "Édition limitée - {stock} unités",
+            "Paiement en 3x sans frais"
+        ],
+        "cta": [
+            "Acheter maintenant",
+            "Découvrir la collection",
+            "Profiter de l'offre",
+            "En savoir plus"
+        ]
+    },
+    
+    "meta_stories": {
+        "primary_text": [
+            "✨ {product} — l'élégance à portée de main ✨",
+            "👆 Swipe up pour découvrir {benefit_1}",
+            "💫 {product}, la révolution {sector} 💫",
+            "🔥 Offre flash -{discount}% 🔥 Code {code}"
+        ],
+        "headline": [
+            "{benefit_1}",
+            "-{discount}%",
+            "Nouveauté",
+            "Édition limitée"
+        ],
+        "cta": [
+            "En savoir plus",
+            "Acheter",
+            "Profiter",
+            "Swipe up"
+        ]
+    },
+    
+    "google_display": {
+        "headline": [
+            "{product} — {benefit_short}",
+            "{discount}% de réduction",
+            "{benefit_1} en {duration}"
+        ],
+        "description": [
+            "Découvrez {product} sur notre site",
+            "Livraison rapide | Satisfait ou remboursé",
+            "Offre limitée - {discount}%",
+            "Qualité premium - {benefit_1}"
+        ],
+        "cta": [
+            "Acheter",
+            "Découvrir",
+            "Profiter",
+            "Commander"
+        ]
+    },
+    
+    "tiktok": {
+        "primary_text": [
+            "POV: tu as enfin trouvé {product} ✨",
+            "Réaction à {product} — incroyable 😱",
+            "La routine qui change tout avec {product} 💫",
+            "Le secret des pros: {product} 🔥"
+        ],
+        "headline": [
+            "{benefit_1} en {duration}",
+            "{discount}% avec code {code}",
+            "Nouveau sur TikTok",
+            "Viral 🔥"
+        ],
+        "hashtags": [
+            "#{product} #{sector} #{brand} #nouveauté",
+            "#{sector} #beauté #astuce #{brand}",
+            "#{product} #promo #{code} #offre",
+            "#{brand} #{sector} #tendance"
+        ]
+    }
+}
+
+# MOD-04.6 — Performance Predictor
+PERFORMANCE_PREDICTOR_PROMPTS = {
+    "ctr_factors": """
+Facteurs influençant le CTR (Click-Through Rate):
+- Présence de visage: +30% de CTR
+- Texte overlay <20%: +15% de CTR
+- Couleurs contrastées: +10% de CTR
+- CTA visible sans scroll: +20% de CTR
+- Urgence (stock limité, offre): +25% de CTR
+- Témoignage/preuve sociale: +18% de CTR
+""",
+    
+    "recommendations": """
+Recommandations A/B testing:
+1. Tester 2-3 variantes de créatives simultanément
+2. Garder le même CTA sur toutes les variantes
+3. Tester sur 3-5 jours minimum
+4. Analyser: CTR, CPC, ROAS
+5. Garder la variante gagnante, tester contre une nouvelle
+"""
+}
+
+def get_meta_ad_prompt(format_type: str, style: str, sector: str, cta: str, colors: str) -> str:
+    """Génère un prompt pour Meta Ads"""
+    prompt = META_ADS_PROMPTS.get(format_type, META_ADS_PROMPTS["feed_image"])
+    return prompt.format(style=style, sector=sector, cta=cta, colors=colors)
+
+def get_google_display_prompt(format_type: str, style: str, sector: str, colors: str) -> str:
+    """Génère un prompt pour Google Display"""
+    prompt = GOOGLE_DISPLAY_PROMPTS.get(format_type, GOOGLE_DISPLAY_PROMPTS["medium_rectangle"])
+    return prompt.format(style=style, sector=sector, colors=colors)
+
+def get_tiktok_ad_prompt(style: str, sector: str, product: str, brand: str) -> str:
+    """Génère un prompt pour TikTok Ads"""
+    return TIKTOK_ADS_PROMPTS.format(style=style, sector=sector, product=product, brand=brand)
+
+def get_carousel_slide_prompt(slide: int, slide_type: str, style: str) -> str:
+    """Génère un prompt pour une slide de carrousel"""
+    prompt_key = f"slide_{slide}_{slide_type}" if slide_type else f"slide_{slide}_hook"
+    prompt = CAROUSEL_ADS_PROMPTS.get(prompt_key, CAROUSEL_ADS_PROMPTS["slide_1_hook"])
+    return prompt.format(style=style)
+
+def get_ad_copy_template(platform: str, sector: str) -> dict:
+    """Génère un template de copy pour une plateforme"""
+    return AD_COPY_TEMPLATES.get(platform, AD_COPY_TEMPLATES["meta_feed"])
+```
+
+## 3. FICHIER modules/module_04_ad_creatives/orchestrator.py
+
+```python
+from typing import Dict, Any, List
+from modules.base_module import BaseModule
+from modules.module_04_ad_creatives.prompts import (
+    get_meta_ad_prompt,
+    get_google_display_prompt,
+    get_tiktok_ad_prompt,
+    get_carousel_slide_prompt,
+    get_ad_copy_template
+)
+
+class AdCreativesOrchestrator(BaseModule):
+    """
+    MODULE 04 — AD CREATIVES
+    Génère tous les prompts pour créer les publicités d'une marque
+    """
+    
+    def __init__(self):
+        super().__init__("AdCreatives")
+    
+    def generate(self, brief: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Génère tous les prompts du Module 04
+        
+        Input brief attendu:
+        {
+            "brand_name": "LUXEOR",
+            "sector": "bijou",
+            "product_name": "Montre Élégance",
+            "product_description": "...",
+            "benefits": ["élégance", "précision", "héritage"],
+            "target_audience": "femmes_35_50",
+            "colors": ["or rose", "noir"],
+            "style": "luxe",
+            "promo_code": "LUXEOR20",
+            "discount": 20,
+            "duration_days": 7,
+            "free_shipping": 100,
+            "stock": 50,
+            "problem": "bijoux qui ternissent"
+        }
+        """
+        
+        # Extraire les données
+        brand_name = brief.get("brand_name", "Ma Marque")
+        sector = brief.get("sector", "general")
+        product_name = brief.get("product_name", "notre produit")
+        benefits = brief.get("benefits", ["qualité", "performance"])
+        target_audience = brief.get("target_audience", "mixte")
+        colors = brief.get("colors", ["or", "noir"])
+        style = brief.get("style", self._detect_style(sector))
+        promo_code = brief.get("promo_code", brand_name.upper()[:4])
+        discount = brief.get("discount", 20)
+        duration_days = brief.get("duration_days", 7)
+        free_shipping = brief.get("free_shipping", 100)
+        stock = brief.get("stock", 50)
+        problem = brief.get("problem", "problèmes quotidiens")
+        
+        # Variables pour personnalisation des copy
+        copy_context = {
+            "product": product_name,
+            "brand": brand_name,
+            "sector": sector,
+            "benefit_1": benefits[0] if benefits else "qualité",
+            "benefit_2": benefits[1] if len(benefits) > 1 else "performance",
+            "benefit_short": benefits[0][:20] if benefits else "qualité",
+            "code": promo_code,
+            "discount": discount,
+            "duration": duration_days,
+            "free_shipping": free_shipping,
+            "days": "30",
+            "stock": stock,
+            "problem": problem
+        }
+        
+        self._log(f"Génération des prompts publicitaires pour {brand_name} ({sector})")
+        
+        # 1. Meta Ads (feed image, feed video, stories, reels)
+        meta_ads = {}
+        meta_formats = ["feed_image", "feed_video", "stories", "reels"]
+        
+        for fmt in meta_formats:
+            prompt = get_meta_ad_prompt(fmt, style, sector, "Acheter maintenant", ", ".join(colors))
+            personalized = self._personalize_prompt(prompt, copy_context)
+            enhanced = self._enhance_prompt(personalized, copy_context)
+            
+            meta_ads[fmt] = {
+                "prompt": enhanced,
+                "parameters": {
+                    "format": fmt,
+                    "dimensions": "1080x1080" if fmt == "feed_image" or fmt == "feed_video" else "1080x1920",
+                    "cta": self._get_cta_for_format(fmt)
+                }
+            }
+        
+        # 2. Google Display (6 formats)
+        google_display = {}
+        google_formats = ["leaderboard", "medium_rectangle", "large_rectangle", "mobile_banner", "half_page", "billboard"]
+        
+        for fmt in google_formats:
+            prompt = get_google_display_prompt(fmt, style, sector, ", ".join(colors))
+            personalized = self._personalize_prompt(prompt, copy_context)
+            enhanced = self._enhance_prompt(personalized, copy_context)
+            
+            google_display[fmt] = {
+                "prompt": enhanced,
+                "parameters": {
+                    "format": fmt,
+                    "dimensions": self._get_google_dimensions(fmt),
+                    "html5_available": True
+                }
+            }
+        
+        # 3. TikTok Ads
+        tiktok_prompt = get_tiktok_ad_prompt(style, sector, product_name, brand_name)
+        tiktok_personalized = self._personalize_prompt(tiktok_prompt, copy_context)
+        tiktok_enhanced = self._enhance_prompt(tiktok_personalized, copy_context)
+        
+        tiktok_ads = {
+            "prompt": tiktok_enhanced,
+            "parameters": {
+                "format": "9:16",
+                "dimensions": "1080x1920",
+                "duration": "15-30s",
+                "sound_required": True
+            }
+        }
+        
+        # 4. Carousel Ads (5 slides)
+        carousel = {}
+        slide_types = ["hook", "problem", "solution", "proof", "cta"]
+        
+        for i, slide_type in enumerate(slide_types, 1):
+            prompt = get_carousel_slide_prompt(i, slide_type, style)
+            personalized = self._personalize_prompt(prompt, copy_context)
+            enhanced = self._enhance_prompt(personalized, copy_context)
+            
+            carousel[f"slide_{i}"] = {
+                "prompt": enhanced,
+                "role": slide_type,
+                "parameters": {
+                    "dimensions": "1080x1080",
+                    "format": "image"
+                }
+            }
+        
+        # 5. Ad Copy (4 variantes par plateforme)
+        ad_copy = {}
+        platforms = ["meta_feed", "meta_stories", "google_display", "tiktok"]
+        
+        for platform in platforms:
+            template = get_ad_copy_template(platform, sector)
+            copy_variants = {}
+            
+            for field, variants in template.items():
+                personalized_variants = []
+                for variant in variants[:4]:  # 4 variantes max
+                    personalized = self._personalize_copy(variant, copy_context)
+                    personalized_variants.append(personalized)
+                copy_variants[field] = personalized_variants
+            
+            ad_copy[platform] = copy_variants
+        
+        # 6. Performance Predictor (recommandations)
+        performance = {
+            "ctr_factors": {
+                "facteurs": [
+                    {"factor": "Présence de visage", "impact": "+30% CTR"},
+                    {"factor": "Texte overlay <20%", "impact": "+15% CTR"},
+                    {"factor": "Couleurs contrastées", "impact": "+10% CTR"},
+                    {"factor": "CTA visible sans scroll", "impact": "+20% CTR"},
+                    {"factor": "Urgence (stock/offre)", "impact": "+25% CTR"},
+                    {"factor": "Preuve sociale", "impact": "+18% CTR"}
+                ]
+            },
+            "recommendations": [
+                "Tester 2-3 variantes de créatives simultanément",
+                "Garder le même CTA sur toutes les variantes",
+                "Tester sur 3-5 jours minimum",
+                "Analyser: CTR, CPC, ROAS",
+                "Garder la variante gagnante, tester contre une nouvelle"
+            ],
+            "metrics_to_track": ["CTR", "CPC", "ROAS", "Conversion Rate", "Cost per Conversion"]
+        }
+        
+        # Retourner tous les prompts
+        return {
+            "ad_creatives": {
+                "meta_ads": {
+                    "agent": "AI Poster Agent / Creative Ad Video Agent",
+                    "creatives": meta_ads,
+                    "parameters": {
+                        "platforms": ["Facebook", "Instagram"],
+                        "formats": meta_formats,
+                        "variants_per_format": 1
+                    }
+                },
+                "google_display": {
+                    "agent": "AI Poster Agent / Brand Design Agent",
+                    "banners": google_display,
+                    "parameters": {
+                        "formats": google_formats,
+                        "html5_animated": True,
+                        "dimensions": self._get_all_google_dimensions()
+                    }
+                },
+                "tiktok_ads": {
+                    "agent": "Creative Ad Video Agent",
+                    "creatives": tiktok_ads,
+                    "parameters": {
+                        "format": "9:16",
+                        "duration": "15-30s",
+                        "sound_trending": True,
+                        "effects_trending": True
+                    }
+                },
+                "carousel_ads": {
+                    "agent": "AI Poster Agent",
+                    "carousel": carousel,
+                    "parameters": {
+                        "slides": 5,
+                        "narrative": ["hook", "problem", "solution", "proof", "cta"],
+                        "dimensions": "1080x1080"
+                    }
+                },
+                "ad_copy": {
+                    "agent": "Manual (copywriting)",
+                    "variants": ad_copy,
+                    "parameters": {
+                        "platforms": platforms,
+                        "variants_per_platform": 4,
+                        "characters_optimized": True
+                    }
+                },
+                "performance_predictor": {
+                    "analysis": performance,
+                    "recommendations": [
+                        "Tester d'abord Meta Feed Image et Stories",
+                        "Google Display: prioriser Medium Rectangle et Mobile Banner",
+                        "TikTok: tester 3 versions avec des sons différents",
+                        "Carousel: tester narrative 'problème-solution' vs 'storytelling'"
+                    ]
+                }
+            },
+            "metadata": {
+                "module": "04_ad_creatives",
+                "brand_name": brand_name,
+                "sector": sector,
+                "meta_formats": len(meta_formats),
+                "google_formats": len(google_formats),
+                "carousel_slides": 5,
+                "copy_variants": 4,
+                "llm_enhanced": bool(self._enhance_prompt("test", {}) != "test")
+            }
+        }
+    
+    def _personalize_prompt(self, prompt: str, context: Dict) -> str:
+        """Personnalise un prompt avec le contexte"""
+        for key, value in context.items():
+            prompt = prompt.replace(f"{{{key}}}", str(value))
+        return prompt
+    
+    def _personalize_copy(self, text: str, context: Dict) -> str:
+        """Personnalise un texte publicitaire"""
+        for key, value in context.items():
+            text = text.replace(f"{{{key}}}", str(value))
+        return text
+    
+    def _detect_style(self, sector: str) -> str:
+        """Détecte le style publicitaire selon le secteur"""
+        mapping = {
+            "bijou": "luxe, élégant, raffiné",
+            "luxe": "premium, exclusif, intemporel",
+            "cosmétique": "frais, naturel, lumineux",
+            "skincare": "doux, naturel, apaisant",
+            "tech": "moderne, dynamique, futuriste",
+            "fitness": "énergique, motivant, dynamique",
+            "mode": "tendance, moderne, élégant",
+            "streetwear": "urban, dynamique, cool"
+        }
+        return mapping.get(sector, "moderne, professionnel")
+    
+    def _get_cta_for_format(self, format_type: str) -> str:
+        """Retourne le CTA recommandé pour un format"""
+        mapping = {
+            "feed_image": "Acheter maintenant",
+            "feed_video": "En savoir plus",
+            "stories": "Swipe up",
+            "reels": "Lien en bio"
+        }
+        return mapping.get(format_type, "Découvrir")
+    
+    def _get_google_dimensions(self, format_type: str) -> str:
+        """Retourne les dimensions pour un format Google"""
+        mapping = {
+            "leaderboard": "728x90",
+            "medium_rectangle": "300x250",
+            "large_rectangle": "336x280",
+            "mobile_banner": "320x100",
+            "half_page": "300x600",
+            "billboard": "970x250"
+        }
+        return mapping.get(format_type, "300x250")
+    
+    def _get_all_google_dimensions(self) -> List[str]:
+        """Retourne toutes les dimensions Google"""
+        return ["728x90", "300x250", "336x280", "320x100", "300x600", "970x250"]
+```
+
+## 4. MISE À JOUR DU FICHIER main.py
+
+Ajoute l'import et l'intégration du Module 04 dans le main.py:
+
+```python
+# Ajouter cet import en haut du fichier
+from modules.module_04_ad_creatives import AdCreativesOrchestrator
+
+# Dans la fonction main(), après la génération du Module 03, ajouter:
+
+# Génération des prompts Module 04
+print("\n" + "=" * 80)
+print("MODULE 04 — AD CREATIVES")
+print("=" * 80)
+
+ad_brief = {
+    "brand_name": brief.get("brand_name"),
+    "sector": brief.get("sector"),
+    "product_name": brief.get("product_name", brief.get("brand_name")),
+    "product_description": brief.get("product_description", ""),
+    "benefits": brief.get("benefits", []),
+    "target_audience": brief.get("target_audience", "mixte"),
+    "colors": brief.get("product_colors", []),
+    "style": brief.get("style", None),
+    "promo_code": brief.get("promo_code", brief.get("brand_name", "BRAND")[:4].upper()),
+    "discount": brief.get("discount", 20),
+    "duration_days": brief.get("duration_days", 7),
+    "free_shipping": brief.get("free_shipping", 100),
+    "stock": brief.get("stock", 50),
+    "problem": f"{brief.get('sector', 'produits')} qui ne répondent pas aux attentes"
+}
+
+ad_orchestrator = AdCreativesOrchestrator()
+ad_result = ad_orchestrator.generate(ad_brief)
+
+# Fusionner les résultats
+result["modules"]["ad_creatives"] = ad_result["ad_creatives"]
+```
+
+## 5. MISE À JOUR DU BRIEF D'EXEMPLE
+
+Modifie le brief par défaut dans main.py pour inclure les champs du Module 04:
+
+```python
+brief = {
+    "brand_name": "LUXEOR",
+    "sector": "bijou",
+    "tone": "luxe",
+    "values": ["excellence", "prestige", "authenticité", "élégance"],
+    "style_pref": None,
+    "product_type": "bijou",
+    "product_name": "Montre Élégance Or Rose",
+    "product_description": "Montre automatique en or rose avec bracelet cuir, mouvement suisse, verre saphir.",
+    "product_colors": ["or rose", "noir"],
+    "product_materials": ["acier inoxydable", "verre saphir", "cuir"],
+    "product_features": ["or rose 18 carats", "verre saphir", "mouvement automatique suisse", "bracelet cuir"],
+    "benefits": ["élégance intemporelle", "précision suisse", "héritage familial"],
+    "target_audience": "femmes_35_50",
+    "year": "1923",
+    "promo_code": "LUXEOR20",
+    "duration_days": "7",
+    "discount": 20,
+    "free_shipping": 100,
+    "stock": 50
+}
+```
+
+## 6. MISE À JOUR DU FICHIER output/prompts_roboneo.txt
+
+Le fichier d'export doit maintenant inclure tous les modules. Assure-toi que le FileExporter gère correctement la structure imbriquée. Si besoin, mets à jour le fichier utils/file_exporter.py pour qu'il génère un fichier TXT lisible.
+
+## 7. VÉRIFICATION
+
+Une fois installé, teste avec:
+
+```bash
+python main.py
+```
+
+Le fichier output/prompts_roboneo.txt doit maintenant contenir les prompts pour:
+- Module 01: Brand Identity
+- Module 02: Visual Content
+- Module 03: Video Content
+- Module 04: Ad Creatives (Meta, Google, TikTok, Carousel, Ad Copy, Performance Predictor)
+```
+
+---
+
+**Copie et colle ce prompt dans Replit AI.** Une fois installé, tu auras les Modules 01, 02, 03 et 04 fonctionnels.
+
+Il nous reste **6 modules** : 05 (Brand Sound), 06 (Copy & Content), 07 (Launch Ready), 08 (Chatbot Script), 09 (Upsell Kit), 10 (Performance Tracker).
+
+Dis-moi quand c'est fait, et on enchaîne ! 🚀

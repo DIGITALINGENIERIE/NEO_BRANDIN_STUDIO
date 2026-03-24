@@ -4,6 +4,7 @@ import { Sparkles, Lock, ChevronRight, Palette, Camera, Video, ShoppingBag, Mess
 import Module01 from "./module-01";
 import Module02 from "./module-02";
 import Module03 from "./module-03";
+import Module04 from "./module-04";
 
 // ─── Définition des modules ──────────────────────────────────────────────────
 
@@ -58,14 +59,16 @@ const MODULES: ModuleDef[] = [
     prompts: 14,
   },
   {
-    id: "product-pages",
+    id: "ad-creatives",
     number: "04",
-    title: "Product Pages",
-    subtitle: "Fiches produit, descriptions IA",
+    title: "Ad Creatives",
+    subtitle: "Meta, Google Display, TikTok",
     icon: <ShoppingBag className="w-5 h-5" />,
-    color: "text-cyan-400",
-    bgColor: "bg-cyan-400/10 border-cyan-400/20",
-    available: false,
+    color: "text-orange-400",
+    bgColor: "bg-orange-400/10 border-orange-400/20",
+    available: true,
+    component: Module04,
+    prompts: 18,
   },
   {
     id: "copywriting",

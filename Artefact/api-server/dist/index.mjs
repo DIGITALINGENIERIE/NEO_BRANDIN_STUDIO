@@ -20481,27 +20481,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router6;
+    module.exports = Router7;
     module.exports.Route = Route;
-    function Router6(options) {
-      if (!(this instanceof Router6)) {
-        return new Router6(options);
+    function Router7(options) {
+      if (!(this instanceof Router7)) {
+        return new Router7(options);
       }
       const opts = options || {};
-      function router6(req, res, next) {
-        router6.handle(req, res, next);
+      function router7(req, res, next) {
+        router7.handle(req, res, next);
       }
-      Object.setPrototypeOf(router6, this);
-      router6.caseSensitive = opts.caseSensitive;
-      router6.mergeParams = opts.mergeParams;
-      router6.params = {};
-      router6.strict = opts.strict;
-      router6.stack = [];
-      return router6;
+      Object.setPrototypeOf(router7, this);
+      router7.caseSensitive = opts.caseSensitive;
+      router7.mergeParams = opts.mergeParams;
+      router7.params = {};
+      router7.strict = opts.strict;
+      router7.stack = [];
+      return router7;
     }
-    Router6.prototype = function() {
+    Router7.prototype = function() {
     };
-    Router6.prototype.param = function param(name, fn) {
+    Router7.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20521,7 +20521,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router6.prototype.handle = function handle(req, res, callback) {
+    Router7.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20648,7 +20648,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router6.prototype.use = function use(handler) {
+    Router7.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20681,7 +20681,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router6.prototype.route = function route(path2) {
+    Router7.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20696,7 +20696,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router6.prototype[method] = function(path2) {
+      Router7.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -20879,13 +20879,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router6 = require_router();
+    var Router7 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router6 = null;
+      var router7 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -20894,13 +20894,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router6 === null) {
-            router6 = new Router6({
+          if (router7 === null) {
+            router7 = new Router7({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router6;
+          return router7;
         }
       });
     };
@@ -20971,15 +20971,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router6 = this.router;
+      var router7 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router6.use(path2, fn2);
+          return router7.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router6.use(path2, function mounted_app(req, res, next) {
+        router7.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23506,7 +23506,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router6 = require_router();
+    var Router7 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23528,8 +23528,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router6.Route;
-    exports.Router = Router6;
+    exports.Route = Router7.Route;
+    exports.Router = Router7;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -28388,12 +28388,12 @@ var require_logger = __commonJS({
 });
 
 // src/app.ts
-var import_express6 = __toESM(require_express2(), 1);
+var import_express7 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express5 = __toESM(require_express2(), 1);
+var import_express6 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -40205,13 +40205,407 @@ Retourne UNIQUEMENT ce JSON:
 });
 var enhance_prompts_video_default = router4;
 
-// src/routes/index.ts
+// src/routes/openai/enhance-prompts-ads.ts
+var import_express5 = __toESM(require_express2(), 1);
 var router5 = (0, import_express5.Router)();
-router5.use(health_default);
-router5.use(enhance_prompts_default);
-router5.use(enhance_prompts_visual_default);
-router5.use(enhance_prompts_video_default);
-var routes_default = router5;
+var STYLE_MAP = {
+  bijou: "luxueux, \xE9l\xE9gant, raffin\xE9, intemporel",
+  luxe: "premium, exclusif, sophistiqu\xE9",
+  maroquinerie: "artisanal, luxueux, pr\xE9cis",
+  montres: "m\xE9canique, pr\xE9cis, \xE9l\xE9gant, masculin",
+  cosm\u00E9tique: "frais, lumineux, naturel, doux",
+  skincare: "apaisant, naturel, scientifique",
+  tech: "moderne, dynamique, futuriste, innovant",
+  gadgets: "pratique, malin, fun, innovant",
+  fitness: "\xE9nergique, motivant, dynamique, puissant",
+  sport: "intense, performance, victoire",
+  mode: "tendance, \xE9l\xE9gant, moderne, confident",
+  streetwear: "urban, cool, authentique, bold",
+  d\u00E9coration: "cosy, harmonieux, inspirant"
+};
+function parseJsonSafe3(text) {
+  try {
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    return JSON.parse(clean);
+  } catch {
+    return null;
+  }
+}
+function sendEvent3(res, data) {
+  res.write(`data: ${JSON.stringify(data)}
+
+`);
+}
+router5.post("/openai/enhance-prompts-ads", async (req, res) => {
+  const {
+    brand_name,
+    sector,
+    product_name,
+    product_description = "",
+    benefits = [],
+    target_audience = "mixte",
+    colors = [],
+    promo_code = "",
+    discount = 20,
+    duration_days = "7",
+    free_shipping = 100,
+    stock = 50,
+    problem = ""
+  } = req.body;
+  if (!brand_name || !sector || !product_name) {
+    res.status(400).json({ error: "Champs requis manquants" });
+    return;
+  }
+  const style = STYLE_MAP[sector] ?? "moderne, professionnel";
+  const promoCode = promo_code || brand_name.slice(0, 4).toUpperCase() + "20";
+  const benefit1 = benefits[0] ?? "qualit\xE9 sup\xE9rieure";
+  const benefit2 = benefits[1] ?? "exp\xE9rience unique";
+  const colorStr = colors.length > 0 ? colors.join(", ") : "couleurs de la marque";
+  const problemStr = problem || `${sector} qui ne r\xE9pondent pas aux attentes`;
+  const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Produit: ${product_name}
+Description: ${product_description || "produit premium de qualit\xE9"}
+B\xE9n\xE9fices: ${benefits.join(", ") || benefit1}
+Cible: ${target_audience} | Style visuel: ${style}
+Couleurs: ${colorStr} | Code promo: ${promoCode} | Remise: ${discount}% | Livraison offerte d\xE8s ${free_shipping}\u20AC | Stock: ${stock} unit\xE9s`;
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  const systemPrompt = `Tu es un expert senior en publicit\xE9 digitale et cr\xE9ation de prompts pour RoboNeo.com.
+Tu g\xE9n\xE8res des prompts de cr\xE9ation publicitaire ultra-pr\xE9cis (Meta Ads, Google Display, TikTok, Carousel) et des copies publicitaires pr\xEAtes \xE0 l'emploi.
+Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.
+Tous les textes sont en fran\xE7ais, percutants, adapt\xE9s au secteur ${sector} et au style ${style}.`;
+  const SECTIONS = [
+    {
+      key: "meta_ads",
+      label: "Meta Ads \u2014 Facebook & Instagram",
+      agent: "AI Poster Agent / Creative Ad Video Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 4 prompts de cr\xE9ation publicitaire Meta Ads pour ${product_name} (${brand_name}).
+
+Pour CHAQUE format, fournis un prompt de cr\xE9ation ultra-d\xE9taill\xE9:
+
+FORMAT "feed_image" \u2014 Image carr\xE9e 1080x1080:
+\u2022 Composition: disposition du produit, arri\xE8re-plan, \xE9l\xE9ments graphiques
+\u2022 \xC9clairage: type et direction (studio, naturel, golden hour...)
+\u2022 Texte overlay: contenu exact, typographie, couleur, position (max 20% surface)
+\u2022 Logo: position, taille
+\u2022 Style visuel: ${style}
+\u2022 Ambiance et couleurs: ${colorStr}
+\u2022 CTA visuel: "Acheter maintenant"
+
+FORMAT "feed_video" \u2014 Vid\xE9o carr\xE9e 1080x1080, 15-30s:
+\u2022 Shot-list: 3-4 plans d\xE9taill\xE9s (angle, mouvement, dur\xE9e)
+\u2022 Transitions: type et dur\xE9e
+\u2022 Texte overlay anim\xE9: contenu, timing
+\u2022 Son: ambiance musicale
+\u2022 CTA final: texte + dur\xE9e d'affichage
+
+FORMAT "stories" \u2014 Vertical 1080x1920, 15s max:
+\u2022 Zone de s\xE9curit\xE9 respect\xE9e (marges haut/bas 15%)
+\u2022 Composition plein \xE9cran: produit, fond, texte
+\u2022 Animation sugg\xE9r\xE9e
+\u2022 Swipe up CTA: design et position
+
+FORMAT "reels" \u2014 Vertical 1080x1920, 15-30s:
+\u2022 Hook 0-3s: accroche visuelle imm\xE9diate
+\u2022 D\xE9veloppement 3-20s: d\xE9monstration produit
+\u2022 CTA final: texte + effet
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "feed_image": "prompt cr\xE9ation complet d\xE9taill\xE9",
+  "feed_video": "prompt r\xE9alisation vid\xE9o complet",
+  "stories": "prompt cr\xE9ation stories complet",
+  "reels": "prompt r\xE9alisation reels complet"
+}`
+    },
+    {
+      key: "google_display",
+      label: "Google Display \u2014 6 Formats",
+      agent: "AI Poster Agent / Brand Design Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 6 prompts de cr\xE9ation pour banni\xE8res Google Display pour ${product_name} (${brand_name}).
+
+Pour CHAQUE format, d\xE9cris pr\xE9cis\xE9ment la cr\xE9ation:
+
+FORMAT "leaderboard" \u2014 728x90px:
+\u2022 Horizontal tr\xE8s large, tr\xE8s peu de hauteur
+\u2022 \xC9l\xE9ments: logo gauche, produit centre, texte accroche, bouton CTA droite
+\u2022 Texte: max 30 caract\xE8res (${benefit1})
+\u2022 Style: ${style}
+
+FORMAT "medium_rectangle" \u2014 300x250px:
+\u2022 Format carr\xE9 le plus utilis\xE9 sur le web
+\u2022 Produit en \xE9vidence, titre court, description, CTA
+\u2022 Couleurs: ${colorStr}
+
+FORMAT "large_rectangle" \u2014 336x280px:
+\u2022 Similaire medium, l\xE9g\xE8rement plus grand
+\u2022 Produit + titre percutant + CTA contrast\xE9
+
+FORMAT "mobile_banner" \u2014 320x100px:
+\u2022 Tr\xE8s compact, mobile first
+\u2022 Logo + accroche ultra-courte (max 20 car.) + CTA
+
+FORMAT "half_page" \u2014 300x600px:
+\u2022 Grand format vertical, storytelling possible
+\u2022 Produit multiple angles ou before/after, texte d\xE9taill\xE9, CTA en bas
+
+FORMAT "billboard" \u2014 970x250px:
+\u2022 Tr\xE8s large, impact visuel maximal
+\u2022 Produit grand format, accroche large, CTA visible
+
+Pour chaque format: d\xE9cris composition, couleurs, typographie, contenu exact des textes.
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "leaderboard": "prompt banni\xE8re 728x90 complet",
+  "medium_rectangle": "prompt banni\xE8re 300x250 complet",
+  "large_rectangle": "prompt banni\xE8re 336x280 complet",
+  "mobile_banner": "prompt banni\xE8re 320x100 complet",
+  "half_page": "prompt banni\xE8re 300x600 complet",
+  "billboard": "prompt banni\xE8re 970x250 complet"
+}`
+    },
+    {
+      key: "tiktok_ads",
+      label: "TikTok Ads",
+      agent: "Creative Ad Video Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 1 prompt de r\xE9alisation complet pour une publicit\xE9 TikTok pour ${product_name} (${brand_name}).
+
+FORMAT: 1080x1920 (9:16) | Dur\xE9e: 21-34 secondes (optimal TikTok) | Son: obligatoire
+
+STRUCTURE SHOT-LIST PR\xC9CISE:
+\u2022 0-3s: HOOK visuel imm\xE9diat (retenir l'attention co\xFBte que co\xFBte \u2014 accroche choc, question, POV)
+\u2022 3-12s: D\xE9monstration produit en action, b\xE9n\xE9fice principal "${benefit1}"
+\u2022 12-22s: Preuve sociale ou transformation (before/after, t\xE9moignage, r\xE9sultat)
+\u2022 22-30s: CTA avec code ${promoCode} affich\xE9 \xE0 l'\xE9cran
+
+POUR CHAQUE S\xC9QUENCE:
+\u2022 Description pr\xE9cise du plan (angle, sujet, mouvement cam\xE9ra)
+\u2022 Texte overlay (contenu, position, style, dur\xE9e)
+\u2022 Effets TikTok recommand\xE9s
+\u2022 Timing musical (genre, BPM, moment de pic)
+\u2022 Transitions
+
+R\xC8GLES ALGORITHME TIKTOK:
+\u2022 Son tendance obligatoire (genre adapt\xE9 au secteur ${sector})
+\u2022 Hook ultra-fort: premi\xE8re frame arr\xEAtable
+\u2022 Mouvements naturels (pas de pub trop "corporate")
+\u2022 Texte lisible sur fond variable
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "tiktok_main": "prompt r\xE9alisation TikTok complet et ultra-d\xE9taill\xE9",
+  "hashtags": "#${brand_name.replace(/\s/g, "")} #${sector} #${product_name.replace(/\s/g, "")} + 5 hashtags tendance",
+  "music_direction": "genre musical, BPM, ambiance recommand\xE9s"
+}`
+    },
+    {
+      key: "carousel_ads",
+      label: "Carousel Ads \u2014 5 Slides",
+      agent: "AI Poster Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 5 prompts de cr\xE9ation pour un Carousel Ad Meta pour ${product_name} (${brand_name}).
+Narrative: Hook \u2192 Probl\xE8me \u2192 Solution \u2192 Preuve \u2192 CTA
+Format chaque slide: 1080x1080 (1:1) | Style: ${style}
+
+SLIDE 1 \u2014 HOOK (arr\xEAter le scroll):
+\u2022 Visuel: lifestyle accrocheur, produit dans son univers
+\u2022 Texte: question ou affirmation qui intrigue (max 8 mots)
+\u2022 Objectif: cr\xE9er la curiosit\xE9, faire swipe
+
+SLIDE 2 \u2014 PROBL\xC8ME (cr\xE9er l'empathie):
+\u2022 Visuel: situation "avant", sans le produit, le probl\xE8me v\xE9cu
+\u2022 Texte: identifier la douleur de la cible ${target_audience} ("${problemStr}")
+\u2022 \xC9motion: frustration, d\xE9sir de changement
+
+SLIDE 3 \u2014 SOLUTION (r\xE9v\xE9ler le produit):
+\u2022 Visuel: ${product_name} en plein \xE9cran, mis en valeur
+\u2022 Texte: "${benefit1}" \u2014 la r\xE9ponse au probl\xE8me
+\u2022 Pr\xE9sentation: caract\xE9ristiques cl\xE9s, design, qualit\xE9
+
+SLIDE 4 \u2014 PREUVE (cr\xE9dibiliser):
+\u2022 Visuel: r\xE9sultat, t\xE9moignage, statistique, before/after
+\u2022 Texte: preuve chiffr\xE9e ou citation client
+\u2022 \xC9l\xE9ments: \xE9toiles, notes, badges de confiance
+
+SLIDE 5 \u2014 CTA (convertir):
+\u2022 Visuel: produit + logo ${brand_name} + offre mise en avant
+\u2022 Texte: "${promoCode}" \u2014 offre limit\xE9e
+\u2022 CTA: bouton, urgence, b\xE9n\xE9fice final "${benefit2}"
+
+Pour chaque slide: d\xE9tailler composition, couleurs, typographie, textes exacts.
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "slide_1": "prompt slide hook complet",
+  "slide_2": "prompt slide probl\xE8me complet",
+  "slide_3": "prompt slide solution complet",
+  "slide_4": "prompt slide preuve complet",
+  "slide_5": "prompt slide CTA complet"
+}`
+    },
+    {
+      key: "ad_copy",
+      label: "Ad Copy \u2014 4 Variantes par Plateforme",
+      agent: "Expert Copywriter IA",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re des copies publicitaires optimis\xE9es pour ${product_name} (${brand_name}) sur 4 plateformes.
+
+Pour CHAQUE plateforme, 4 variantes de chaque \xE9l\xE9ment:
+
+PLATEFORME "meta_feed" \u2014 Facebook/Instagram Feed:
+\u2022 primary_text: 4 variantes (max 125 car.) avec emojis, ton adapt\xE9 ${sector}
+\u2022 headline: 4 variantes (max 40 car.) percutantes
+\u2022 description: 4 variantes (max 30 car.) avec b\xE9n\xE9fice ou offre
+\u2022 cta: 4 variantes (bouton d'action)
+
+PLATEFORME "meta_stories" \u2014 Stories verticales:
+\u2022 primary_text: 4 variantes ultra-courtes (max 50 car.) avec emojis
+\u2022 headline: 4 variantes (max 20 car.)
+\u2022 cta: 4 variantes
+
+PLATEFORME "google_display" \u2014 Banni\xE8res Google:
+\u2022 headline: 4 variantes (max 30 car. \u2014 SANS emojis)
+\u2022 description: 4 variantes (max 90 car.)
+\u2022 cta: 4 variantes courtes
+
+PLATEFORME "tiktok" \u2014 TikTok Ads:
+\u2022 primary_text: 4 variantes style TikTok (POV, r\xE9action, secret...) avec emojis
+\u2022 headline: 4 variantes tendance
+\u2022 hashtags: 4 combinaisons de hashtags
+
+R\xC8GLES:
+\u2022 Fran\xE7ais naturel, copywriting direct, adapt\xE9 au secteur ${sector}
+\u2022 Code promo ${promoCode}, remise ${discount}%, livraison offerte d\xE8s ${free_shipping}\u20AC
+\u2022 Ton: ${style}
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "meta_feed": {
+    "primary_text": ["variante1", "variante2", "variante3", "variante4"],
+    "headline": ["h1", "h2", "h3", "h4"],
+    "description": ["d1", "d2", "d3", "d4"],
+    "cta": ["cta1", "cta2", "cta3", "cta4"]
+  },
+  "meta_stories": {
+    "primary_text": ["v1", "v2", "v3", "v4"],
+    "headline": ["h1", "h2", "h3", "h4"],
+    "cta": ["c1", "c2", "c3", "c4"]
+  },
+  "google_display": {
+    "headline": ["h1", "h2", "h3", "h4"],
+    "description": ["d1", "d2", "d3", "d4"],
+    "cta": ["c1", "c2", "c3", "c4"]
+  },
+  "tiktok": {
+    "primary_text": ["v1", "v2", "v3", "v4"],
+    "headline": ["h1", "h2", "h3", "h4"],
+    "hashtags": ["#set1", "#set2", "#set3", "#set4"]
+  }
+}`
+    },
+    {
+      key: "performance_predictor",
+      label: "Performance Predictor \u2014 A/B Testing",
+      agent: "Analytics & Media Buying Expert IA",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re une analyse de performance pr\xE9dictive et un plan A/B testing pour les campagnes de ${brand_name} (${sector}).
+
+ANALYSE CTR PR\xC9DICTIF:
+Pour chaque format (Meta Feed, Stories, Google Display, TikTok), estime:
+\u2022 CTR attendu (fourchette %)
+\u2022 CPC estim\xE9 (en \u20AC)
+\u2022 ROAS potentiel
+\u2022 Facteurs de performance cl\xE9s pour ce secteur ${sector}
+\u2022 Top 3 optimisations sp\xE9cifiques
+
+PLAN A/B TESTING:
+\u2022 Priorit\xE9 des formats \xE0 tester en premier
+\u2022 Variables \xE0 tester (cr\xE9atif, texte, CTA, audience)
+\u2022 Dur\xE9e recommand\xE9e par test
+\u2022 Budget minimum recommand\xE9 par format
+
+RECOMMANDATIONS SECTEUR ${sector.toUpperCase()}:
+\u2022 Meilleures pratiques cr\xE9atives pour ce secteur
+\u2022 Erreurs courantes \xE0 \xE9viter
+\u2022 Moments de diffusion optimaux
+\u2022 Audiences recommand\xE9es pour ${target_audience}
+
+QUICK WINS:
+\u2022 3 actions imm\xE9diates pour am\xE9liorer les performances
+\u2022 Checklist pr\xE9-lancement campagne
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "ctr_predictions": {
+    "meta_feed": {"ctr": "X-Y%", "cpc": "X-Y\u20AC", "roas": "Xx"},
+    "meta_stories": {"ctr": "X-Y%", "cpc": "X-Y\u20AC", "roas": "Xx"},
+    "google_display": {"ctr": "X-Y%", "cpc": "X-Y\u20AC", "roas": "Xx"},
+    "tiktok": {"ctr": "X-Y%", "cpc": "X-Y\u20AC", "roas": "Xx"}
+  },
+  "ab_test_plan": ["test1", "test2", "test3", "test4", "test5"],
+  "sector_recommendations": ["rec1", "rec2", "rec3"],
+  "quick_wins": ["win1", "win2", "win3"],
+  "launch_checklist": ["item1", "item2", "item3", "item4", "item5"]
+}`
+    }
+  ];
+  for (const section of SECTIONS) {
+    sendEvent3(res, { type: "section_start", key: section.key, label: section.label, agent: section.agent });
+    let fullContent = "";
+    try {
+      const stream = await openai.chat.completions.create({
+        model: "gpt-5.2",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: section.buildPrompt() }
+        ],
+        max_completion_tokens: 2500,
+        stream: true
+      });
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content ?? "";
+        if (content) {
+          fullContent += content;
+          sendEvent3(res, { type: "chunk", key: section.key, content });
+        }
+      }
+      const parsed = parseJsonSafe3(fullContent);
+      sendEvent3(res, {
+        type: "section_done",
+        key: section.key,
+        label: section.label,
+        agent: section.agent,
+        data: parsed ?? {},
+        rawContent: fullContent
+      });
+    } catch (err) {
+      sendEvent3(res, { type: "section_error", key: section.key, error: err instanceof Error ? err.message : "Erreur inconnue" });
+    }
+  }
+  sendEvent3(res, { type: "done" });
+  res.end();
+});
+var enhance_prompts_ads_default = router5;
+
+// src/routes/index.ts
+var router6 = (0, import_express6.Router)();
+router6.use(health_default);
+router6.use(enhance_prompts_default);
+router6.use(enhance_prompts_visual_default);
+router6.use(enhance_prompts_video_default);
+router6.use(enhance_prompts_ads_default);
+var routes_default = router6;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -40232,7 +40626,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express6.default)();
+var app = (0, import_express7.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -40253,8 +40647,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express6.default.json());
-app.use(import_express6.default.urlencoded({ extended: true }));
+app.use(import_express7.default.json());
+app.use(import_express7.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var app_default = app;
 

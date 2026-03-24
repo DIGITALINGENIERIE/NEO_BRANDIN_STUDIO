@@ -20481,27 +20481,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router10;
+    module.exports = Router11;
     module.exports.Route = Route;
-    function Router10(options) {
-      if (!(this instanceof Router10)) {
-        return new Router10(options);
+    function Router11(options) {
+      if (!(this instanceof Router11)) {
+        return new Router11(options);
       }
       const opts = options || {};
-      function router10(req, res, next) {
-        router10.handle(req, res, next);
+      function router11(req, res, next) {
+        router11.handle(req, res, next);
       }
-      Object.setPrototypeOf(router10, this);
-      router10.caseSensitive = opts.caseSensitive;
-      router10.mergeParams = opts.mergeParams;
-      router10.params = {};
-      router10.strict = opts.strict;
-      router10.stack = [];
-      return router10;
+      Object.setPrototypeOf(router11, this);
+      router11.caseSensitive = opts.caseSensitive;
+      router11.mergeParams = opts.mergeParams;
+      router11.params = {};
+      router11.strict = opts.strict;
+      router11.stack = [];
+      return router11;
     }
-    Router10.prototype = function() {
+    Router11.prototype = function() {
     };
-    Router10.prototype.param = function param(name, fn) {
+    Router11.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20521,7 +20521,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router10.prototype.handle = function handle(req, res, callback) {
+    Router11.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20648,7 +20648,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router10.prototype.use = function use(handler) {
+    Router11.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20681,7 +20681,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router10.prototype.route = function route(path2) {
+    Router11.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20696,7 +20696,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router10.prototype[method] = function(path2) {
+      Router11.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -20879,13 +20879,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router10 = require_router();
+    var Router11 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router10 = null;
+      var router11 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -20894,13 +20894,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router10 === null) {
-            router10 = new Router10({
+          if (router11 === null) {
+            router11 = new Router11({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router10;
+          return router11;
         }
       });
     };
@@ -20971,15 +20971,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router10 = this.router;
+      var router11 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router10.use(path2, fn2);
+          return router11.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router10.use(path2, function mounted_app(req, res, next) {
+        router11.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23506,7 +23506,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router10 = require_router();
+    var Router11 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23528,8 +23528,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router10.Route;
-    exports.Router = Router10;
+    exports.Route = Router11.Route;
+    exports.Router = Router11;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -28388,12 +28388,12 @@ var require_logger = __commonJS({
 });
 
 // src/app.ts
-var import_express10 = __toESM(require_express2(), 1);
+var import_express11 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express9 = __toESM(require_express2(), 1);
+var import_express10 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -41399,17 +41399,228 @@ Adapte les actions et contenus sp\xE9cifiquement au secteur "${sector}" et \xE0 
 });
 var enhance_prompts_launch_default = router8;
 
-// src/routes/index.ts
+// src/routes/openai/enhance-prompts-chatbot.ts
+var import_express9 = __toESM(require_express2(), 1);
 var router9 = (0, import_express9.Router)();
-router9.use(health_default);
-router9.use(enhance_prompts_default);
-router9.use(enhance_prompts_visual_default);
-router9.use(enhance_prompts_video_default);
-router9.use(enhance_prompts_ads_default);
-router9.use(enhance_prompts_sound_default);
-router9.use(enhance_prompts_copy_default);
-router9.use(enhance_prompts_launch_default);
-var routes_default = router9;
+function sendEvent7(res, data) {
+  res.write(`data: ${JSON.stringify(data)}
+
+`);
+}
+function parseJsonSafe7(text) {
+  try {
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    return JSON.parse(clean);
+  } catch {
+    return null;
+  }
+}
+router9.post("/openai/enhance-prompts-chatbot", async (req, res) => {
+  const {
+    brand_name,
+    sector,
+    tone = "professionnel",
+    product_name,
+    product_description = "",
+    material = "mat\xE9riaux d'exception",
+    warranty = 2,
+    delivery_days = 3,
+    express_delivery_days = 1,
+    express_price = 9.9,
+    return_days = 30,
+    discount = 20,
+    promo_code,
+    price = 299,
+    free_shipping = 100,
+    support_email,
+    unique_feature = "fabrication artisanale",
+    best_seller_1 = "",
+    best_seller_2 = ""
+  } = req.body;
+  if (!brand_name || !sector || !product_name) {
+    res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
+    return;
+  }
+  const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
+  const email = support_email || `contact@${brand_name.toLowerCase().replace(/\s+/g, "")}.com`;
+  const discountedPrice = Math.round(price * (1 - discount / 100) * 100) / 100;
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  const systemPrompt = `Tu es un expert en service client, gestion de communaut\xE9 et chatbot marketing pour RoboNeo.com.
+Tu g\xE9n\xE8res des scripts de service client ultra-professionnels, empathiques et orient\xE9s conversion, en fran\xE7ais.
+Contexte de la marque:
+- Marque: ${brand_name}
+- Produit: ${product_name}
+- Secteur: ${sector}
+- Ton: ${tone}
+- Mat\xE9riau principal: ${material}
+- Description: ${product_description || "produit premium"}
+- Garantie: ${warranty} ans
+- Livraison: ${delivery_days} jours ouvr\xE9s (express: ${express_delivery_days}j pour ${express_price}\u20AC)
+- Retours: ${return_days} jours
+- Prix: ${price}\u20AC (remise ${discount}% \u2192 ${discountedPrice}\u20AC avec code ${code})
+- Livraison offerte d\xE8s: ${free_shipping}\u20AC
+- Email support: ${email}
+- Point diff\xE9renciateur: ${unique_feature}
+- Best-sellers: ${best_seller_1 || "produit phare"}, ${best_seller_2 || "coup de c\u0153ur"}
+
+R\xC8GLE ABSOLUE: R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.`;
+  const sections = [
+    {
+      key: "faq",
+      label: "FAQ Service Client (20 questions)",
+      agent: "Chatbot Agent / Customer Service AI",
+      prompt: `G\xE9n\xE8re 20 questions/r\xE9ponses FAQ compl\xE8tes pour le chatbot de service client de "${brand_name}" (produit: "${product_name}", secteur: ${sector}, ton: ${tone}).
+
+Les questions doivent couvrir : commande et paiement, livraison et suivi, retours et remboursements, qualit\xE9 et mat\xE9riaux, entretien, personnalisation/gravure, cadeaux, tailles/compatibilit\xE9, garantie, service apr\xE8s-vente.
+
+R\xE9ponds en JSON avec exactement cette structure:
+{
+  "questions": [
+    {
+      "id": 1,
+      "category": "cat\xE9gorie (Livraison / Commande / Produit / SAV / Cadeaux / etc.)",
+      "question": "Question naturelle telle que la poserait un client",
+      "answer": "R\xE9ponse compl\xE8te, empathique et convaincante (2-4 phrases) personnalis\xE9e pour ${brand_name} / ${product_name}",
+      "quick_reply": "R\xE9sum\xE9 ultra-court 10 mots max pour bouton de chatbot"
+    }
+  ]
+}
+
+Les 20 questions doivent \xEAtre vari\xE9es, r\xE9alistes et 100% adapt\xE9es au secteur "${sector}" et au produit "${product_name}".
+Inclure les infos sp\xE9cifiques: livraison ${delivery_days}j, retours ${return_days}j, garantie ${warranty}ans, code promo ${code}, email ${email}.`
+    },
+    {
+      key: "objections",
+      label: "Scripts de Gestion des Objections (8 sc\xE9narios)",
+      agent: "Sales Conversion Agent / Objection Handler",
+      prompt: `G\xE9n\xE8re 8 scripts de gestion des objections de vente pour "${brand_name}" (produit: "${product_name}", secteur: ${sector}).
+
+Les 8 objections \xE0 traiter: 
+1. Prix trop \xE9lev\xE9
+2. D\xE9lai de livraison trop long
+3. H\xE9sitation sur la qualit\xE9 / doute
+4. Comparaison avec un concurrent moins cher
+5. "Je verrai plus tard" / procrastination
+6. Frais de port trop \xE9lev\xE9s
+7. Incertitude sur la taille / compatibilit\xE9
+8. Achat pour offrir (h\xE9sitation sur le choix cadeau)
+
+R\xE9ponds en JSON avec exactement cette structure:
+{
+  "scripts": [
+    {
+      "id": 1,
+      "objection_type": "prix_trop_eleve",
+      "scenario": "Titre court d\xE9crivant la situation",
+      "trigger": "Ce que dit exactement le client (citation)",
+      "response": "R\xE9ponse du service client (3-5 phrases): empathie + valeur + solution concr\xE8te avec les infos de la marque",
+      "follow_up": "Question de relance courte pour maintenir la conversation",
+      "tip": "Conseil interne pour l'agent: ton \xE0 adopter ou astuce cl\xE9"
+    }
+  ]
+}
+
+Personnaliser avec: prix ${price}\u20AC, remise ${discount}%, code ${code} (\u2192 ${discountedPrice}\u20AC), livraison ${delivery_days}j, express ${express_delivery_days}j \xE0 ${express_price}\u20AC, garantie ${warranty}ans, retours ${return_days}j, livraison offerte d\xE8s ${free_shipping}\u20AC, point fort "${unique_feature}".`
+    },
+    {
+      key: "negative_comments",
+      label: "R\xE9ponses Commentaires N\xE9gatifs (5 situations)",
+      agent: "Community Manager Agent / Reputation Defender",
+      prompt: `G\xE9n\xE8re 5 r\xE9ponses professionnelles aux commentaires n\xE9gatifs sur les r\xE9seaux sociaux pour "${brand_name}" (produit: "${product_name}", secteur: ${sector}).
+
+Les 5 situations \xE0 traiter:
+1. Produit d\xE9fectueux / endommag\xE9 \xE0 la r\xE9ception
+2. Retard de livraison
+3. Service client insatisfaisant / pas de r\xE9ponse
+4. Produit diff\xE9rent de la description / photos
+5. Client m\xE9content du prix (a trouv\xE9 moins cher ailleurs)
+
+Pour chaque situation, g\xE9n\xE8re 2 types de r\xE9ponse:
+- R\xE9ponse publique (visible par tous): courte, empathique, professionnelle, d\xE9place vers le priv\xE9
+- Message priv\xE9 de suivi: plus d\xE9taill\xE9, avec solution concr\xE8te et geste commercial si appropri\xE9
+
+R\xE9ponds en JSON avec exactement cette structure:
+{
+  "situations": [
+    {
+      "id": 1,
+      "type": "defaut_produit",
+      "situation_title": "Titre court de la situation",
+      "example_comment": "Exemple de commentaire n\xE9gatif r\xE9aliste que pourrait laisser un client",
+      "public_response": "R\xE9ponse publique: 2-3 phrases, commence par le pr\xE9nom [Pr\xE9nom], empathie sinc\xE8re + action imm\xE9diate + invitation en priv\xE9",
+      "private_message": "Message priv\xE9: 4-6 phrases, excuse + demande info pr\xE9cise + solution concr\xE8te (renvoi / remboursement / geste commercial)",
+      "dos": ["point positif \xE0 faire"],
+      "donts": ["chose \xE0 \xE9viter absolument dans cette situation"]
+    }
+  ]
+}
+
+L'email de support est ${email}. Adapter les r\xE9ponses au secteur "${sector}" et au ton "${tone}" de la marque.
+Les gestes commerciaux peuvent inclure: remboursement, renvoi, code promo ${code} (-${discount}%), avoir.`
+    }
+  ];
+  for (const section of sections) {
+    try {
+      sendEvent7(res, {
+        type: "section_start",
+        key: section.key,
+        label: section.label,
+        agent: section.agent
+      });
+      let fullContent = "";
+      const stream = await openai.chat.completions.create({
+        model: "gpt-5.2",
+        max_completion_tokens: 4096,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: section.prompt }
+        ],
+        stream: true
+      });
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content;
+        if (content) {
+          fullContent += content;
+          sendEvent7(res, { type: "chunk", key: section.key, content });
+        }
+      }
+      const parsed = parseJsonSafe7(fullContent);
+      sendEvent7(res, {
+        type: "section_done",
+        key: section.key,
+        label: section.label,
+        agent: section.agent,
+        data: parsed ?? { raw: fullContent },
+        rawContent: fullContent
+      });
+    } catch (err) {
+      req.log.error({ err, section: section.key }, "Error generating chatbot section");
+      sendEvent7(res, {
+        type: "section_error",
+        key: section.key,
+        message: "Erreur lors de la g\xE9n\xE9ration"
+      });
+    }
+  }
+  sendEvent7(res, { type: "done" });
+  res.end();
+});
+var enhance_prompts_chatbot_default = router9;
+
+// src/routes/index.ts
+var router10 = (0, import_express10.Router)();
+router10.use(health_default);
+router10.use(enhance_prompts_default);
+router10.use(enhance_prompts_visual_default);
+router10.use(enhance_prompts_video_default);
+router10.use(enhance_prompts_ads_default);
+router10.use(enhance_prompts_sound_default);
+router10.use(enhance_prompts_copy_default);
+router10.use(enhance_prompts_launch_default);
+router10.use(enhance_prompts_chatbot_default);
+var routes_default = router10;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -41430,7 +41641,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express10.default)();
+var app = (0, import_express11.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -41451,8 +41662,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express10.default.json());
-app.use(import_express10.default.urlencoded({ extended: true }));
+app.use(import_express11.default.json());
+app.use(import_express11.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var app_default = app;
 

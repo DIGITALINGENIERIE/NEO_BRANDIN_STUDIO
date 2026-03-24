@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles, Lock, ChevronRight, Palette, Camera, Video,
   ShoppingBag, MessageSquare, BarChart2, Mail, Share2,
-  Globe, Users, Music2, Zap, FileText, Rocket
+  Globe, Users, Music2, Zap, FileText, Rocket, MessageCircle
 } from "lucide-react";
 import Module01 from "./module-01";
 import Module02 from "./module-02";
@@ -12,6 +12,7 @@ import Module04 from "./module-04";
 import Module05 from "./module-05";
 import Module06 from "./module-06";
 import Module07 from "./module-07";
+import Module08 from "./module-08";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -203,22 +204,24 @@ const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: "social-media",
+    id: "chatbot-script",
     number: "08",
-    title: "Social Media",
-    subtitle: "Posts, stories, stratégie",
-    description: "Stratégie de contenu et prompts pour tous les réseaux sociaux.",
-    icon: <Share2 className="w-5 h-5" />,
-    color: "text-pink-400",
-    bgColor: "bg-pink-400/10",
-    gradientFrom: "from-pink-500/20",
+    title: "Chatbot Script",
+    subtitle: "FAQ, objections, commentaires",
+    description: "Génère tout le contenu pour ton service client automatisé : 20 questions/réponses FAQ, 8 scripts de gestion des objections de vente et 5 réponses professionnelles aux commentaires négatifs.",
+    icon: <MessageCircle className="w-5 h-5" />,
+    color: "text-cyan-400",
+    bgColor: "bg-cyan-400/10",
+    gradientFrom: "from-cyan-500/20",
     gradientTo: "to-transparent",
-    borderColor: "border-pink-400/30",
-    available: false,
+    borderColor: "border-cyan-400/30",
+    available: true,
+    component: Module08,
+    prompts: 16,
     outputs: [
-      { label: "Posts", icon: "▣" },
-      { label: "Stories", icon: "◎" },
-      { label: "Stratégie", icon: "▤" },
+      { label: "FAQ", icon: "❓" },
+      { label: "Objections", icon: "🛡" },
+      { label: "Commentaires", icon: "💬" },
     ],
   },
   {
@@ -440,7 +443,7 @@ function MobileNav({ activeId, onSelect }: { activeId: string; onSelect: (id: st
       ))}
       <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5 text-muted-foreground/30 text-sm">
         <Lock className="w-3.5 h-3.5" />
-        <span>08–10</span>
+        <span>09–10</span>
       </div>
     </div>
   );
@@ -482,7 +485,7 @@ export default function Home() {
               </p>
             </div>
             <div className="hidden md:flex flex-col items-end gap-1">
-              <span className="text-xs text-muted-foreground/60 font-mono">v1.7.0</span>
+              <span className="text-xs text-muted-foreground/60 font-mono">v1.8.0</span>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-green-400">GPT-5.2 Connecté</span>
@@ -525,7 +528,7 @@ export default function Home() {
                     className="h-full rounded-full bg-gradient-to-r from-amber-400 via-primary to-violet-400"
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground/35 mt-1.5">Modules 08–10 bientôt disponibles</p>
+                <p className="text-[10px] text-muted-foreground/35 mt-1.5">Modules 09–10 bientôt disponibles</p>
               </div>
             </div>
           </div>

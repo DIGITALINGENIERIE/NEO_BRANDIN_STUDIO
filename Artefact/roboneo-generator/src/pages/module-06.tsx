@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -227,16 +228,37 @@ export default function Module06() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
+  const { brief, updateBrief } = useBrand();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", product_name: "", sector: "bijou", tone: "luxe",
-      product_description: "", product_features: "", benefits: "", values: "",
-      target_audience: "femmes_25_45", discount: 20, promo_code: "",
+      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
+      product_description: brief.product_description || "", product_features: brief.product_features || "", benefits: brief.benefits || "", values: brief.values || "",
+      target_audience: brief.target_audience || "femmes_25_45", discount: Number(brief.discount) || 20, promo_code: brief.promo_code || "",
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        product_name: brief.product_name || "",
+        sector: brief.sector || "bijou",
+        tone: brief.tone || "luxe",
+        product_description: brief.product_description || "",
+        product_features: brief.product_features || "",
+        benefits: brief.benefits || "",
+        values: brief.values || "",
+        target_audience: brief.target_audience || "femmes_25_45",
+        discount: Number(brief.discount) || 20,
+        promo_code: brief.promo_code || "",
+      });
+    }
+  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_description, brief.product_features, brief.benefits, brief.values, brief.target_audience, brief.discount, brief.promo_code]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_description: data.product_description, product_features: data.product_features, benefits: data.benefits, values: data.values, target_audience: data.target_audience, discount: String(data.discount), promo_code: data.promo_code });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

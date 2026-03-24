@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -459,18 +460,47 @@ export default function Module08() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
+  const { brief, updateBrief } = useBrand();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", product_name: "", sector: "bijou", tone: "professionnel",
-      product_description: "", material: "", warranty: 2, delivery_days: 3,
-      express_delivery_days: 1, express_price: 9.90, return_days: 30, discount: 20,
-      promo_code: "", price: 299, free_shipping: 100, support_email: "", unique_feature: "",
-      best_seller_1: "", best_seller_2: "",
+      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "professionnel",
+      product_description: brief.product_description || "", material: brief.product_materials || "", warranty: Number(brief.warranty) || 2, delivery_days: Number(brief.delivery_days) || 3,
+      express_delivery_days: Number(brief.express_delivery_days) || 1, express_price: Number(brief.express_price) || 9.90, return_days: Number(brief.return_days) || 30, discount: Number(brief.discount) || 20,
+      promo_code: brief.promo_code || "", price: Number(brief.price) || 299, free_shipping: Number(brief.free_shipping) || 100, support_email: brief.support_email || "", unique_feature: brief.unique_feature || "",
+      best_seller_1: brief.best_seller_1 || "", best_seller_2: brief.best_seller_2 || "",
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        product_name: brief.product_name || "",
+        sector: brief.sector || "bijou",
+        tone: brief.tone || "professionnel",
+        product_description: brief.product_description || "",
+        material: brief.product_materials || "",
+        warranty: Number(brief.warranty) || 2,
+        delivery_days: Number(brief.delivery_days) || 3,
+        express_delivery_days: Number(brief.express_delivery_days) || 1,
+        express_price: Number(brief.express_price) || 9.90,
+        return_days: Number(brief.return_days) || 30,
+        discount: Number(brief.discount) || 20,
+        promo_code: brief.promo_code || "",
+        price: Number(brief.price) || 299,
+        free_shipping: Number(brief.free_shipping) || 100,
+        support_email: brief.support_email || "",
+        unique_feature: brief.unique_feature || "",
+        best_seller_1: brief.best_seller_1 || "",
+        best_seller_2: brief.best_seller_2 || "",
+      });
+    }
+  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_description, brief.product_materials, brief.warranty, brief.delivery_days, brief.return_days, brief.discount, brief.promo_code, brief.price, brief.free_shipping, brief.support_email, brief.unique_feature, brief.best_seller_1, brief.best_seller_2]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_description: data.product_description, product_materials: data.material, warranty: String(data.warranty), delivery_days: String(data.delivery_days), express_delivery_days: String(data.express_delivery_days), express_price: String(data.express_price), return_days: String(data.return_days), discount: String(data.discount), promo_code: data.promo_code, price: String(data.price), free_shipping: String(data.free_shipping), support_email: data.support_email, unique_feature: data.unique_feature, best_seller_1: data.best_seller_1, best_seller_2: data.best_seller_2 });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

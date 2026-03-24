@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { generatePrompts, type BrandBrief, type GenerationResult, generateTxtExport } from "@/lib/prompt-generator";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
 const TONES = ["luxe", "minimal", "street", "tech", "artisanal", "vintage", "playful", "corporate", "nature", "editorial", "futuristic", "ethnic"];
@@ -49,6 +50,7 @@ interface StreamState {
 
 export default function Module01() {
   const { toast } = useToast();
+  const { brief, updateBrief } = useBrand();
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [streamState, setStreamState] = useState<StreamState>({ prompts: {}, activeSection: null, completedSections: new Set() });
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,8 +60,20 @@ export default function Module01() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { brand_name: "", sector: "luxe", tone: "luxe", values: "", style_pref: "auto-detect" },
+    defaultValues: { brand_name: brief.brand_name || "", sector: brief.sector || "luxe", tone: brief.tone || "luxe", values: brief.values || "", style_pref: "auto-detect" },
   });
+
+  React.useEffect(() => {
+    if (brief.brand_name) {
+      form.reset({
+        brand_name: brief.brand_name,
+        sector: brief.sector || "luxe",
+        tone: brief.tone || "luxe",
+        values: brief.values || "",
+        style_pref: form.getValues("style_pref") || "auto-detect",
+      });
+    }
+  }, [brief.brand_name, brief.sector, brief.tone, brief.values]);
 
   const generateWithAI = async (data: FormValues) => {
     const values = data.values.split(",").map((v) => v.trim()).filter(Boolean);
@@ -123,6 +137,7 @@ export default function Module01() {
   };
 
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, sector: data.sector, tone: data.tone, values: data.values });
     setIsGenerating(true);
     setFormData(data);
     try {

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -164,6 +165,7 @@ function SubPromptList({
 
 export default function Module02() {
   const { toast } = useToast();
+  const { brief, updateBrief } = useBrand();
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
@@ -174,11 +176,26 @@ export default function Module02() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", sector: "luxe", product_type: "bijou",
-      product_name: "", product_colors: "", product_materials: "",
-      target_audience: "femmes_25_45", carousel_style: "auto",
+      brand_name: brief.brand_name || "", sector: brief.sector || "luxe", product_type: "bijou",
+      product_name: brief.product_name || "", product_colors: brief.product_colors || "", product_materials: brief.product_materials || "",
+      target_audience: brief.target_audience || "femmes_25_45", carousel_style: "auto",
     },
   });
+
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        sector: brief.sector || "luxe",
+        product_type: form.getValues("product_type") || "bijou",
+        product_name: brief.product_name || "",
+        product_colors: brief.product_colors || "",
+        product_materials: brief.product_materials || "",
+        target_audience: brief.target_audience || "femmes_25_45",
+        carousel_style: form.getValues("carousel_style") || "auto",
+      });
+    }
+  }, [brief.brand_name, brief.sector, brief.product_name, brief.product_colors, brief.product_materials, brief.target_audience]);
 
   const generateWithAI = async (data: FormValues) => {
     const colors = data.product_colors.split(",").map((c) => c.trim()).filter(Boolean);
@@ -272,6 +289,7 @@ export default function Module02() {
   const SECTION_ORDER = ["product_photos", "lifestyle_photos", "detail_photos", "before_after", "virtual_tryon", "carousel"];
 
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, sector: data.sector, product_name: data.product_name, product_colors: data.product_colors, product_materials: data.product_materials, target_audience: data.target_audience });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

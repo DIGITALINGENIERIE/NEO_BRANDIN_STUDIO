@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -655,6 +656,7 @@ function SectionView({ sectionKey, data, streamBuffer, streaming, isActive }: {
 
 export default function Module10() {
   const { toast } = useToast();
+  const { brief, updateBrief } = useBrand();
 
   const [streamState, setStreamState] = useState<StreamState>({
     sections: {},
@@ -667,17 +669,32 @@ export default function Module10() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name:    "",
-      sector:        "bijou",
-      ca_target:     undefined,
-      basket_target: undefined,
-      conv_target:   undefined,
-      roas_target:   undefined,
-      target_cpa:    undefined,
+      brand_name:    brief.brand_name || "",
+      sector:        brief.sector || "bijou",
+      ca_target:     brief.ca_target ? Number(brief.ca_target) : undefined,
+      basket_target: brief.basket_target ? Number(brief.basket_target) : undefined,
+      conv_target:   brief.conv_target ? Number(brief.conv_target) : undefined,
+      roas_target:   brief.roas_target ? Number(brief.roas_target) : undefined,
+      target_cpa:    brief.target_cpa ? Number(brief.target_cpa) : undefined,
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        sector: brief.sector || "bijou",
+        ca_target: brief.ca_target ? Number(brief.ca_target) : undefined,
+        basket_target: brief.basket_target ? Number(brief.basket_target) : undefined,
+        conv_target: brief.conv_target ? Number(brief.conv_target) : undefined,
+        roas_target: brief.roas_target ? Number(brief.roas_target) : undefined,
+        target_cpa: brief.target_cpa ? Number(brief.target_cpa) : undefined,
+      });
+    }
+  }, [brief.brand_name, brief.sector, brief.ca_target, brief.basket_target, brief.conv_target, brief.roas_target, brief.target_cpa]);
+
   async function onSubmit(values: FormValues) {
+    updateBrief({ brand_name: values.brand_name, sector: values.sector, ca_target: values.ca_target ? String(values.ca_target) : "", basket_target: values.basket_target ? String(values.basket_target) : "", conv_target: values.conv_target ? String(values.conv_target) : "", roas_target: values.roas_target ? String(values.roas_target) : "", target_cpa: values.target_cpa ? String(values.target_cpa) : "" });
     setIsStreaming(true);
     setIsComplete(false);
     setStreamState({ sections: {}, activeSection: null });

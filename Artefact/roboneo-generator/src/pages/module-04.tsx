@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -232,6 +233,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Module04() {
   const { toast } = useToast();
+  const { brief, updateBrief } = useBrand();
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
@@ -241,14 +243,35 @@ export default function Module04() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", sector: "bijou", product_name: "",
-      product_description: "", benefits: "", target_audience: "femmes_25_45",
-      colors: "", promo_code: "", discount: "20",
-      duration_days: "7", free_shipping: "100", stock: "50", problem: "",
+      brand_name: brief.brand_name || "", sector: brief.sector || "bijou", product_name: brief.product_name || "",
+      product_description: brief.product_description || "", benefits: brief.benefits || "", target_audience: brief.target_audience || "femmes_25_45",
+      colors: brief.product_colors || "", promo_code: brief.promo_code || "", discount: brief.discount || "20",
+      duration_days: "7", free_shipping: brief.free_shipping || "100", stock: "50", problem: "",
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        sector: brief.sector || "bijou",
+        product_name: brief.product_name || "",
+        product_description: brief.product_description || "",
+        benefits: brief.benefits || "",
+        target_audience: brief.target_audience || "femmes_25_45",
+        colors: brief.product_colors || "",
+        promo_code: brief.promo_code || "",
+        discount: brief.discount || "20",
+        duration_days: form.getValues("duration_days") || "7",
+        free_shipping: brief.free_shipping || "100",
+        stock: form.getValues("stock") || "50",
+        problem: form.getValues("problem") || "",
+      });
+    }
+  }, [brief.brand_name, brief.sector, brief.product_name, brief.product_description, brief.benefits, brief.target_audience, brief.product_colors, brief.promo_code, brief.discount, brief.free_shipping]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, sector: data.sector, product_name: data.product_name, product_description: data.product_description, benefits: data.benefits, target_audience: data.target_audience, product_colors: data.colors, promo_code: data.promo_code, discount: data.discount, free_shipping: data.free_shipping });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

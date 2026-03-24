@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -404,18 +405,44 @@ export default function Module07() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
+  const { brief, updateBrief } = useBrand();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", product_name: "", sector: "bijou", tone: "luxe",
-      product_description: "", features: "", benefits: "",
-      price: 299, old_price: 399, discount: 20, promo_code: "",
-      checkout_url: "", shipping_info: "Livraison offerte dès 100€",
-      primary_color: "#D4AF37", heading_font: "Playfair Display", body_font: "Montserrat",
+      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
+      product_description: brief.product_description || "", features: brief.product_features || "", benefits: brief.benefits || "",
+      price: Number(brief.price) || 299, old_price: Number(brief.old_price) || 399, discount: Number(brief.discount) || 20, promo_code: brief.promo_code || "",
+      checkout_url: brief.checkout_url || "", shipping_info: brief.shipping_info || "Livraison offerte dès 100€",
+      primary_color: brief.primary_color || "#D4AF37", heading_font: brief.heading_font || "Playfair Display", body_font: brief.body_font || "Montserrat",
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        product_name: brief.product_name || "",
+        sector: brief.sector || "bijou",
+        tone: brief.tone || "luxe",
+        product_description: brief.product_description || "",
+        features: brief.product_features || "",
+        benefits: brief.benefits || "",
+        price: Number(brief.price) || 299,
+        old_price: Number(brief.old_price) || 399,
+        discount: Number(brief.discount) || 20,
+        promo_code: brief.promo_code || "",
+        checkout_url: brief.checkout_url || "",
+        shipping_info: brief.shipping_info || "Livraison offerte dès 100€",
+        primary_color: brief.primary_color || "#D4AF37",
+        heading_font: brief.heading_font || "Playfair Display",
+        body_font: brief.body_font || "Montserrat",
+      });
+    }
+  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_description, brief.product_features, brief.benefits, brief.price, brief.discount, brief.promo_code, brief.checkout_url, brief.shipping_info, brief.primary_color, brief.heading_font, brief.body_font]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_description: data.product_description, product_features: data.features, benefits: data.benefits, price: String(data.price), old_price: String(data.old_price), discount: String(data.discount), promo_code: data.promo_code, checkout_url: data.checkout_url, shipping_info: data.shipping_info, primary_color: data.primary_color, heading_font: data.heading_font, body_font: data.body_font });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

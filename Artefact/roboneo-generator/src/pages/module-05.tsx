@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -228,16 +229,33 @@ export default function Module05() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
+  const { brief, updateBrief } = useBrand();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", sector: "bijou", tone: "luxe",
-      values: "", target_audience: "femmes_25_45",
+      brand_name: brief.brand_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
+      values: brief.values || "", target_audience: brief.target_audience || "femmes_25_45",
       has_ugc_audio: false, needs_vocal_separation: false,
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        sector: brief.sector || "bijou",
+        tone: brief.tone || "luxe",
+        values: brief.values || "",
+        target_audience: brief.target_audience || "femmes_25_45",
+        has_ugc_audio: form.getValues("has_ugc_audio"),
+        needs_vocal_separation: form.getValues("needs_vocal_separation"),
+      });
+    }
+  }, [brief.brand_name, brief.sector, brief.tone, brief.values, brief.target_audience]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, sector: data.sector, tone: data.tone, values: data.values, target_audience: data.target_audience });
     setIsGenerating(true);
     setFormData(data);
     setShowResults(true);

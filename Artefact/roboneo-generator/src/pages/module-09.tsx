@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useBrand } from "@/context/brand-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -627,6 +628,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Module09() {
   const { toast } = useToast();
+  const { brief, updateBrief } = useBrand();
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
@@ -635,12 +637,27 @@ export default function Module09() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brand_name: "", product_name: "", sector: "bijou", tone: "professionnel",
-      product_price: 299, product_features: "", values: "",
+      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "professionnel",
+      product_price: Number(brief.product_price) || Number(brief.price) || 299, product_features: brief.product_features || "", values: brief.values || "",
     },
   });
 
+  React.useEffect(() => {
+    if (brief.brand_name || brief.product_name) {
+      form.reset({
+        brand_name: brief.brand_name || "",
+        product_name: brief.product_name || "",
+        sector: brief.sector || "bijou",
+        tone: brief.tone || "professionnel",
+        product_price: Number(brief.product_price) || Number(brief.price) || 299,
+        product_features: brief.product_features || "",
+        values: brief.values || "",
+      });
+    }
+  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_price, brief.product_features, brief.values]);
+
   const onSubmit = async (data: FormValues) => {
+    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_price: String(data.product_price), product_features: data.product_features, values: data.values });
     setIsGenerating(true);
     setShowResults(true);
     setStreamState({ sections: {}, activeSection: null });

@@ -20481,27 +20481,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router5;
+    module.exports = Router6;
     module.exports.Route = Route;
-    function Router5(options) {
-      if (!(this instanceof Router5)) {
-        return new Router5(options);
+    function Router6(options) {
+      if (!(this instanceof Router6)) {
+        return new Router6(options);
       }
       const opts = options || {};
-      function router5(req, res, next) {
-        router5.handle(req, res, next);
+      function router6(req, res, next) {
+        router6.handle(req, res, next);
       }
-      Object.setPrototypeOf(router5, this);
-      router5.caseSensitive = opts.caseSensitive;
-      router5.mergeParams = opts.mergeParams;
-      router5.params = {};
-      router5.strict = opts.strict;
-      router5.stack = [];
-      return router5;
+      Object.setPrototypeOf(router6, this);
+      router6.caseSensitive = opts.caseSensitive;
+      router6.mergeParams = opts.mergeParams;
+      router6.params = {};
+      router6.strict = opts.strict;
+      router6.stack = [];
+      return router6;
     }
-    Router5.prototype = function() {
+    Router6.prototype = function() {
     };
-    Router5.prototype.param = function param(name, fn) {
+    Router6.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20521,7 +20521,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router5.prototype.handle = function handle(req, res, callback) {
+    Router6.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20648,7 +20648,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router5.prototype.use = function use(handler) {
+    Router6.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20681,7 +20681,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router5.prototype.route = function route(path2) {
+    Router6.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20696,7 +20696,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router5.prototype[method] = function(path2) {
+      Router6.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -20879,13 +20879,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router5 = null;
+      var router6 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -20894,13 +20894,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router5 === null) {
-            router5 = new Router5({
+          if (router6 === null) {
+            router6 = new Router6({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router5;
+          return router6;
         }
       });
     };
@@ -20971,15 +20971,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router5 = this.router;
+      var router6 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router5.use(path2, fn2);
+          return router6.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router5.use(path2, function mounted_app(req, res, next) {
+        router6.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23506,7 +23506,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23528,8 +23528,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router5.Route;
-    exports.Router = Router5;
+    exports.Route = Router6.Route;
+    exports.Router = Router6;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -27925,7 +27925,7 @@ var require_pino = __commonJS({
     function pinoBundlerAbsolutePath(p) {
       try {
         const path2 = __require("path");
-        const outputDir = "/home/runner/workspace/artifacts/api-server/dist";
+        const outputDir = "/home/runner/workspace/Artefact/api-server/dist";
         return path2.resolve(outputDir, p.replace(/^\.\//, ""));
       } catch (e) {
         const f = new Function("p", "return new URL(p, import.meta.url).pathname");
@@ -28388,12 +28388,12 @@ var require_logger = __commonJS({
 });
 
 // src/app.ts
-var import_express5 = __toESM(require_express2(), 1);
+var import_express6 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express4 = __toESM(require_express2(), 1);
+var import_express5 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -39830,12 +39830,388 @@ Tu r\xE9ponds TOUJOURS en fran\xE7ais. Tu retournes UNIQUEMENT du JSON valide, s
 });
 var enhance_prompts_visual_default = router3;
 
-// src/routes/index.ts
+// src/routes/openai/enhance-prompts-video.ts
+var import_express4 = __toESM(require_express2(), 1);
 var router4 = (0, import_express4.Router)();
-router4.use(health_default);
-router4.use(enhance_prompts_default);
-router4.use(enhance_prompts_visual_default);
-var routes_default = router4;
+var TEASER_STYLE_MAP = {
+  bijou: "luxe",
+  luxe: "luxe",
+  maroquinerie: "luxe",
+  montres: "luxe",
+  cosm\u00E9tique: "cinematic",
+  skincare: "cinematic",
+  tech: "glitch",
+  gadgets: "glitch",
+  streetwear: "glitch",
+  fitness: "kinetic",
+  sport: "kinetic",
+  mode: "minimal",
+  d\u00E9coration: "minimal"
+};
+var THUMBNAIL_TYPE_MAP = {
+  bijou: "product_focus",
+  luxe: "product_focus",
+  maroquinerie: "product_focus",
+  montres: "product_focus",
+  mode: "product_focus",
+  cosm\u00E9tique: "before_after",
+  skincare: "before_after",
+  fitness: "before_after",
+  tech: "review",
+  gadgets: "unboxing",
+  streetwear: "review"
+};
+var VOICE_MAP = {
+  bijou: { id: "Bella", description: "Voix f\xE9minine, \xE9l\xE9gante, raffin\xE9e", tone: "elegant, sophisticated, refined" },
+  luxe: { id: "Bella", description: "Voix f\xE9minine, \xE9l\xE9gante, raffin\xE9e", tone: "elegant, sophisticated, refined" },
+  maroquinerie: { id: "Bella", description: "Voix f\xE9minine, \xE9l\xE9gante, raffin\xE9e", tone: "elegant, sophisticated, refined" },
+  montres: { id: "Bella", description: "Voix f\xE9minine, \xE9l\xE9gante, raffin\xE9e", tone: "elegant, sophisticated, refined" },
+  cosm\u00E9tique: { id: "Rachel", description: "Voix f\xE9minine, chaleureuse, accessible", tone: "friendly, warm, inviting" },
+  skincare: { id: "Emily", description: "Voix f\xE9minine, naturelle, authentique", tone: "natural, authentic, genuine" },
+  mode: { id: "Rachel", description: "Voix f\xE9minine, chaleureuse, accessible", tone: "friendly, warm, inviting" },
+  fitness: { id: "Antoni", description: "Voix masculine, \xE9nergique, dynamique", tone: "energetic, enthusiastic, motivating" },
+  sport: { id: "Antoni", description: "Voix masculine, \xE9nergique, dynamique", tone: "energetic, enthusiastic, motivating" },
+  streetwear: { id: "Antoni", description: "Voix masculine, \xE9nergique, dynamique", tone: "energetic, enthusiastic, motivating" },
+  tech: { id: "Adam", description: "Voix masculine, professionnelle, confiante", tone: "professional, confident, authoritative" },
+  gadgets: { id: "Adam", description: "Voix masculine, professionnelle, confiante", tone: "professional, confident, authoritative" }
+};
+var TEASER_DESCRIPTIONS = {
+  luxe: "slow pan \xE9l\xE9gant, particules dor\xE9es, lumi\xE8re chaude, fondu sur logo or/noir",
+  cinematic: "slow zoom dramatique, profondeur de champ, lens flare, grain film, musique orchestrale",
+  glitch: "effets RGB split, scanlines, distortion cyberpunk, transitions saccad\xE9es, beat \xE9lectronique",
+  kinetic: "typographie anim\xE9e dynamique, mouvements rapides, motion blur, EDM, \xE9nergie maximale",
+  minimal: "fond blanc \xE9pur\xE9, rotation 360\xB0, transitions simples, piano ambient, texte minimal"
+};
+var THUMBNAIL_DESCRIPTIONS = {
+  product_focus: "produit centr\xE9, \xE9clairage studio, texte court percutant, palette marque, contraste \xE9lev\xE9",
+  before_after: "split screen gauche/droite, 'AVANT / APR\xC8S' en gros, avant fade/apr\xE8s vibrant",
+  tutorial: "main tenant le produit, fl\xE8ches indicatrices, 'COMMENT FAIRE', fond \xE9pur\xE9",
+  review: "visage surpris/impressionn\xE9 + produit, 'JE TESTE [PRODUIT]', fond color\xE9",
+  unboxing: "packaging + produit sorti, 'UNBOXING', confettis, ambiance excitante"
+};
+function parseJsonSafe2(text) {
+  try {
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    return JSON.parse(clean);
+  } catch {
+    return null;
+  }
+}
+function sendEvent2(res, data) {
+  res.write(`data: ${JSON.stringify(data)}
+
+`);
+}
+router4.post("/openai/enhance-prompts-video", async (req, res) => {
+  const {
+    brand_name,
+    sector,
+    product_name,
+    product_description = "",
+    product_features = [],
+    benefits = [],
+    target_audience = "mixte",
+    year = "2020",
+    promo_code = "",
+    duration_days = "7",
+    teaser_style: teaser_style_override = null,
+    thumbnail_type: thumbnail_type_override = null
+  } = req.body;
+  if (!brand_name || !sector || !product_name) {
+    res.status(400).json({ error: "Champs requis manquants" });
+    return;
+  }
+  const teaserStyle = teaser_style_override ?? TEASER_STYLE_MAP[sector] ?? "cinematic";
+  const thumbnailType = thumbnail_type_override ?? THUMBNAIL_TYPE_MAP[sector] ?? "product_focus";
+  const voice = VOICE_MAP[sector] ?? { id: "Adam", description: "Voix professionnelle", tone: "professional, confident" };
+  const promoCode = promo_code || brand_name.slice(0, 4).toUpperCase() + "20";
+  const material = product_features[0] ?? "mat\xE9riaux d'exception";
+  const detail = product_features[1] ?? "finitions soign\xE9es";
+  const benefit1 = benefits[0] ?? "qualit\xE9 sup\xE9rieure";
+  const benefit2 = benefits[1] ?? "exp\xE9rience unique";
+  const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Produit: ${product_name}
+Description: ${product_description || "produit premium de qualit\xE9"}
+Caract\xE9ristiques: ${product_features.join(", ") || material}
+B\xE9n\xE9fices: ${benefits.join(", ") || benefit1}
+Cible: ${target_audience} | Ann\xE9e fondation: ${year} | Code promo: ${promoCode} | Dur\xE9e promo: ${duration_days} jours`;
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  const systemPrompt = `Tu es un expert senior en cr\xE9ation de scripts publicitaires et prompts vid\xE9o pour RoboNeo.com.
+Tu r\xE9diges des scripts punchy, adapt\xE9s au secteur ${sector}, en fran\xE7ais. Formule courte, efficace, copywriting direct.
+Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.`;
+  const SECTIONS = [
+    {
+      key: "scripts",
+      label: "Scripts \u2014 15s / 30s / 60s",
+      agent: "Creative Ad Video Agent (scripts)",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 3 scripts publicitaires professionnels pour ${product_name} (${brand_name}) en 3 dur\xE9es.
+
+STRUCTURE ABSOLUE par dur\xE9e:
+- "15s": format AIDA court: {hook, interest, desire, cta, full_script}
+  \u2022 hook (5 mots max): accroche choc, fait tourner les t\xEAtes
+  \u2022 interest (8 mots max): caract\xE9ristique cl\xE9 \u2014 ${material}, ${detail}
+  \u2022 desire (8 mots max): b\xE9n\xE9fice \xE9motionnel \u2014 ce que \xE7a change dans la vie
+  \u2022 cta (5 mots max): appel \xE0 l'action direct
+  \u2022 full_script: les 4 sections encha\xEEn\xE9es naturellement (~15 secondes \xE0 lire)
+
+- "30s": format PASOP: {problem, agitation, solution, offer, cta, full_script}
+  \u2022 problem (10 mots): probl\xE8me que conna\xEEt la cible
+  \u2022 agitation (10 mots): pourquoi c'est frustrant
+  \u2022 solution (15 mots): ${brand_name} \u2014 ${material}, ${benefit1}
+  \u2022 offer (10 mots): l'offre / la preuve
+  \u2022 cta (8 mots): code ${promoCode}, lien bio
+  \u2022 full_script: tout encha\xEEn\xE9 (~30 secondes)
+
+- "60s": format Storytelling: {hook, context, discovery, proof, cta, full_script}
+  \u2022 hook (10 mots): ouverture narrative accrocheuse
+  \u2022 context (20 mots): mise en situation r\xE9elle de la cible ${target_audience}
+  \u2022 discovery (20 mots): r\xE9v\xE9lation du produit, ${material}, ${detail}
+  \u2022 proof (15 mots): preuve sociale ou r\xE9sultat chiffr\xE9
+  \u2022 cta (10 mots): invitation finale avec code ${promoCode}
+  \u2022 full_script: tout encha\xEEn\xE9 (~60 secondes)
+
+R\xC8GLES:
+\u2022 Fran\xE7ais naturel, punchy, copywriting direct
+\u2022 Adapt\xE9 au ton du secteur ${sector}
+\u2022 Scripts pr\xEAts \xE0 lire pour une voix off
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "15s": { "hook": "...", "interest": "...", "desire": "...", "cta": "...", "full_script": "..." },
+  "30s": { "problem": "...", "agitation": "...", "solution": "...", "offer": "...", "cta": "...", "full_script": "..." },
+  "60s": { "hook": "...", "context": "...", "discovery": "...", "proof": "...", "cta": "...", "full_script": "..." }
+}`
+    },
+    {
+      key: "short_videos",
+      label: "Vid\xE9os Courtes \u2014 TikTok / Reels",
+      agent: "Creative Ad Video Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 2 prompts de r\xE9alisation vid\xE9o pour des vid\xE9os courtes verticales (format 9:16, 1080\xD71920px).
+
+FORMAT "tiktok_15s" (15 secondes):
+- Structure shot-list compl\xE8te: 4-5 plans de 3s maximum
+- Chaque plan: description pr\xE9cise (angle, sujet, mouvement, \xE9clairage)
+- Transitions: type et dur\xE9e
+- Texte overlay: quoi, quand, style (taille, couleur, position)
+- Son: musique recommand\xE9e (genre, BPM), timing voix off
+- Accroche visuelle dans les 3 premi\xE8res secondes (r\xE9tention maximale)
+
+FORMAT "tiktok_30s" (30 secondes):
+- Structure narrative en 3 actes: accroche (8s) + d\xE9veloppement (15s) + CTA (7s)
+- Shot-list: 6-8 plans avec descriptions compl\xE8tes
+- Animations de texte: style, timing, contenu
+- Transitions: type et dur\xE9e
+- Code ${promoCode} visible \xE0 l'\xE9cran en fin de vid\xE9o
+
+R\xC8GLES:
+\u2022 Adapt\xE9 aux algorithmes TikTok/Reels (hook fort en 0-3s)
+\u2022 Mouvements de cam\xE9ra naturels, tendances actuelles
+\u2022 Fran\xE7ais, ultra-pr\xE9cis, r\xE9alisable avec un smartphone ou cam\xE9ra
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "tiktok_15s": "prompt de r\xE9alisation complet 15s",
+  "tiktok_30s": "prompt de r\xE9alisation complet 30s"
+}`
+    },
+    {
+      key: "long_video",
+      label: "Vid\xE9o YouTube \u2014 60s",
+      agent: "Creative Ad Video Agent",
+      buildPrompt: () => `${contextBlock}
+
+G\xE9n\xE8re 1 prompt de r\xE9alisation pour une vid\xE9o YouTube horizontal (16:9, 1920\xD71080px, 60 secondes).
+
+STRUCTURE:
+- Format horizontal 16:9, qualit\xE9 cin\xE9ma
+- D\xE9coupage en 4 s\xE9quences:
+  1. OUVERTURE (0-10s): plan large cin\xE9matographique, mise en ambiance
+  2. PR\xC9SENTATION (10-30s): produit en d\xE9tail, caract\xE9ristiques en overlay
+  3. LIFESTYLE (30-50s): produit en usage r\xE9el avec la cible ${target_audience}
+  4. CTA (50-60s): logo, code ${promoCode}, appel \xE0 l'action
+
+POUR CHAQUE S\xC9QUENCE, d\xE9crire:
+- Plans exacts (composition, angle, mouvement)
+- \xC9clairage (studio, naturel, golden hour...)
+- Transitions entre s\xE9quences
+- Texte overlay (contenu, style, timing)
+- Musique: dynamique et \xE9volution sur 60s
+
+R\xC8GLES:
+\u2022 Qualit\xE9 pub TV/YouTube Premium
+\u2022 Mouvements cam\xE9ra ma\xEEtris\xE9s, non amateurs
+\u2022 Rythme: pose en d\xE9but, mont\xE9e en \xE9nergie vers le CTA
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "youtube_60s": "prompt de r\xE9alisation complet 60s"
+}`
+    },
+    {
+      key: "teaser",
+      label: `Teaser Anim\xE9 \u2014 Style ${teaserStyle.toUpperCase()}`,
+      agent: "Anime Video Agent / Image-to-Video",
+      buildPrompt: () => `${contextBlock}
+
+Style de teaser s\xE9lectionn\xE9: ${teaserStyle.toUpperCase()}
+Description du style: ${TEASER_DESCRIPTIONS[teaserStyle] ?? "style professionnel adapt\xE9"}
+
+G\xE9n\xE8re un prompt de teaser anim\xE9 ultra-pr\xE9cis de 15 secondes pour ${product_name} (${brand_name}).
+
+PLAN S\xC9QUENCE SECOND PAR SECONDE:
+- 0-4s: ouverture (selon le style ${teaserStyle})
+- 4-8s: r\xE9v\xE9lation du produit
+- 8-12s: d\xE9tails et b\xE9n\xE9fice cl\xE9
+- 12-15s: logo ${brand_name}, CTA
+
+POUR CHAQUE PHASE, d\xE9crire:
+\u2022 Visuels: fond, couleurs, composition
+\u2022 Animations: type de mouvement, vitesse, effets sp\xE9ciaux sp\xE9cifiques au style ${teaserStyle}
+\u2022 Typographie: police, taille, animation du texte
+\u2022 Transitions: type exact, dur\xE9e en frames
+\u2022 Audio: genre musical, BPM, \xE9volution
+
+R\xC8GLES ABSOLUES:
+\u2022 Deux versions: vertical 9:16 (1080\xD71920) et horizontal 16:9 (1920\xD71080)
+\u2022 Prompt en fran\xE7ais, extr\xEAmement d\xE9taill\xE9 et pr\xE9cis
+\u2022 Effets adapt\xE9s au style ${teaserStyle}: ${TEASER_DESCRIPTIONS[teaserStyle]}
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "vertical": "prompt teaser vertical 9:16 complet",
+  "horizontal": "prompt teaser horizontal 16:9 complet",
+  "style": "${teaserStyle}",
+  "effects": "liste des effets utilis\xE9s"
+}`
+    },
+    {
+      key: "thumbnails",
+      label: `Miniatures YouTube \u2014 Type ${thumbnailType.replace(/_/g, " ").toUpperCase()}`,
+      agent: "AI Poster Agent",
+      buildPrompt: () => `${contextBlock}
+
+Type de miniature: ${thumbnailType.replace(/_/g, " ").toUpperCase()}
+Description: ${THUMBNAIL_DESCRIPTIONS[thumbnailType] ?? "miniature professionnelle optimis\xE9e CTR"}
+
+G\xE9n\xE8re 3 variantes de miniatures YouTube pour ${product_name} (${brand_name}).
+
+FORMAT: 1280\xD7720px (16:9), JPG optimis\xE9
+
+Pour CHAQUE variante (A, B, C), d\xE9crire:
+\u2022 Composition: disposition des \xE9l\xE9ments visuels sur la miniature
+\u2022 Sujet principal: description pr\xE9cise (produit, visage, sc\xE8ne)
+\u2022 Texte: contenu exact (3-6 mots), police, taille, couleur, position, ombre
+\u2022 Palette: couleurs dominantes, contraste, background
+\u2022 \xC9l\xE9ments graphiques: fl\xE8ches, cercles, ic\xF4nes, overlays
+\u2022 \xC9clairage: naturel/studio/composite
+
+TYPE ${thumbnailType.toUpperCase()} \u2014 R\xE8gles sp\xE9cifiques: ${THUMBNAIL_DESCRIPTIONS[thumbnailType]}
+
+R\xC8GLES CTR:
+\u2022 Contraste maximal pour se d\xE9marquer dans les suggestions YouTube
+\u2022 Visage ou objet reconnaissable \xE0 200px
+\u2022 Texte lisible sur mobile
+\u2022 Teaser de curiosit\xE9 sans spoiler
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "variant_a": "prompt miniature variante A complet",
+  "variant_b": "prompt miniature variante B complet",
+  "variant_c": "prompt miniature variante C complet",
+  "type": "${thumbnailType}"
+}`
+    },
+    {
+      key: "voice_over",
+      label: "Voix Off \u2014 Scripts & Recommandation",
+      agent: "ElevenLabs / AI Voice Generator",
+      buildPrompt: () => `${contextBlock}
+
+Voix recommand\xE9e pour ce secteur (${sector}): ${voice.id} \u2014 ${voice.description}
+Ton: ${voice.tone}
+
+G\xE9n\xE8re les textes de voix off optimis\xE9s pour lecture TTS (ElevenLabs) en 3 dur\xE9es.
+
+Pour CHAQUE dur\xE9e, le texte doit \xEAtre:
+\u2022 R\xE9dig\xE9 pour \xEAtre LU \xE0 voix haute (pas de texte d'\xE9cran)
+\u2022 Ponctuation adapt\xE9e au d\xE9bit voix (virgules = pause courte, ... = pause longue)
+\u2022 Rythme: 15s = ~35 mots, 30s = ~75 mots, 60s = ~150 mots
+\u2022 \xC9motionnel et adapt\xE9 au ton ${voice.tone}
+\u2022 Fran\xE7ais naturel, pas robotique
+
+R\xC8GLES ELEVENLABS:
+\u2022 Ajoute des <break time="0.5s"/> l\xE0 o\xF9 la pause est importante
+\u2022 Mots-cl\xE9s \xE0 ACCENTUER en majuscules (3 max par script)
+\u2022 Fin avec une mont\xE9e d'intonation sur le CTA
+
+Retourne UNIQUEMENT ce JSON:
+{
+  "recommended_voice": "${voice.id}",
+  "voice_description": "${voice.description}",
+  "voice_tone": "${voice.tone}",
+  "script_15s": "texte voix off 15s optimis\xE9 ElevenLabs",
+  "script_30s": "texte voix off 30s optimis\xE9 ElevenLabs",
+  "script_60s": "texte voix off 60s optimis\xE9 ElevenLabs",
+  "elevenlabs_settings": "stability, similarity_boost, style recommand\xE9s"
+}`
+    }
+  ];
+  for (const section of SECTIONS) {
+    sendEvent2(res, { type: "section_start", key: section.key, label: section.label, agent: section.agent });
+    let fullContent = "";
+    try {
+      const stream = await openai.chat.completions.create({
+        model: "gpt-5.2",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: section.buildPrompt() }
+        ],
+        max_completion_tokens: 2e3,
+        stream: true
+      });
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content ?? "";
+        if (content) {
+          fullContent += content;
+          sendEvent2(res, { type: "chunk", key: section.key, content });
+        }
+      }
+      const parsed = parseJsonSafe2(fullContent);
+      sendEvent2(res, {
+        type: "section_done",
+        key: section.key,
+        label: section.label,
+        agent: section.agent,
+        data: parsed ?? {},
+        rawContent: fullContent,
+        meta: {
+          teaserStyle: section.key === "teaser" ? teaserStyle : void 0,
+          thumbnailType: section.key === "thumbnails" ? thumbnailType : void 0,
+          voice: section.key === "voice_over" ? voice : void 0
+        }
+      });
+    } catch (err) {
+      sendEvent2(res, { type: "section_error", key: section.key, error: err instanceof Error ? err.message : "Erreur inconnue" });
+    }
+  }
+  sendEvent2(res, { type: "done" });
+  res.end();
+});
+var enhance_prompts_video_default = router4;
+
+// src/routes/index.ts
+var router5 = (0, import_express5.Router)();
+router5.use(health_default);
+router5.use(enhance_prompts_default);
+router5.use(enhance_prompts_visual_default);
+router5.use(enhance_prompts_video_default);
+var routes_default = router5;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -39856,7 +40232,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express5.default)();
+var app = (0, import_express6.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -39877,8 +40253,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express5.default.json());
-app.use(import_express5.default.urlencoded({ extended: true }));
+app.use(import_express6.default.json());
+app.use(import_express6.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var app_default = app;
 

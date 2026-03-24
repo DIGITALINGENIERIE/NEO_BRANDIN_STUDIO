@@ -42,3 +42,9 @@ externalPort = 80
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "PORT=3000 node --enable-source-maps /home/runner/workspace/Artefact/api-server/dist/index.mjs"]
 build = ["bash", "-c", "pnpm --filter @workspace/api-server run build && BASE_PATH=/ PORT=5000 pnpm --filter @workspace/roboneo-generator run build"]
+
+[userenv]
+
+[userenv.shared]
+PORT = "5000"
+BASE_PATH = "/"

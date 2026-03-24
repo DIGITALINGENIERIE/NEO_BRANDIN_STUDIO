@@ -1,0 +1,883 @@
+Voici le **prompt pour installer le Module 06 — Copy & Content** dans l'architecture existante.
+
+---
+
+# PROMPT — INSTALLATION MODULE 06 — COPY & CONTENT
+
+```
+Ajoute le MODULE 06 — COPY & CONTENT au projet existant.
+
+Le Module 06 génère des prompts optimisés pour créer tout le contenu textuel d'une marque: fiche produit complète (titre, description, bullet points, FAQ), captions pour chaque visuel, hashtags optimisés par plateforme, séquence emails (3), et 10 reviews clients réalistes.
+
+Le module doit s'intégrer avec les Modules 01, 02, 03, 04 et 05 déjà installés.
+
+## STRUCTURE À AJOUTER
+
+Ajoute ce dossier et ces fichiers:
+
+```
+modules/module_06_copy_content/
+├── __init__.py
+├── orchestrator.py
+└── prompts.py
+```
+
+## 1. FICHIER modules/module_06_copy_content/__init__.py
+
+```python
+from .orchestrator import CopyContentOrchestrator
+
+__all__ = ["CopyContentOrchestrator"]
+```
+
+## 2. FICHIER modules/module_06_copy_content/prompts.py
+
+```python
+# ============================================================
+# MODULE 06 — COPY & CONTENT — PROMPTS ROBONEO
+# ============================================================
+
+# MOD-06.1 — Fiche Produit Complète
+PRODUCT_SHEET_TEMPLATES = {
+    "bijou": {
+        "title_formats": [
+            "{product} — L'élégance qui traverse le temps",
+            "{product} en {material}, le bijou qui fait la différence",
+            "Découvrez {product}, la nouvelle icône de l'élégance",
+            "{product} — Édition limitée, précision suisse"
+        ],
+        "description_structure": [
+            "Présentation générale du produit et de son héritage",
+            "Description des matériaux et de la fabrication",
+            "Détails techniques et caractéristiques",
+            "Bénéfices pour le client et promesse de valeur",
+            "Garantie, entretien et conditions"
+        ],
+        "bullet_points": [
+            "Matériau: {material}",
+            "Mouvement: {movement}",
+            "Dimensions: {dimensions}",
+            "Garantie: {warranty} ans",
+            "Livraison offerte dès {free_shipping}€"
+        ],
+        "faq": [
+            {
+                "question": "Le produit est-il livré avec une garantie ?",
+                "answer": "Oui, {product} bénéficie d'une garantie de {warranty} ans contre tout défaut de fabrication."
+            },
+            {
+                "question": "Comment entretenir mon {product} ?",
+                "answer": "Nous recommandons un nettoyage doux avec un chiffon microfibre. Évitez tout contact avec l'eau et les produits chimiques."
+            },
+            {
+                "question": "Les bijoux sont-ils livrés dans un écrin ?",
+                "answer": "Oui, chaque {product} est livré dans un écrin de luxe, idéal pour offrir ou conserver précieusement votre bijou."
+            },
+            {
+                "question": "Quels sont les délais de livraison ?",
+                "answer": "La livraison est assurée sous {delivery_days} jours ouvrés. La livraison express est disponible en option."
+            },
+            {
+                "question": "Puis-je retourner le produit s'il ne me convient pas ?",
+                "answer": "Vous disposez de {return_days} jours pour retourner votre produit et être remboursé, sans justification."
+            }
+        ]
+    },
+    
+    "cosmétique": {
+        "title_formats": [
+            "{product} — La révolution skincare en {duration} jours",
+            "{product} : {benefit} visible dès la première application",
+            "Découvrez {product}, le sérum qui change tout",
+            "{product} — {ingredient}, pour une peau {result}"
+        ],
+        "description_structure": [
+            "Présentation du problème cutané et de la promesse",
+            "Description des ingrédients actifs et de leur action",
+            "Résultats cliniques et études",
+            "Mode d'emploi et routine recommandée",
+            "Avis et témoignages"
+        ],
+        "bullet_points": [
+            "{ingredient} : {benefit}",
+            "Testé dermatologiquement",
+            "Sans parfum, sans allergène",
+            "98% d'ingrédients naturels",
+            "Fabrication française"
+        ],
+        "faq": [
+            {
+                "question": "À partir de quel âge peut-on utiliser ce produit ?",
+                "answer": "{product} convient à partir de {min_age} ans. Pour les peaux sensibles, un test préalable est recommandé."
+            },
+            {
+                "question": "Combien de temps avant de voir les premiers résultats ?",
+                "answer": "Les premiers résultats sont visibles dès {first_results_days} jours. Une amélioration significative est observée après {optimal_days} jours d'utilisation régulière."
+            },
+            {
+                "question": "Peut-on utiliser ce produit enceinte ?",
+                "answer": "Consultez votre médecin avant utilisation. La formule est conçue pour être douce, mais l'avis d'un professionnel est recommandé."
+            },
+            {
+                "question": "Quelle est la différence avec les autres sérums ?",
+                "answer": "{product} se distingue par sa concentration en {ingredient} et sa formule brevetée qui garantit une absorption optimale."
+            },
+            {
+                "question": "Le produit est-il testé sur les animaux ?",
+                "answer": "Non, {brand} est une marque cruelty-free et ne teste pas ses produits sur les animaux."
+            }
+        ]
+    },
+    
+    "tech": {
+        "title_formats": [
+            "{product} — La technologie qui change tout",
+            "{product} : {feature}, {benefit}",
+            "Découvrez {product}, le gadget indispensable du quotidien",
+            "{product} — Compact, puissant, révolutionnaire"
+        ],
+        "description_structure": [
+            "Présentation du problème que le produit résout",
+            "Description technique des spécifications",
+            "Avantages et bénéfices pour l'utilisateur",
+            "Comparatif avec les alternatives",
+            "Garantie et support"
+        ],
+        "bullet_points": [
+            "{feature}: {benefit}",
+            "Autonomie: {battery_life}",
+            "Compatibilité: {compatibility}",
+            "Dimensions: {dimensions}",
+            "Garantie: {warranty} ans"
+        ],
+        "faq": [
+            {
+                "question": "Le produit est-il compatible avec mon appareil ?",
+                "answer": "{product} est compatible avec {compatibility}. Vérifiez les spécifications techniques pour plus de détails."
+            },
+            {
+                "question": "Quelle est la durée de la batterie ?",
+                "answer": "L'autonomie de {product} est de {battery_life} en utilisation normale. La charge complète prend {charging_time}."
+            },
+            {
+                "question": "Y a-t-il une application dédiée ?",
+                "answer": "Oui, {product} fonctionne avec l'application {app_name}, disponible gratuitement sur iOS et Android."
+            },
+            {
+                "question": "Que faire en cas de problème technique ?",
+                "answer": "Notre service client est joignable 7j/7 par email ou chat. Une garantie de {warranty} ans couvre les défauts de fabrication."
+            },
+            {
+                "question": "Le produit est-il livré avec tous les accessoires ?",
+                "answer": "La boîte contient {product}, un câble de charge, un guide de démarrage rapide et {accessories}."
+            }
+        ]
+    },
+    
+    "fitness": {
+        "title_formats": [
+            "{product} — Atteignez vos objectifs plus vite",
+            "{product} : {benefit} en {duration} minutes par jour",
+            "Découvrez {product}, l'équipement qui motive",
+            "{product} — Performance, confort, résultats"
+        ],
+        "description_structure": [
+            "Présentation du besoin fitness et de la solution",
+            "Description technique et matériaux",
+            "Programme d'entraînement inclus",
+            "Résultats attendus et témoignages",
+            "Garantie et conditions"
+        ],
+        "bullet_points": [
+            "{material} : confort et durabilité",
+            "Programme {program_duration} jours inclus",
+            "Transportable partout",
+            "{weight} kg seulement",
+            "Garantie satisfait ou remboursé"
+        ],
+        "faq": [
+            {
+                "question": "Ce produit convient-il aux débutants ?",
+                "answer": "Absolument ! {product} est conçu pour tous les niveaux. Le programme inclus vous guide pas à pas."
+            },
+            {
+                "question": "Combien de temps par jour faut-il utiliser le produit ?",
+                "answer": "Seulement {duration} minutes par jour suffisent pour voir des résultats visibles en {result_weeks} semaines."
+            },
+            {
+                "question": "Quel est le poids et l'encombrement ?",
+                "answer": "{product} pèse {weight} kg et se range facilement. Idéal pour les petits espaces."
+            },
+            {
+                "question": "Y a-t-il un programme d'entraînement inclus ?",
+                "answer": "Oui, vous recevez un programme complet de {program_duration} jours, avec des vidéos et un suivi personnalisé."
+            },
+            {
+                "question": "Que faire si je ne suis pas satisfait ?",
+                "answer": "Vous disposez de {return_days} jours pour tester {product} et être remboursé si vous n'êtes pas satisfait."
+            }
+        ]
+    },
+    
+    "mode": {
+        "title_formats": [
+            "{product} — La pièce qui fait la différence",
+            "{product} en {material}, l'élégance au quotidien",
+            "Découvrez {product}, la tendance de la saison",
+            "{product} — Confort, style, polyvalence"
+        ],
+        "description_structure": [
+            "Présentation du vêtement et de son inspiration",
+            "Description des matières et coupes",
+            "Conseils de style et associations",
+            "Entretien et durabilité",
+            "Engagement éthique et fabrication"
+        ],
+        "bullet_points": [
+            "Matière: {material}",
+            "Coupe: {fit}",
+            "Disponible en {colors} couleurs",
+            "Fabrication {origin}",
+            "Entretien: {care}"
+        ],
+        "faq": [
+            {
+                "question": "Quelle taille choisir ?",
+                "answer": "Consultez notre guide des tailles. {product} taille normalement. En cas d'hésitation, prenez une taille au-dessus."
+            },
+            {
+                "question": "Comment entretenir ce vêtement ?",
+                "answer": "{product} se lave en machine à {temperature}°C. Sécher à l'air libre, ne pas passer au sèche-linge."
+            },
+            {
+                "question": "Quel est le délai de livraison ?",
+                "answer": "La livraison est assurée sous {delivery_days} jours ouvrés. La livraison express est disponible."
+            },
+            {
+                "question": "Puis-je retourner le vêtement s'il ne me convient pas ?",
+                "answer": "Oui, vous disposez de {return_days} jours pour retourner votre article et être remboursé."
+            },
+            {
+                "question": "D'où viennent les matières premières ?",
+                "answer": "Nous sélectionnons nos matières avec soin. {material} provient de {origin} et est certifié {certification}."
+            }
+        ]
+    }
+}
+
+# MOD-06.2 — Captions par plateforme
+CAPTION_TEMPLATES = {
+    "instagram_feed": [
+        "✨ {product} — {benefit}. Découvrez l'élégance qui vous ressemble. # {brand} #{sector}",
+        "La pièce qui fait toute la différence ? {product} 🖤 {description_short} #Nouveauté #{brand}",
+        "Style, confort, qualité. {product} coche toutes les cases. 🎯 # {brand} #{sector}",
+        "Quand {benefit} rencontre {product}. Le résultat ? Un bijou unique. ✨ #Collection #{brand}",
+        "Offre limitée : {product} à -{discount}% avec code {code} ⏰ #Promo #{brand}"
+    ],
+    
+    "instagram_story": [
+        "✨ {product} — {benefit} ✨",
+        "👆 Swipe up pour découvrir {product}",
+        "💫 La pièce qui change tout : {product} 💫",
+        "🔥 -{discount}% sur {product} 🔥 Code {code}",
+        "Nouvelle collection {brand} — {product} disponible"
+    ],
+    
+    "tiktok": [
+        "POV: tu as enfin trouvé {product} ✨ #{brand} #{sector}",
+        "Réaction à {product} — incroyable 😱 #{brand} #{sector}",
+        "La routine qui change tout avec {product} 💫 #{brand} #{sector}",
+        "Le secret des pros: {product} 🔥 #{brand} #{sector}",
+        "Pourquoi tout le monde parle de {product} ? 👀 #{brand} #{sector}"
+    ],
+    
+    "pinterest": [
+        "{product} — L'élégance intemporelle pour sublimer votre style. #{brand} #{sector}",
+        "Découvrez {product}, la pièce incontournable de la saison. #{brand} #{sector}",
+        "Inspiration mode : {product} associé à {styling}. #{brand} #{sector}",
+        "Comment porter {product} au quotidien ? Nos conseils. #{brand} #{sector}"
+    ],
+    
+    "facebook": [
+        "✨ Nouveau : {product} arrive dans notre collection. Découvrez l'élégance qui vous ressemble. # {brand} #{sector}",
+        "{product} — {benefit}. Disponible dès maintenant sur notre site. # {brand}",
+        "Offre exclusive : -{discount}% sur {product} avec le code {code}. Ne manquez pas cette opportunité !",
+        "Pourquoi {product} est-il la pièce que vous attendiez ? Découvrez-le ici. # {brand}"
+    ]
+}
+
+# MOD-06.3 — Hashtags optimisés
+HASHTAG_SETS = {
+    "bijou": {
+        "general": ["#bijou", "#bijoux", "#joaillerie", "#luxe", "#eleganc", "#frenchluxury", "#handmadejewelry"],
+        "specific": ["#montrefemme", "#collierperle", "#bagueor", "#braceletcuir", "#pendentifdiamant"],
+        "trending": ["#jewelryoftheday", #OOTD", "#luxurylifestyle", "#timelesselegance"],
+        "brand": ["#{brand}", "#{brand}jewelry", "#{brand}collection"]
+    },
+    
+    "cosmétique": {
+        "general": ["#skincare", "#beautyroutine", "#soinvisage", "#peaulumineuse", "#cleanbeauty", "#naturelskincare"],
+        "specific": ["#serum", "#antirides", "#hydratation", "#antiage", "#peauparfaite"],
+        "trending": ["#skincarecommunity", "#glassskin", "#skincaretips", "#glowingskin"],
+        "brand": ["#{brand}", "#{brand}skincare", "#{brand}routine"]
+    },
+    
+    "tech": {
+        "general": ["#tech", "#gadget", "#innovation", "#newtech", "#futuretech", "#techlife"],
+        "specific": ["#{product}", "#connecteddevice", "#smarthome", "#wireless", "#charging"],
+        "trending": ["#techreview", "#gadgetoftheday", "#technews", "#unboxing"],
+        "brand": ["#{brand}", "#{brand}tech", "#{brand}gadget"]
+    },
+    
+    "fitness": {
+        "general": ["#fitness", "#sport", "#entrainement", "#workout", "#activewear", "#fitnessmotivation"],
+        "specific": ["#{product}", "#homeworkout", "#fitnessequipment", "#gymathome", "#training"],
+        "trending": ["#fitnessjourney", "#workoutmotivation", "#fitnessaddict", "#healthylifestyle"],
+        "brand": ["#{brand}", "#{brand}fitness", "#{brand}active"]
+    },
+    
+    "mode": {
+        "general": ["#mode", "#fashion", "#style", "#tendance", "#outfitinspo", "#streetstyle"],
+        "specific": ["#{product}", "#modefemme", "#frenchstyle", "#elegance", "#lookdujour"],
+        "trending": ["#ootd", "#fashionista", "#styleinspo", "#whatiwore"],
+        "brand": ["#{brand}", "#{brand}fashion", "#{brand}style"]
+    }
+}
+
+# MOD-06.4 — Email Sequences
+EMAIL_SEQUENCES = {
+    "launch": {
+        "subject": "✨ {product} est enfin là — Offre exclusive à l'intérieur !",
+        "body": """
+Bonjour {first_name},
+
+Nous sommes ravis de vous présenter {product}, la nouvelle pièce qui fait déjà sensation.
+
+{product} allie {material} et {feature} pour un résultat exceptionnel. Conçu avec soin, il incarne l'élégance et la qualité que vous attendez de {brand}.
+
+🎁 OFFRE DE LANCEMENT : -{discount}% avec le code {code} valable 48h.
+
+[BOUTON: Découvrir {product}]
+
+À très vite,
+L'équipe {brand}
+"""
+    },
+    
+    "abandoned_cart": {
+        "subject": "Votre {product} vous attend — ne le laissez pas filer !",
+        "body": """
+Bonjour {first_name},
+
+Vous avez laissé {product} dans votre panier. Nous avons pensé que cela pourrait vous intéresser : il reste seulement {stock} unités en stock.
+
+✨ Pourquoi nos clients l'adorent :
+- {benefit_1}
+- {benefit_2}
+- {feature} exclusif
+
+🛒 Finalisez votre commande dès maintenant et profitez de la livraison offerte.
+
+[BOUTON: Finaliser ma commande]
+
+Offre valable jusqu'à épuisement des stocks.
+
+L'équipe {brand}
+"""
+    },
+    
+    "loyalty": {
+        "subject": "Merci de faire partie de l'aventure {brand} — une surprise pour vous",
+        "body": """
+Bonjour {first_name},
+
+Merci d'être un client fidèle de {brand}. Nous tenions à vous remercier pour votre confiance.
+
+Pour vous remercier, voici un code exclusif : {code} pour -{discount}% sur votre prochaine commande.
+
+✨ Découvrez nos nouveautés :
+- {new_product_1}
+- {new_product_2}
+- {new_product_3}
+
+[BOUTON: Découvrir la collection]
+
+À très bientôt,
+L'équipe {brand}
+"""
+    }
+}
+
+# MOD-06.5 — Client Reviews (10 réalistes)
+REVIEW_TEMPLATES = [
+    {
+        "name": "Sophie M.",
+        "rating": 5,
+        "title": "Un bijou magnifique !",
+        "content": "Je cherchais une montre élégante depuis longtemps. {product} est parfaite : le cadran est sublime, le bracelet en cuir très confortable. Livraison rapide et emballage soigné. Je recommande !",
+        "verified": True
+    },
+    {
+        "name": "Laurent D.",
+        "rating": 5,
+        "title": "Qualité exceptionnelle",
+        "content": "Très satisfait de mon achat. La qualité des matériaux est au rendez-vous, le rendu est encore plus beau qu'en photo. Service client réactif.",
+        "verified": True
+    },
+    {
+        "name": "Camille R.",
+        "rating": 4,
+        "title": "Très beau produit",
+        "content": "Reçu rapidement, bien emballé. La montre est magnifique, un peu plus grande que je ne pensais mais finalement j'adore le rendu.",
+        "verified": True
+    },
+    {
+        "name": "Thomas L.",
+        "rating": 5,
+        "title": "Cadeau parfait",
+        "content": "Offert à ma femme pour son anniversaire, elle est ravie. La montre est élégante et intemporelle. Merci !",
+        "verified": True
+    },
+    {
+        "name": "Julie C.",
+        "rating": 5,
+        "title": "Coup de cœur",
+        "content": "Je ne quitte plus ma {product}. Elle passe partout, du bureau au dîner. Un investissement que je ne regrette pas.",
+        "verified": True
+    },
+    {
+        "name": "Nicolas B.",
+        "rating": 4,
+        "title": "Très belle montre",
+        "content": "Belle finition, mouvement précis. Le bracelet est confortable. Seul bémol: les instructions étaient un peu succinctes.",
+        "verified": True
+    },
+    {
+        "name": "Élise P.",
+        "rating": 5,
+        "title": "Fidèle à la description",
+        "content": "Conforme aux photos, très belle qualité. Le service client a répondu rapidement à mes questions. Je recommande cette marque.",
+        "verified": True
+    },
+    {
+        "name": "Antoine G.",
+        "rating": 5,
+        "title": "Ravie de mon achat",
+        "content": "Superbe produit, emballage luxueux, livraison rapide. Je vais certainement commander à nouveau.",
+        "verified": True
+    },
+    {
+        "name": "Marion S.",
+        "rating": 4,
+        "title": "Très satisfaite",
+        "content": "J'hésitais à cause du prix mais je ne regrette pas. La qualité est au rendez-vous et le design est intemporel.",
+        "verified": True
+    },
+    {
+        "name": "David F.",
+        "rating": 5,
+        "title": "Une valeur sûre",
+        "content": "Deuxième commande chez {brand}, toujours aussi satisfait. {product} est devenue mon accessoire quotidien.",
+        "verified": True
+    }
+]
+
+def get_product_sheet_template(sector: str) -> dict:
+    """Retourne le template de fiche produit pour un secteur"""
+    return PRODUCT_SHEET_TEMPLATES.get(sector, PRODUCT_SHEET_TEMPLATES["bijou"])
+
+def get_caption(platform: str, variant: int, context: dict) -> str:
+    """Retourne une caption personnalisée"""
+    templates = CAPTION_TEMPLATES.get(platform, CAPTION_TEMPLATES["instagram_feed"])
+    template = templates[variant % len(templates)]
+    for key, value in context.items():
+        template = template.replace(f"{{{key}}}", str(value))
+    return template
+
+def get_hashtags(sector: str, brand: str, product: str) -> list:
+    """Retourne une liste de hashtags optimisés"""
+    hashtag_set = HASHTAG_SETS.get(sector, HASHTAG_SETS["bijou"])
+    all_hashtags = []
+    all_hashtags.extend(hashtag_set["general"])
+    all_hashtags.extend(hashtag_set["specific"])
+    all_hashtags.extend(hashtag_set["trending"])
+    all_hashtags.extend([h.replace("{brand}", brand).replace("{product}", product) for h in hashtag_set["brand"]])
+    return all_hashtags[:20]  # Limite à 20 hashtags
+
+def get_email_sequence(email_type: str, context: dict) -> dict:
+    """Retourne une séquence email personnalisée"""
+    template = EMAIL_SEQUENCES.get(email_type, EMAIL_SEQUENCES["launch"])
+    subject = template["subject"]
+    body = template["body"]
+    for key, value in context.items():
+        subject = subject.replace(f"{{{key}}}", str(value))
+        body = body.replace(f"{{{key}}}", str(value))
+    return {"subject": subject, "body": body}
+
+def get_reviews(product_name: str, brand: str) -> list:
+    """Retourne 10 reviews clients réalistes"""
+    reviews = []
+    for template in REVIEW_TEMPLATES:
+        review = template.copy()
+        review["content"] = review["content"].replace("{product}", product_name).replace("{brand}", brand)
+        reviews.append(review)
+    return reviews
+```
+
+## 3. FICHIER modules/module_06_copy_content/orchestrator.py
+
+```python
+from typing import Dict, Any, List
+from modules.base_module import BaseModule
+from modules.module_06_copy_content.prompts import (
+    get_product_sheet_template,
+    get_caption,
+    get_hashtags,
+    get_email_sequence,
+    get_reviews
+)
+
+class CopyContentOrchestrator(BaseModule):
+    """
+    MODULE 06 — COPY & CONTENT
+    Génère tous les prompts pour créer le contenu textuel d'une marque
+    """
+    
+    def __init__(self):
+        super().__init__("CopyContent")
+    
+    def generate(self, brief: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Génère tous les prompts du Module 06
+        
+        Input brief attendu:
+        {
+            "brand_name": "LUXEOR",
+            "sector": "bijou",
+            "product_name": "Montre Élégance Or Rose",
+            "product_description": "...",
+            "product_features": ["or rose 18 carats", "verre saphir", "mouvement suisse"],
+            "benefits": ["élégance intemporelle", "précision suisse"],
+            "target_audience": "femmes_35_50",
+            "discount": 20,
+            "promo_code": "LUXEOR20",
+            "free_shipping": 100,
+            "delivery_days": 3,
+            "return_days": 30,
+            "warranty": 2,
+            "stock": 50,
+            "first_name": "Client"  # pour emails
+        }
+        """
+        
+        # Extraire les données
+        brand_name = brief.get("brand_name", "Ma Marque")
+        sector = brief.get("sector", "general")
+        product_name = brief.get("product_name", "notre produit")
+        product_description = brief.get("product_description", "")
+        product_features = brief.get("product_features", [])
+        benefits = brief.get("benefits", ["qualité", "performance"])
+        target_audience = brief.get("target_audience", "mixte")
+        discount = brief.get("discount", 20)
+        promo_code = brief.get("promo_code", brand_name.upper()[:4])
+        free_shipping = brief.get("free_shipping", 100)
+        delivery_days = brief.get("delivery_days", 3)
+        return_days = brief.get("return_days", 30)
+        warranty = brief.get("warranty", 2)
+        stock = brief.get("stock", 50)
+        first_name = brief.get("first_name", "Client")
+        
+        # Contexte pour personnalisation
+        context = {
+            "product": product_name,
+            "brand": brand_name,
+            "sector": sector,
+            "benefit": benefits[0] if benefits else "qualité",
+            "benefit_1": benefits[0] if benefits else "qualité",
+            "benefit_2": benefits[1] if len(benefits) > 1 else "performance",
+            "material": product_features[0] if product_features else "matériaux d'exception",
+            "feature": product_features[1] if len(product_features) > 1 else "finitions soignées",
+            "movement": product_features[2] if len(product_features) > 2 else "précision",
+            "discount": discount,
+            "code": promo_code,
+            "free_shipping": free_shipping,
+            "delivery_days": delivery_days,
+            "return_days": return_days,
+            "warranty": warranty,
+            "stock": stock,
+            "first_name": first_name,
+            "dimensions": brief.get("dimensions", "35mm"),
+            "battery_life": brief.get("battery_life", "24h"),
+            "compatibility": brief.get("compatibility", "tous appareils"),
+            "charging_time": brief.get("charging_time", "2h"),
+            "weight": brief.get("weight", "0.5"),
+            "colors": brief.get("product_colors", ["unique"])[0],
+            "fit": brief.get("fit", "regular"),
+            "origin": brief.get("origin", "France"),
+            "care": brief.get("care", "lavage à la main"),
+            "temperature": brief.get("temperature", "30"),
+            "certification": brief.get("certification", "OEKO-TEX"),
+            "ingredient": brief.get("ingredient", "acide hyaluronique"),
+            "result": brief.get("result", "radieuse"),
+            "duration": brief.get("duration_days", "7"),
+            "first_results_days": brief.get("first_results_days", "7"),
+            "optimal_days": brief.get("optimal_days", "28"),
+            "min_age": brief.get("min_age", "25"),
+            "program_duration": brief.get("program_duration", "30"),
+            "result_weeks": brief.get("result_weeks", "4"),
+            "app_name": brief.get("app_name", brand_name),
+            "accessories": brief.get("accessories", "un guide d'utilisation"),
+            "styling": brief.get("styling", "un jean et un blazer")
+        }
+        
+        self._log(f"Génération des prompts copy pour {brand_name} ({sector})")
+        
+        # 1. Fiche Produit Complète
+        template = get_product_sheet_template(sector)
+        
+        # Titres (4 variantes)
+        titles = []
+        for title_template in template["title_formats"]:
+            title = title_template
+            for key, value in context.items():
+                title = title.replace(f"{{{key}}}", str(value))
+            titles.append(title)
+        
+        # Description (structure + personnalisation)
+        description_parts = []
+        for section in template["description_structure"]:
+            personalized = section
+            for key, value in context.items():
+                personalized = personalized.replace(f"{{{key}}}", str(value))
+            description_parts.append(personalized)
+        full_description = " ".join(description_parts)
+        
+        # Bullet Points
+        bullet_points = []
+        for bp in template["bullet_points"]:
+            personalized = bp
+            for key, value in context.items():
+                personalized = personalized.replace(f"{{{key}}}", str(value))
+            bullet_points.append(personalized)
+        
+        # FAQ
+        faq = []
+        for qa in template["faq"]:
+            question = qa["question"]
+            answer = qa["answer"]
+            for key, value in context.items():
+                question = question.replace(f"{{{key}}}", str(value))
+                answer = answer.replace(f"{{{key}}}", str(value))
+            faq.append({"question": question, "answer": answer})
+        
+        product_sheet = {
+            "titles": titles,
+            "description": full_description,
+            "bullet_points": bullet_points,
+            "faq": faq
+        }
+        
+        # 2. Captions par plateforme (5 variantes chacune)
+        captions = {}
+        platforms = ["instagram_feed", "instagram_story", "tiktok", "pinterest", "facebook"]
+        
+        for platform in platforms:
+            platform_captions = []
+            for i in range(5):
+                caption = get_caption(platform, i, context)
+                platform_captions.append(caption)
+            captions[platform] = platform_captions
+        
+        # 3. Hashtags optimisés
+        hashtags = {
+            "all": get_hashtags(sector, brand_name, product_name),
+            "by_platform": {
+                "instagram": get_hashtags(sector, brand_name, product_name)[:15],
+                "tiktok": get_hashtags(sector, brand_name, product_name)[:8],
+                "pinterest": get_hashtags(sector, brand_name, product_name)[:20]
+            }
+        }
+        
+        # 4. Séquence emails (3 emails)
+        emails = {
+            "launch": get_email_sequence("launch", context),
+            "abandoned_cart": get_email_sequence("abandoned_cart", context),
+            "loyalty": get_email_sequence("loyalty", {
+                **context,
+                "new_product_1": f"{brand_name} Collection Automne",
+                "new_product_2": f"{product_name} Édition Limitée",
+                "new_product_3": "Accessoires Coordonnés"
+            })
+        }
+        
+        # 5. Reviews clients (10 réalistes)
+        reviews = get_reviews(product_name, brand_name)
+        
+        # Retourner tous les prompts
+        return {
+            "copy_content": {
+                "product_sheet": {
+                    "agent": "Manual (copywriting)",
+                    "content": product_sheet,
+                    "parameters": {
+                        "titles_variants": 4,
+                        "description_length": "complet",
+                        "bullet_points": len(bullet_points),
+                        "faq_count": len(faq)
+                    }
+                },
+                "captions": {
+                    "agent": "Manual (copywriting)",
+                    "content": captions,
+                    "parameters": {
+                        "platforms": platforms,
+                        "variants_per_platform": 5,
+                        "platform_specific": True
+                    }
+                },
+                "hashtags": {
+                    "agent": "Manual (copywriting)",
+                    "content": hashtags,
+                    "parameters": {
+                        "total_hashtags": len(hashtags["all"]),
+                        "optimized_for": ["instagram", "tiktok", "pinterest"]
+                    }
+                },
+                "email_sequence": {
+                    "agent": "Manual (copywriting)",
+                    "content": emails,
+                    "parameters": {
+                        "emails_count": 3,
+                        "types": ["launch", "abandoned_cart", "loyalty"]
+                    }
+                },
+                "client_reviews": {
+                    "agent": "Manual (copywriting)",
+                    "content": reviews,
+                    "parameters": {
+                        "reviews_count": 10,
+                        "verified_count": 10,
+                        "average_rating": 4.8
+                    }
+                }
+            },
+            "metadata": {
+                "module": "06_copy_content",
+                "brand_name": brand_name,
+                "sector": sector,
+                "product_name": product_name,
+                "titles_generated": len(titles),
+                "captions_generated": sum(len(v) for v in captions.values()),
+                "hashtags_generated": len(hashtags["all"]),
+                "emails_generated": 3,
+                "reviews_generated": len(reviews),
+                "llm_enhanced": bool(self._enhance_prompt("test", {}) != "test")
+            }
+        }
+```
+
+## 4. MISE À JOUR DU FICHIER main.py
+
+Ajoute l'import et l'intégration du Module 06 dans le main.py:
+
+```python
+# Ajouter cet import en haut du fichier
+from modules.module_06_copy_content import CopyContentOrchestrator
+
+# Dans la fonction main(), après la génération du Module 05, ajouter:
+
+# Génération des prompts Module 06
+print("\n" + "=" * 80)
+print("MODULE 06 — COPY & CONTENT")
+print("=" * 80)
+
+copy_brief = {
+    "brand_name": brief.get("brand_name"),
+    "sector": brief.get("sector"),
+    "product_name": brief.get("product_name", brief.get("brand_name")),
+    "product_description": brief.get("product_description", ""),
+    "product_features": brief.get("product_features", []),
+    "product_colors": brief.get("product_colors", []),
+    "benefits": brief.get("benefits", []),
+    "target_audience": brief.get("target_audience", "mixte"),
+    "discount": brief.get("discount", 20),
+    "promo_code": brief.get("promo_code", brief.get("brand_name", "BRAND")[:4].upper()),
+    "free_shipping": brief.get("free_shipping", 100),
+    "delivery_days": brief.get("delivery_days", 3),
+    "return_days": brief.get("return_days", 30),
+    "warranty": brief.get("warranty", 2),
+    "stock": brief.get("stock", 50),
+    "duration_days": brief.get("duration_days", 7),
+    "first_name": "Client",
+    "dimensions": brief.get("dimensions", "35mm"),
+    "weight": brief.get("weight", "0.5"),
+    "origin": brief.get("origin", "France"),
+    "certification": brief.get("certification", "")
+}
+
+copy_orchestrator = CopyContentOrchestrator()
+copy_result = copy_orchestrator.generate(copy_brief)
+
+# Fusionner les résultats
+result["modules"]["copy_content"] = copy_result["copy_content"]
+```
+
+## 5. MISE À JOUR DU BRIEF D'EXEMPLE
+
+Modifie le brief par défaut dans main.py pour inclure les champs du Module 06:
+
+```python
+brief = {
+    "brand_name": "LUXEOR",
+    "sector": "bijou",
+    "tone": "luxe",
+    "values": ["excellence", "prestige", "authenticité", "élégance"],
+    "style_pref": None,
+    "product_type": "bijou",
+    "product_name": "Montre Élégance Or Rose",
+    "product_description": "Montre automatique en or rose avec bracelet cuir, mouvement suisse, verre saphir.",
+    "product_colors": ["or rose", "noir"],
+    "product_materials": ["acier inoxydable", "verre saphir", "cuir"],
+    "product_features": ["or rose 18 carats", "verre saphir", "mouvement automatique suisse", "bracelet cuir"],
+    "benefits": ["élégance intemporelle", "précision suisse", "héritage familial"],
+    "target_audience": "femmes_35_50",
+    "year": "1923",
+    "promo_code": "LUXEOR20",
+    "duration_days": "7",
+    "discount": 20,
+    "free_shipping": 100,
+    "stock": 50,
+    "delivery_days": 3,
+    "return_days": 30,
+    "warranty": 2,
+    "dimensions": "35mm de diamètre",
+    "origin": "Suisse",
+    "has_ugc_audio": False,
+    "needs_vocal_separation": False
+}
+```
+
+## 6. VÉRIFICATION
+
+Une fois installé, teste avec:
+
+```bash
+python main.py
+```
+
+Le fichier output/prompts_roboneo.txt doit maintenant contenir les prompts pour:
+- Module 01: Brand Identity
+- Module 02: Visual Content
+- Module 03: Video Content
+- Module 04: Ad Creatives
+- Module 05: Brand Sound
+- Module 06: Copy & Content (fiche produit, captions, hashtags, emails, reviews)
+```
+
+---
+
+**Copie et colle ce prompt dans Replit AI.** Une fois installé, tu auras les Modules 01 à 06 fonctionnels.
+
+Il nous reste **4 modules** : 07 (Launch Ready), 08 (Chatbot Script), 09 (Upsell Kit), 10 (Performance Tracker).
+
+Dis-moi quand c'est fait, et on continue ! 🚀

@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Copy, Download, ChevronRight, Check, Brain,
+  Copy, Download, Check, Brain,
   FileText, MessageSquare, Hash, Mail, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -198,26 +195,6 @@ function SubPromptTabs({
 
 // ─── Formulaire ───────────────────────────────────────────────────────────────
 
-const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
-const TONES = ["luxe", "professionnel", "dynamique", "naturel", "fun", "sérieux", "chaleureux", "élégant"];
-const TARGET_AUDIENCES = ["femmes_18_25", "femmes_25_45", "femmes_35_50", "hommes_25_40", "mixte"];
-
-const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  product_name: z.string().min(2, "Nom de produit requis"),
-  sector: z.string().min(1),
-  tone: z.string().min(1),
-  product_description: z.string().default(""),
-  product_features: z.string().default(""),
-  benefits: z.string().default(""),
-  values: z.string().default(""),
-  target_audience: z.string().min(1),
-  discount: z.coerce.number().min(1).max(99).default(20),
-  promo_code: z.string().default(""),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 // ─── Composant principal ──────────────────────────────────────────────────────
 
 export default function Module06() {
@@ -225,42 +202,16 @@ export default function Module06() {
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
-  const { brief, updateBrief } = useBrand();
+  const { brief } = useBrand();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
-      product_description: brief.product_description || "", product_features: brief.product_features || "", benefits: brief.benefits || "", values: brief.values || "",
-      target_audience: brief.target_audience || "femmes_25_45", discount: Number(brief.discount) || 20, promo_code: brief.promo_code || "",
-    },
-  });
-
-  React.useEffect(() => {
-    if (brief.brand_name || brief.product_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        product_name: brief.product_name || "",
-        sector: brief.sector || "bijou",
-        tone: brief.tone || "luxe",
-        product_description: brief.product_description || "",
-        product_features: brief.product_features || "",
-        benefits: brief.benefits || "",
-        values: brief.values || "",
-        target_audience: brief.target_audience || "femmes_25_45",
-        discount: Number(brief.discount) || 20,
-        promo_code: brief.promo_code || "",
-      });
+  const onSubmit = async () => {
+    if (!brief.brand_name || !brief.product_name) {
+      toast({ title: "Brief incomplet", description: "Remplissez au minimum le nom de marque et le produit dans le Brief Global.", variant: "destructive" });
+      return;
     }
-  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_description, brief.product_features, brief.benefits, brief.values, brief.target_audience, brief.discount, brief.promo_code]);
-
-  const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_description: data.product_description, product_features: data.product_features, benefits: data.benefits, values: data.values, target_audience: data.target_audience, discount: String(data.discount), promo_code: data.promo_code });
     setIsGenerating(true);
-    setFormData(data);
     setShowResults(true);
     setStreamState({ sections: {}, activeSection: null });
     setSections([]);
@@ -272,17 +223,17 @@ export default function Module06() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          brand_name: data.brand_name,
-          product_name: data.product_name,
-          sector: data.sector,
-          tone: data.tone,
-          product_description: data.product_description,
-          product_features: toList(data.product_features),
-          benefits: toList(data.benefits),
-          values: toList(data.values),
-          target_audience: data.target_audience,
-          discount: data.discount,
-          promo_code: data.promo_code || undefined,
+          brand_name: brief.brand_name,
+          product_name: brief.product_name,
+          sector: brief.sector,
+          tone: brief.tone,
+          product_description: brief.product_description,
+          product_features: toList(brief.product_features),
+          benefits: toList(brief.benefits),
+          values: toList(brief.values),
+          target_audience: brief.target_audience,
+          discount: Number(brief.discount) || 20,
+          promo_code: brief.promo_code || undefined,
         }),
       });
 
@@ -364,8 +315,8 @@ export default function Module06() {
   const allDone = sections.length === SECTION_ORDER.length;
 
   const handleDownloadTXT = () => {
-    if (!sections.length || !formData) return;
-    let txt = `================================================================================\nPROMPTS MODULE 06 — COPY & CONTENT — NEO BRANDING STUDIO\nMarque: ${formData.brand_name} | Produit: ${formData.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
+    if (!sections.length) return;
+    let txt = `================================================================================\nPROMPTS MODULE 06 — COPY & CONTENT — NEO BRANDING STUDIO\nMarque: ${brief.brand_name} | Produit: ${brief.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
     for (const sec of sections) {
       txt += `\n--- ${sec.label.toUpperCase()} ---\nAgent: ${sec.agent}\n\n`;
       for (const [k, v] of Object.entries(sec.data)) {
@@ -375,128 +326,39 @@ export default function Module06() {
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-    a.download = `prompts_m06_${formData.brand_name.toLowerCase()}.txt`;
+    a.download = `prompts_m06_${brief.brand_name.toLowerCase()}.txt`;
     a.click();
   };
 
   const handleDownloadJSON = () => {
-    if (!sections.length || !formData) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: formData.brand_name, product_name: formData.product_name, sections };
+    if (!sections.length) return;
+    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, product_name: brief.product_name, sections };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
-    a.download = `prompts_m06_${formData.brand_name.toLowerCase()}.json`;
+    a.download = `prompts_m06_${brief.brand_name.toLowerCase()}.json`;
     a.click();
   };
-
-  const selectClass = "flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors";
 
   return (
     <AnimatePresence mode="wait">
       {!showResults ? (
         <motion.div key="form" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} className="max-w-2xl">
-          <Card className="border-white/10">
+          <BriefSummaryBanner />
+          <Card className="border-white/10 mt-4">
             <CardHeader>
-              <CardTitle className="text-2xl text-foreground">Brief — Copy & Content</CardTitle>
+              <CardTitle className="text-2xl text-foreground">Copy & Content</CardTitle>
               <CardDescription>
-                Définissez votre marque et votre produit pour générer : fiche produit complète, captions multi-plateformes, hashtags optimisés, séquence de 3 emails et 10 reviews clients réalistes.
+                Génère une fiche produit complète, captions multi-plateformes, hashtags optimisés, séquence de 3 emails et 10 reviews clients réalistes à partir de votre Brief Global.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-                {/* Marque + Produit */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                    {form.formState.errors.brand_name && <p className="text-destructive text-xs">{form.formState.errors.brand_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom du produit <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: Montre Élégance Or Rose" {...form.register("product_name")} className="bg-black/20" />
-                    {form.formState.errors.product_name && <p className="text-destructive text-xs">{form.formState.errors.product_name.message}</p>}
-                  </div>
-                </div>
-
-                {/* Secteur + Ton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Secteur <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("sector")} className={selectClass}>
-                        {SECTORS.map((s) => <option key={s} value={s} className="bg-card">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Ton de communication</label>
-                    <div className="relative">
-                      <select {...form.register("tone")} className={selectClass}>
-                        {TONES.map((t) => <option key={t} value={t} className="bg-card">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description produit */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Description du produit</label>
-                  <Input placeholder="ex: Montre automatique en or rose avec bracelet cuir, verre saphir..." {...form.register("product_description")} className="bg-black/20" />
-                </div>
-
-                {/* Caractéristiques + Bénéfices */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Caractéristiques produit</label>
-                    <Input placeholder="ex: or rose 18 carats, verre saphir, mouvement suisse" {...form.register("product_features")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparées par virgules</p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Bénéfices clés</label>
-                    <Input placeholder="ex: élégance intemporelle, précision suisse, héritage" {...form.register("benefits")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparés par virgules</p>
-                  </div>
-                </div>
-
-                {/* Valeurs + Audience */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Valeurs de marque</label>
-                    <Input placeholder="ex: excellence, prestige, authenticité" {...form.register("values")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Audience cible</label>
-                    <div className="relative">
-                      <select {...form.register("target_audience")} className={selectClass}>
-                        {TARGET_AUDIENCES.map((a) => <option key={a} value={a} className="bg-card">{a.replace(/_/g, " ")}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Remise + Code promo */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Remise promo (%)</label>
-                    <Input type="number" min={1} max={99} placeholder="20" {...form.register("discount")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Code promo (optionnel)</label>
-                    <Input placeholder="ex: LUXEOR20 — généré auto si vide" {...form.register("promo_code")} className="bg-black/20" />
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={isGenerating} className="w-full h-12 text-base font-semibold">
-                  {isGenerating ? (
-                    <><Brain className="w-5 h-5 mr-2 animate-pulse" /> Génération en cours...</>
-                  ) : (
-                    <><FileText className="w-5 h-5 mr-2" /> Générer le Copy & Content</>
-                  )}
-                </Button>
-              </form>
+              <Button onClick={onSubmit} disabled={isGenerating} className="w-full h-12 text-base font-semibold">
+                {isGenerating ? (
+                  <><Brain className="w-5 h-5 mr-2 animate-pulse" /> Génération en cours...</>
+                ) : (
+                  <><FileText className="w-5 h-5 mr-2" /> Générer le Copy & Content</>
+                )}
+              </Button>
             </CardContent>
           </Card>
         </motion.div>
@@ -505,8 +367,8 @@ export default function Module06() {
           {/* Header résultats */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 className="text-xl font-bold text-foreground">{formData?.brand_name} — {formData?.product_name}</h2>
-              <p className="text-sm text-muted-foreground">{formData?.sector} · Ton {formData?.tone} · -{formData?.discount}%</p>
+              <h2 className="text-xl font-bold text-foreground">{brief.brand_name} — {brief.product_name}</h2>
+              <p className="text-sm text-muted-foreground">{brief.sector} · Ton {brief.tone} · -{brief.discount}%</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => { setShowResults(false); setSections([]); setStreamState({ sections: {}, activeSection: null }); }}>

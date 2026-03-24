@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Download, ChevronRight, Check, ShoppingCart,
   Package, Tag, Mail, ChevronDown, ChevronUp, Gift, Percent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -609,55 +606,21 @@ function EmailSequencesView({ data, streamBuffer, streaming, isActive }: {
 
 // ─── Formulaire ───────────────────────────────────────────────────────────────
 
-const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
-const TONES = ["luxe", "professionnel", "dynamique", "naturel", "fun", "sérieux", "chaleureux", "élégant"];
-
-const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  product_name: z.string().min(2, "Nom de produit requis"),
-  sector: z.string().min(1),
-  tone: z.string().min(1),
-  product_price: z.coerce.number().min(1).default(299),
-  product_features: z.string().default(""),
-  values: z.string().default(""),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 // ─── Composant principal ──────────────────────────────────────────────────────
 
 export default function Module09() {
   const { toast } = useToast();
-  const { brief, updateBrief } = useBrand();
+  const { brief } = useBrand();
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "professionnel",
-      product_price: Number(brief.product_price) || Number(brief.price) || 299, product_features: brief.product_features || "", values: brief.values || "",
-    },
-  });
-
-  React.useEffect(() => {
-    if (brief.brand_name || brief.product_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        product_name: brief.product_name || "",
-        sector: brief.sector || "bijou",
-        tone: brief.tone || "professionnel",
-        product_price: Number(brief.product_price) || Number(brief.price) || 299,
-        product_features: brief.product_features || "",
-        values: brief.values || "",
-      });
+  const onSubmit = async () => {
+    if (!brief.brand_name || !brief.product_name) {
+      toast({ title: "Brief incomplet", description: "Remplissez au minimum le nom de marque et le produit dans le Brief Global.", variant: "destructive" });
+      return;
     }
-  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_price, brief.product_features, brief.values]);
-
-  const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_price: String(data.product_price), product_features: data.product_features, values: data.values });
     setIsGenerating(true);
     setShowResults(true);
     setStreamState({ sections: {}, activeSection: null });
@@ -668,16 +631,16 @@ export default function Module09() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          brand_name: data.brand_name,
-          product_name: data.product_name,
-          sector: data.sector,
-          tone: data.tone,
-          product_price: data.product_price,
-          product_features: data.product_features
-            ? data.product_features.split(",").map(s => s.trim()).filter(Boolean)
+          brand_name: brief.brand_name,
+          product_name: brief.product_name,
+          sector: brief.sector,
+          tone: brief.tone,
+          product_price: Number(brief.product_price) || Number(brief.price) || 299,
+          product_features: brief.product_features
+            ? brief.product_features.split(",").map(s => s.trim()).filter(Boolean)
             : [],
-          values: data.values
-            ? data.values.split(",").map(s => s.trim()).filter(Boolean)
+          values: brief.values
+            ? brief.values.split(",").map(s => s.trim()).filter(Boolean)
             : [],
         }),
       });
@@ -777,125 +740,32 @@ export default function Module09() {
 
   return (
     <div className="space-y-6">
-      {/* Form card */}
+      {/* Brief recap + action */}
+      <BriefSummaryBanner />
       <Card className="bg-card/40 border-green-500/10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base text-green-400">Brief — Upsell & Cross-sell Kit</CardTitle>
-          <CardDescription>Définissez votre produit pour générer vos stratégies de maximisation du panier.</CardDescription>
+          <CardTitle className="text-base text-green-400">Upsell & Cross-sell Kit</CardTitle>
+          <CardDescription>Génère vos stratégies de maximisation du panier à partir du Brief Global.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Brand name */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Nom de la marque <span className="text-red-400">*</span>
-                </label>
-                <Input
-                  {...form.register("brand_name")}
-                  placeholder="ex: LUXEOR"
-                  className="bg-background/50 border-white/10 focus:border-green-500/40 h-9 text-sm"
-                />
-                {form.formState.errors.brand_name && (
-                  <p className="text-xs text-red-400">{form.formState.errors.brand_name.message}</p>
-                )}
-              </div>
-
-              {/* Product name */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Produit principal <span className="text-red-400">*</span>
-                </label>
-                <Input
-                  {...form.register("product_name")}
-                  placeholder="ex: Montre Élégance Or Rose"
-                  className="bg-background/50 border-white/10 focus:border-green-500/40 h-9 text-sm"
-                />
-                {form.formState.errors.product_name && (
-                  <p className="text-xs text-red-400">{form.formState.errors.product_name.message}</p>
-                )}
-              </div>
-
-              {/* Sector */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Secteur</label>
-                <select
-                  {...form.register("sector")}
-                  className="w-full h-9 px-3 rounded-md bg-background/50 border border-white/10 focus:border-green-500/40 text-sm text-foreground outline-none"
-                >
-                  {SECTORS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                </select>
-              </div>
-
-              {/* Tone */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Ton</label>
-                <select
-                  {...form.register("tone")}
-                  className="w-full h-9 px-3 rounded-md bg-background/50 border border-white/10 focus:border-green-500/40 text-sm text-foreground outline-none"
-                >
-                  {TONES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
-                </select>
-              </div>
-
-              {/* Price */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Prix du produit (€)
-                </label>
-                <Input
-                  {...form.register("product_price")}
-                  type="number"
-                  min={1}
-                  placeholder="299"
-                  className="bg-background/50 border-white/10 focus:border-green-500/40 h-9 text-sm"
-                />
-              </div>
-
-              {/* Features */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Caractéristiques (séparées par des virgules)
-                </label>
-                <Input
-                  {...form.register("product_features")}
-                  placeholder="ex: or rose, verre saphir, mouvement suisse"
-                  className="bg-background/50 border-white/10 focus:border-green-500/40 h-9 text-sm"
-                />
-              </div>
-
-              {/* Values */}
-              <div className="sm:col-span-2 space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Valeurs de marque (séparées par des virgules)
-                </label>
-                <Input
-                  {...form.register("values")}
-                  placeholder="ex: élégance, exclusivité, durabilité"
-                  className="bg-background/50 border-white/10 focus:border-green-500/40 h-9 text-sm"
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isGenerating}
-              className="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white font-semibold"
-            >
-              {isGenerating ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  Génération en cours...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4" />
-                  Générer l'Upsell Kit
-                  <ChevronRight className="w-4 h-4" />
-                </span>
-              )}
-            </Button>
-          </form>
+          <Button
+            onClick={onSubmit}
+            disabled={isGenerating}
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white font-semibold"
+          >
+            {isGenerating ? (
+              <span className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                Génération en cours...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <ShoppingCart className="w-4 h-4" />
+                Générer l'Upsell Kit
+                <ChevronRight className="w-4 h-4" />
+              </span>
+            )}
+          </Button>
         </CardContent>
       </Card>
 

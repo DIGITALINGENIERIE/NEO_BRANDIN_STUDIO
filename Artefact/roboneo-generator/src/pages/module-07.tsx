@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Copy, Download, ChevronRight, Check, Brain,
+  Copy, Download, Check, Brain,
   Rocket, Globe, BookOpen, CalendarDays, ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -371,30 +368,6 @@ function CalendarView({ data, streamBuffer, streaming, isActive }: {
 
 // ─── Formulaire ───────────────────────────────────────────────────────────────
 
-const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
-const TONES = ["luxe", "professionnel", "dynamique", "naturel", "fun", "sérieux", "chaleureux", "élégant"];
-
-const formSchema = z.object({
-  brand_name: z.string().min(2, "Nom de marque requis"),
-  product_name: z.string().min(2, "Nom de produit requis"),
-  sector: z.string().min(1),
-  tone: z.string().min(1),
-  product_description: z.string().default(""),
-  features: z.string().default(""),
-  benefits: z.string().default(""),
-  price: z.coerce.number().min(1).default(299),
-  old_price: z.coerce.number().min(1).default(399),
-  discount: z.coerce.number().min(1).max(99).default(20),
-  promo_code: z.string().default(""),
-  checkout_url: z.string().default(""),
-  shipping_info: z.string().default("Livraison offerte dès 100€"),
-  primary_color: z.string().default("#D4AF37"),
-  heading_font: z.string().default("Playfair Display"),
-  body_font: z.string().default("Montserrat"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 // ─── Composant principal ──────────────────────────────────────────────────────
 
 export default function Module07() {
@@ -402,49 +375,16 @@ export default function Module07() {
   const [sections, setSections] = useState<SectionResult[]>([]);
   const [streamState, setStreamState] = useState<StreamState>({ sections: {}, activeSection: null });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [formData, setFormData] = useState<FormValues | null>(null);
   const [showResults, setShowResults] = useState(false);
 
-  const { brief, updateBrief } = useBrand();
+  const { brief } = useBrand();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name: brief.brand_name || "", product_name: brief.product_name || "", sector: brief.sector || "bijou", tone: brief.tone || "luxe",
-      product_description: brief.product_description || "", features: brief.product_features || "", benefits: brief.benefits || "",
-      price: Number(brief.price) || 299, old_price: Number(brief.old_price) || 399, discount: Number(brief.discount) || 20, promo_code: brief.promo_code || "",
-      checkout_url: brief.checkout_url || "", shipping_info: brief.shipping_info || "Livraison offerte dès 100€",
-      primary_color: brief.primary_color || "#D4AF37", heading_font: brief.heading_font || "Playfair Display", body_font: brief.body_font || "Montserrat",
-    },
-  });
-
-  React.useEffect(() => {
-    if (brief.brand_name || brief.product_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        product_name: brief.product_name || "",
-        sector: brief.sector || "bijou",
-        tone: brief.tone || "luxe",
-        product_description: brief.product_description || "",
-        features: brief.product_features || "",
-        benefits: brief.benefits || "",
-        price: Number(brief.price) || 299,
-        old_price: Number(brief.old_price) || 399,
-        discount: Number(brief.discount) || 20,
-        promo_code: brief.promo_code || "",
-        checkout_url: brief.checkout_url || "",
-        shipping_info: brief.shipping_info || "Livraison offerte dès 100€",
-        primary_color: brief.primary_color || "#D4AF37",
-        heading_font: brief.heading_font || "Playfair Display",
-        body_font: brief.body_font || "Montserrat",
-      });
+  const onSubmit = async () => {
+    if (!brief.brand_name || !brief.product_name) {
+      toast({ title: "Brief incomplet", description: "Remplissez au minimum le nom de marque et le produit dans le Brief Global.", variant: "destructive" });
+      return;
     }
-  }, [brief.brand_name, brief.product_name, brief.sector, brief.tone, brief.product_description, brief.product_features, brief.benefits, brief.price, brief.discount, brief.promo_code, brief.checkout_url, brief.shipping_info, brief.primary_color, brief.heading_font, brief.body_font]);
-
-  const onSubmit = async (data: FormValues) => {
-    updateBrief({ brand_name: data.brand_name, product_name: data.product_name, sector: data.sector, tone: data.tone, product_description: data.product_description, product_features: data.features, benefits: data.benefits, price: String(data.price), old_price: String(data.old_price), discount: String(data.discount), promo_code: data.promo_code, checkout_url: data.checkout_url, shipping_info: data.shipping_info, primary_color: data.primary_color, heading_font: data.heading_font, body_font: data.body_font });
     setIsGenerating(true);
-    setFormData(data);
     setShowResults(true);
     setStreamState({ sections: {}, activeSection: null });
     setSections([]);
@@ -456,22 +396,22 @@ export default function Module07() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          brand_name: data.brand_name,
-          product_name: data.product_name,
-          sector: data.sector,
-          tone: data.tone,
-          product_description: data.product_description,
-          features: toList(data.features),
-          benefits: toList(data.benefits),
-          price: data.price,
-          old_price: data.old_price,
-          discount: data.discount,
-          promo_code: data.promo_code || undefined,
-          checkout_url: data.checkout_url || undefined,
-          shipping_info: data.shipping_info,
-          primary_color: data.primary_color,
-          heading_font: data.heading_font,
-          body_font: data.body_font,
+          brand_name: brief.brand_name,
+          product_name: brief.product_name,
+          sector: brief.sector,
+          tone: brief.tone,
+          product_description: brief.product_description,
+          features: toList(brief.product_features),
+          benefits: toList(brief.benefits),
+          price: Number(brief.price) || 299,
+          old_price: Number(brief.old_price) || 399,
+          discount: Number(brief.discount) || 20,
+          promo_code: brief.promo_code || undefined,
+          checkout_url: brief.checkout_url || undefined,
+          shipping_info: brief.shipping_info,
+          primary_color: brief.primary_color,
+          heading_font: brief.heading_font,
+          body_font: brief.body_font,
         }),
       });
 
@@ -553,163 +493,47 @@ export default function Module07() {
   const allDone = sections.length === SECTION_ORDER.length;
 
   const handleDownloadAll = () => {
-    if (!sections.length || !formData) return;
-    let txt = `================================================================================\nPACK MODULE 07 — LAUNCH READY — NEO BRANDING STUDIO\nMarque: ${formData.brand_name} | Produit: ${formData.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
+    if (!sections.length) return;
+    let txt = `================================================================================\nPACK MODULE 07 — LAUNCH READY — NEO BRANDING STUDIO\nMarque: ${brief.brand_name} | Produit: ${brief.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
     for (const sec of sections) {
       txt += `\n${"=".repeat(60)}\n${sec.label.toUpperCase()}\nAgent: ${sec.agent}\n${"=".repeat(60)}\n\n`;
       txt += sec.rawContent + "\n";
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-    a.download = `launch_pack_${formData.brand_name.toLowerCase()}.txt`;
+    a.download = `launch_pack_${brief.brand_name.toLowerCase()}.txt`;
     a.click();
   };
 
   const handleDownloadJSON = () => {
-    if (!sections.length || !formData) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: formData.brand_name, product_name: formData.product_name, sections };
+    if (!sections.length) return;
+    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, product_name: brief.product_name, sections };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
-    a.download = `launch_pack_${formData.brand_name.toLowerCase()}.json`;
+    a.download = `launch_pack_${brief.brand_name.toLowerCase()}.json`;
     a.click();
   };
-
-  const selectClass = "flex h-11 w-full appearance-none rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors";
 
   return (
     <AnimatePresence mode="wait">
       {!showResults ? (
         <motion.div key="form" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} className="max-w-2xl">
-          <Card className="border-white/10">
+          <BriefSummaryBanner />
+          <Card className="border-white/10 mt-4">
             <CardHeader>
-              <CardTitle className="text-2xl text-foreground">Brief — Launch Ready</CardTitle>
+              <CardTitle className="text-2xl text-foreground">Launch Ready</CardTitle>
               <CardDescription>
-                Définissez votre marque et votre produit pour générer : une landing page HTML complète prête à déployer, un guide d'utilisation avec calendrier 30 jours, et un plan de publication jour par jour.
+                Génère une landing page HTML complète prête à déployer, un guide avec calendrier 30 jours, et un plan de publication à partir de votre Brief Global.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-                {/* Marque + Produit */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom de la marque <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: LUXEOR" {...form.register("brand_name")} className="bg-black/20" />
-                    {form.formState.errors.brand_name && <p className="text-destructive text-xs">{form.formState.errors.brand_name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Nom du produit <span className="text-primary">*</span></label>
-                    <Input placeholder="ex: Montre Élégance Or Rose" {...form.register("product_name")} className="bg-black/20" />
-                    {form.formState.errors.product_name && <p className="text-destructive text-xs">{form.formState.errors.product_name.message}</p>}
-                  </div>
-                </div>
-
-                {/* Secteur + Ton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Secteur <span className="text-primary">*</span></label>
-                    <div className="relative">
-                      <select {...form.register("sector")} className={selectClass}>
-                        {SECTORS.map((s) => <option key={s} value={s} className="bg-card">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Ton de communication</label>
-                    <div className="relative">
-                      <select {...form.register("tone")} className={selectClass}>
-                        {TONES.map((t) => <option key={t} value={t} className="bg-card">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
-                      </select>
-                      <ChevronRight className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Description du produit</label>
-                  <Input placeholder="ex: Montre automatique or rose, verre saphir, bracelet cuir..." {...form.register("product_description")} className="bg-black/20" />
-                </div>
-
-                {/* Caractéristiques + Bénéfices */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Caractéristiques clés</label>
-                    <Input placeholder="ex: or rose 18 carats, verre saphir, mouvement suisse" {...form.register("features")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparées par virgules</p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Bénéfices</label>
-                    <Input placeholder="ex: élégance, précision, durabilité" {...form.register("benefits")} className="bg-black/20" />
-                    <p className="text-xs text-muted-foreground">Séparés par virgules</p>
-                  </div>
-                </div>
-
-                {/* Prix */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Prix (€)</label>
-                    <Input type="number" min={1} placeholder="299" {...form.register("price")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Prix barré (€)</label>
-                    <Input type="number" min={1} placeholder="399" {...form.register("old_price")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Remise (%)</label>
-                    <Input type="number" min={1} max={99} placeholder="20" {...form.register("discount")} className="bg-black/20" />
-                  </div>
-                </div>
-
-                {/* Code promo + Checkout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Code promo (optionnel)</label>
-                    <Input placeholder="ex: LUXEOR20 — auto si vide" {...form.register("promo_code")} className="bg-black/20" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">URL de checkout</label>
-                    <Input placeholder="ex: https://monsite.com/checkout" {...form.register("checkout_url")} className="bg-black/20" />
-                  </div>
-                </div>
-
-                {/* Livraison */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Info livraison</label>
-                  <Input placeholder="ex: Livraison offerte dès 100€ · Retours 30 jours" {...form.register("shipping_info")} className="bg-black/20" />
-                </div>
-
-                {/* Design */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Design de la landing page</label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Couleur principale</label>
-                      <div className="flex items-center gap-2">
-                        <input type="color" {...form.register("primary_color")} className="w-10 h-10 rounded cursor-pointer border border-white/10 bg-transparent" />
-                        <Input {...form.register("primary_color")} className="bg-black/20 font-mono text-sm" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Police titres</label>
-                      <Input placeholder="Playfair Display" {...form.register("heading_font")} className="bg-black/20 text-sm" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Police corps</label>
-                      <Input placeholder="Montserrat" {...form.register("body_font")} className="bg-black/20 text-sm" />
-                    </div>
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={isGenerating} className="w-full h-12 text-base font-semibold">
-                  {isGenerating ? (
-                    <><Brain className="w-5 h-5 mr-2 animate-pulse" /> Génération en cours...</>
-                  ) : (
-                    <><Rocket className="w-5 h-5 mr-2" /> Générer le Pack Launch Ready</>
-                  )}
-                </Button>
-              </form>
+              <Button onClick={onSubmit} disabled={isGenerating} className="w-full h-12 text-base font-semibold">
+                {isGenerating ? (
+                  <><Brain className="w-5 h-5 mr-2 animate-pulse" /> Génération en cours...</>
+                ) : (
+                  <><Rocket className="w-5 h-5 mr-2" /> Générer le Pack Launch Ready</>
+                )}
+              </Button>
             </CardContent>
           </Card>
         </motion.div>
@@ -718,8 +542,8 @@ export default function Module07() {
           {/* Header résultats */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 className="text-xl font-bold text-foreground">{formData?.brand_name} — {formData?.product_name}</h2>
-              <p className="text-sm text-muted-foreground">{formData?.sector} · Ton {formData?.tone} · {formData?.price}€</p>
+              <h2 className="text-xl font-bold text-foreground">{brief.brand_name} — {brief.product_name}</h2>
+              <p className="text-sm text-muted-foreground">{brief.sector} · Ton {brief.tone} · {brief.price}€</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => { setShowResults(false); setSections([]); setStreamState({ sections: {}, activeSection: null }); }}>

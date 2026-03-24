@@ -68,7 +68,14 @@ const SECTIONS = [
     label: "Commerce",
     color: "text-green-400",
     dot: "bg-green-400",
-    fields: ["price", "discount", "promo_code", "shipping_info", "free_shipping"],
+    fields: ["price", "old_price", "discount", "promo_code", "checkout_url", "shipping_info", "free_shipping"],
+  },
+  {
+    key: "sav",
+    label: "SAV",
+    color: "text-orange-400",
+    dot: "bg-orange-400",
+    fields: ["warranty", "delivery_days", "express_delivery_days", "express_price", "return_days", "support_email", "unique_feature", "best_seller_1", "best_seller_2"],
   },
   {
     key: "visual",

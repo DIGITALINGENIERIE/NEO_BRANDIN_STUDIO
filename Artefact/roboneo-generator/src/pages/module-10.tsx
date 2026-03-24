@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Download, ChevronRight, Check, BarChart2,
@@ -9,10 +6,10 @@ import {
   AlertTriangle, ArrowUpCircle, Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
+import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -52,30 +49,6 @@ const SECTION_LABELS: Record<string, string> = {
   weekly_review: "Template Analyse Hebdomadaire",
 };
 
-const SECTORS = [
-  { value: "bijou",        label: "Bijouterie / Accessoires" },
-  { value: "luxe",         label: "Luxe / Premium" },
-  { value: "cosmétique",   label: "Cosmétique / Beauté" },
-  { value: "mode",         label: "Mode / Prêt-à-porter" },
-  { value: "tech",         label: "Tech / Électronique" },
-  { value: "fitness",      label: "Sport / Fitness" },
-  { value: "décoration",   label: "Décoration / Maison" },
-  { value: "maroquinerie", label: "Maroquinerie / Sacs" },
-];
-
-// ─── Zod Schema ───────────────────────────────────────────────────────────────
-
-const formSchema = z.object({
-  brand_name:     z.string().min(2, "Minimum 2 caractères"),
-  sector:         z.string().min(1, "Choisissez un secteur"),
-  ca_target:      z.coerce.number().min(100).optional(),
-  basket_target:  z.coerce.number().min(1).optional(),
-  conv_target:    z.coerce.number().min(0.1).max(100).optional(),
-  roas_target:    z.coerce.number().min(1).optional(),
-  target_cpa:     z.coerce.number().min(1).optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 // ─── Stream Buffer View (loading) ─────────────────────────────────────────────
 
@@ -656,7 +629,7 @@ function SectionView({ sectionKey, data, streamBuffer, streaming, isActive }: {
 
 export default function Module10() {
   const { toast } = useToast();
-  const { brief, updateBrief } = useBrand();
+  const { brief } = useBrand();
 
   const [streamState, setStreamState] = useState<StreamState>({
     sections: {},
@@ -666,35 +639,11 @@ export default function Module10() {
   const [isComplete, setIsComplete]   = useState(false);
   const [activeView, setActiveView]   = useState<string>("dashboard");
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      brand_name:    brief.brand_name || "",
-      sector:        brief.sector || "bijou",
-      ca_target:     brief.ca_target ? Number(brief.ca_target) : undefined,
-      basket_target: brief.basket_target ? Number(brief.basket_target) : undefined,
-      conv_target:   brief.conv_target ? Number(brief.conv_target) : undefined,
-      roas_target:   brief.roas_target ? Number(brief.roas_target) : undefined,
-      target_cpa:    brief.target_cpa ? Number(brief.target_cpa) : undefined,
-    },
-  });
-
-  React.useEffect(() => {
-    if (brief.brand_name) {
-      form.reset({
-        brand_name: brief.brand_name || "",
-        sector: brief.sector || "bijou",
-        ca_target: brief.ca_target ? Number(brief.ca_target) : undefined,
-        basket_target: brief.basket_target ? Number(brief.basket_target) : undefined,
-        conv_target: brief.conv_target ? Number(brief.conv_target) : undefined,
-        roas_target: brief.roas_target ? Number(brief.roas_target) : undefined,
-        target_cpa: brief.target_cpa ? Number(brief.target_cpa) : undefined,
-      });
+  async function onSubmit() {
+    if (!brief.brand_name) {
+      toast({ title: "Brief incomplet", description: "Remplissez au minimum le nom de marque dans le Brief Global.", variant: "destructive" });
+      return;
     }
-  }, [brief.brand_name, brief.sector, brief.ca_target, brief.basket_target, brief.conv_target, brief.roas_target, brief.target_cpa]);
-
-  async function onSubmit(values: FormValues) {
-    updateBrief({ brand_name: values.brand_name, sector: values.sector, ca_target: values.ca_target ? String(values.ca_target) : "", basket_target: values.basket_target ? String(values.basket_target) : "", conv_target: values.conv_target ? String(values.conv_target) : "", roas_target: values.roas_target ? String(values.roas_target) : "", target_cpa: values.target_cpa ? String(values.target_cpa) : "" });
     setIsStreaming(true);
     setIsComplete(false);
     setStreamState({ sections: {}, activeSection: null });
@@ -703,7 +652,15 @@ export default function Module10() {
       const response = await fetch("/api/openai/enhance-prompts-performance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          brand_name:    brief.brand_name,
+          sector:        brief.sector,
+          ca_target:     brief.ca_target ? Number(brief.ca_target) : undefined,
+          basket_target: brief.basket_target ? Number(brief.basket_target) : undefined,
+          conv_target:   brief.conv_target ? Number(brief.conv_target) : undefined,
+          roas_target:   brief.roas_target ? Number(brief.roas_target) : undefined,
+          target_cpa:    brief.target_cpa ? Number(brief.target_cpa) : undefined,
+        }),
       });
 
       if (!response.ok || !response.body) {
@@ -788,93 +745,33 @@ export default function Module10() {
 
   return (
     <div className="space-y-8">
-      {/* Brief Form */}
+      {/* Brief recap + action */}
+      <BriefSummaryBanner />
       <Card className="border-blue-500/20 bg-blue-500/3">
         <CardHeader>
-          <CardTitle className="text-base">Brief — Performance Tracker</CardTitle>
+          <CardTitle className="text-base">Performance Tracker</CardTitle>
           <CardDescription>
-            Définissez vos objectifs pour calibrer les KPIs, seuils d'alerte et guides d'optimisation.
+            Génère KPIs calibrés, seuils d'alerte et guides d'optimisation à partir du Brief Global.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground/80">
-                  Nom de la marque <span className="text-destructive">*</span>
-                </label>
-                <Input
-                  {...form.register("brand_name")}
-                  placeholder="ex: LUXEOR"
-                  className="bg-background/50"
-                />
-                {form.formState.errors.brand_name && (
-                  <p className="text-xs text-destructive">{form.formState.errors.brand_name.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground/80">
-                  Secteur d'activité <span className="text-destructive">*</span>
-                </label>
-                <select
-                  {...form.register("sector")}
-                  className="w-full h-10 px-3 rounded-md border border-input bg-background/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  {SECTORS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                Objectifs (optionnel — des valeurs par défaut sont utilisées si vides)
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[
-                  { name: "ca_target" as const,      label: "CA mensuel cible",   unit: "€",  placeholder: "ex: 10000" },
-                  { name: "basket_target" as const,   label: "Panier moyen cible", unit: "€",  placeholder: "ex: 150" },
-                  { name: "conv_target" as const,     label: "Taux de conversion", unit: "%",  placeholder: "ex: 2.5" },
-                  { name: "roas_target" as const,     label: "ROAS cible",         unit: "x",  placeholder: "ex: 3.0" },
-                  { name: "target_cpa" as const,      label: "CPA cible",          unit: "€",  placeholder: "ex: 15" },
-                ].map((field) => (
-                  <div key={field.name} className="space-y-1">
-                    <label className="text-xs text-muted-foreground">{field.label}</label>
-                    <div className="relative">
-                      <Input
-                        {...form.register(field.name)}
-                        type="number"
-                        step="any"
-                        placeholder={field.placeholder}
-                        className="bg-background/50 pr-7"
-                      />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{field.unit}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isStreaming}
-              className="w-full bg-blue-500 hover:bg-blue-400 text-black font-semibold"
-            >
-              {isStreaming ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                  Génération en cours…
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <BarChart2 className="w-4 h-4" />
-                  Générer les outils de performance
-                </span>
-              )}
-            </Button>
-          </form>
+          <Button
+            onClick={onSubmit}
+            disabled={isStreaming}
+            className="w-full bg-blue-500 hover:bg-blue-400 text-black font-semibold"
+          >
+            {isStreaming ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                Génération en cours…
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <BarChart2 className="w-4 h-4" />
+                Générer les outils de performance
+              </span>
+            )}
+          </Button>
         </CardContent>
       </Card>
 

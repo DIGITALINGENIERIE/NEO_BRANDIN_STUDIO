@@ -11,6 +11,7 @@ import enhancePromptsLaunchRouter from "./openai/enhance-prompts-launch";
 import enhancePromptsChatbotRouter from "./openai/enhance-prompts-chatbot";
 import enhancePromptsUpsellRouter from "./openai/enhance-prompts-upsell";
 import enhancePromptsPerformanceRouter from "./openai/enhance-prompts-performance";
+import personaVariantsRouter from "./openai/persona-variants";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(enhancePromptsLaunchRouter);
 router.use(enhancePromptsChatbotRouter);
 router.use(enhancePromptsUpsellRouter);
 router.use(enhancePromptsPerformanceRouter);
+router.use(personaVariantsRouter);
 
 export default router;

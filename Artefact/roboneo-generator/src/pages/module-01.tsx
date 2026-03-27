@@ -3,18 +3,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Download, Sparkles, ChevronRight, Check, RefreshCw, Brain, FileText, Zap } from "lucide-react";
+import { Copy, Download, Sparkles, ChevronRight, Check, RefreshCw, Brain, FileText, Zap, Star, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { generatePrompts, type BrandBrief, type GenerationResult, generateTxtExport } from "@/lib/prompt-generator";
 import { useToast } from "@/hooks/use-toast";
 import { useBrand } from "@/context/brand-context";
 import BriefSummaryBanner from "@/components/brief-summary-banner";
 
-const SECTORS = ["bijou", "luxe", "mode", "streetwear", "cosmétique", "skincare", "tech", "fitness", "décoration", "maroquinerie", "gadgets", "montres", "autre"];
-const TONES = ["luxe", "minimal", "street", "tech", "artisanal", "vintage", "playful", "corporate", "nature", "editorial", "futuristic", "ethnic"];
 const STYLES = ["auto-detect", "luxe", "minimal", "street", "tech", "artisanal", "vintage", "playful", "corporate", "nature", "editorial", "futuristic", "ethnic"];
 
 const SECTION_LABELS: Record<string, { title: string; agent: string }> = {
@@ -33,14 +29,26 @@ const SECTION_PARAMS: Record<string, Record<string, unknown>> = {
 
 const formSchema = z.object({
   style_pref: z.string().optional().default("auto-detect"),
+  enable_review: z.boolean().optional().default(false),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 type SectionKey = "logo" | "palette" | "typography" | "guidelines";
 
+interface ReviewData {
+  score: number;
+  improvements: string[];
+}
+
+interface PersonaVariant {
+  persona: string;
+  variant: string;
+}
+
 interface StreamState {
   prompts: Partial<Record<SectionKey, string>>;
+  reviews: Partial<Record<SectionKey, ReviewData>>;
   activeSection: SectionKey | null;
   completedSections: Set<SectionKey>;
 }
@@ -49,25 +57,40 @@ export default function Module01() {
   const { toast } = useToast();
   const { brief, updateBrief } = useBrand();
   const [result, setResult] = useState<GenerationResult | null>(null);
-  const [streamState, setStreamState] = useState<StreamState>({ prompts: {}, activeSection: null, completedSections: new Set() });
+  const [streamState, setStreamState] = useState<StreamState>({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() });
   const [isGenerating, setIsGenerating] = useState(false);
   const [useAI, setUseAI] = useState(true);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState<FormValues | null>(null);
+  const [personaVariants, setPersonaVariants] = useState<Partial<Record<SectionKey, PersonaVariant[]>>>({});
+  const [loadingPersonas, setLoadingPersonas] = useState<Partial<Record<SectionKey, boolean>>>({});
+  const [openPersonas, setOpenPersonas] = useState<Partial<Record<SectionKey, boolean>>>({});
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { style_pref: "auto-detect" },
+    defaultValues: { style_pref: "auto-detect", enable_review: false },
   });
+
+  const enableReview = form.watch("enable_review");
 
   const generateWithAI = async (data: FormValues) => {
     const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
-    setStreamState({ prompts: {}, activeSection: null, completedSections: new Set() });
+    setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() });
 
     const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values, style_pref: data.style_pref === "auto-detect" ? null : data.style_pref }),
+      body: JSON.stringify({
+        brand_name: brief.brand_name,
+        sector: brief.sector,
+        tone: brief.tone,
+        values,
+        style_pref: data.style_pref === "auto-detect" ? null : data.style_pref,
+        enable_review: data.enable_review ?? false,
+        target_demographic: brief.target_demographic || undefined,
+        competitors: brief.competitors || undefined,
+        forbidden_keywords: brief.forbidden_keywords || undefined,
+      }),
     });
 
     if (!response.ok || !response.body) throw new Error("Erreur API");
@@ -76,6 +99,7 @@ export default function Module01() {
     const decoder = new TextDecoder();
     let buffer = "";
     const finalPrompts: Partial<Record<SectionKey, string>> = {};
+    const finalReviews: Partial<Record<SectionKey, ReviewData>> = {};
 
     while (true) {
       const { done, value } = await reader.read();
@@ -95,10 +119,19 @@ export default function Module01() {
             setStreamState((p) => ({ ...p, prompts: { ...p.prompts, [event.key]: finalPrompts[event.key as SectionKey] } }));
           } else if (event.type === "section_done") {
             finalPrompts[event.key as SectionKey] = event.fullContent;
+            if (event.review) {
+              finalReviews[event.key as SectionKey] = event.review;
+            }
             setStreamState((p) => {
               const next = new Set(p.completedSections);
               next.add(event.key);
-              return { ...p, prompts: { ...p.prompts, [event.key]: event.fullContent }, activeSection: null, completedSections: next };
+              return {
+                ...p,
+                prompts: { ...p.prompts, [event.key]: event.fullContent },
+                reviews: { ...p.reviews, ...(event.review ? { [event.key]: event.review } : {}) },
+                activeSection: null,
+                completedSections: next,
+              };
             });
           }
         } catch {}
@@ -118,18 +151,62 @@ export default function Module01() {
         },
       },
     };
+
+    // Propager les outputs vers le brief (ex: polices si détectées)
+    if (finalPrompts.palette || finalPrompts.typography) {
+      const colorMatch = finalPrompts.palette?.match(/#([0-9A-Fa-f]{6})/);
+      const fontMatch = finalPrompts.typography?.match(/Google Fonts[^(]*\(([^)]+)\)/);
+      const patch: Record<string, string> = {};
+      if (colorMatch && !brief.primary_color) patch.primary_color = `#${colorMatch[1]}`;
+      if (fontMatch && !brief.heading_font) patch.heading_font = fontMatch[1].split(",")[0].trim();
+      if (Object.keys(patch).length > 0) updateBrief(patch);
+    }
+
+    setStreamState((p) => ({ ...p, reviews: finalReviews }));
     return generated;
+  };
+
+  const handleGeneratePersonas = async (key: SectionKey) => {
+    const promptText = getPromptText(key);
+    if (!promptText) return;
+    setLoadingPersonas((p) => ({ ...p, [key]: true }));
+    try {
+      const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
+      const res = await fetch(`${import.meta.env.BASE_URL}api/openai/persona-variants`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          base_prompt: promptText,
+          brand_name: brief.brand_name,
+          sector: brief.sector,
+          tone: brief.tone,
+          values,
+          target_demographic: brief.target_demographic || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error("Erreur API personas");
+      const data = await res.json();
+      setPersonaVariants((p) => ({ ...p, [key]: data.variants }));
+      setOpenPersonas((p) => ({ ...p, [key]: true }));
+      toast({ title: "3 variantes personas générées !" });
+    } catch {
+      toast({ title: "Erreur", description: "Impossible de générer les variantes personas.", variant: "destructive" });
+    } finally {
+      setLoadingPersonas((p) => ({ ...p, [key]: false }));
+    }
   };
 
   const onSubmit = async (data: FormValues) => {
     setIsGenerating(true);
     setFormData(data);
+    setPersonaVariants({});
+    setOpenPersonas({});
     try {
       const generated = useAI ? await generateWithAI(data) : generatePrompts({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values: brief.values, style_pref: data.style_pref } as BrandBrief);
       if (!useAI) await new Promise((r) => setTimeout(r, 400));
       setResult(generated);
       toast({ title: useAI ? "Prompts IA générés !" : "Prompts générés !" });
-    } catch (err) {
+    } catch {
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
     } finally {
       setIsGenerating(false);
@@ -170,6 +247,16 @@ export default function Module01() {
     return "";
   };
 
+  const getReview = (key: SectionKey): ReviewData | null => {
+    return streamState.reviews[key] ?? null;
+  };
+
+  const scoreColor = (score: number) => {
+    if (score >= 9) return "text-green-400 bg-green-400/10 border-green-400/30";
+    if (score >= 7) return "text-amber-400 bg-amber-400/10 border-amber-400/30";
+    return "text-red-400 bg-red-400/10 border-red-400/30";
+  };
+
   return (
     <AnimatePresence mode="wait">
       {!showResultsView ? (
@@ -182,6 +269,16 @@ export default function Module01() {
             <CardContent>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <BriefSummaryBanner />
+
+                {/* Champs stratégiques détectés */}
+                {(brief.competitors || brief.forbidden_keywords || brief.target_demographic) && (
+                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2 p-3 rounded-lg border border-red-400/20 bg-red-400/5">
+                    <span className="w-full text-[10px] text-red-400 font-semibold uppercase tracking-wider mb-0.5">Contexte stratégique détecté ✓</span>
+                    {brief.target_demographic && <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-400/10 border border-red-400/20 text-red-300">🎯 {brief.target_demographic.substring(0, 40)}{brief.target_demographic.length > 40 ? "…" : ""}</span>}
+                    {brief.competitors && <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-400/10 border border-red-400/20 text-red-300">⚡ Concurrents: {brief.competitors.substring(0, 30)}{brief.competitors.length > 30 ? "…" : ""}</span>}
+                    {brief.forbidden_keywords && <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-400/10 border border-red-400/20 text-red-300">🚫 Interdits: {brief.forbidden_keywords.substring(0, 30)}{brief.forbidden_keywords.length > 30 ? "…" : ""}</span>}
+                  </motion.div>
+                )}
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">Style de Logo</label>
@@ -206,8 +303,33 @@ export default function Module01() {
                   </button>
                 </div>
 
+                {useAI && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="flex items-center justify-between p-4 rounded-lg border border-amber-400/20 bg-amber-400/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Star className="w-5 h-5 text-amber-400" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Mode Ultra-Qualité</p>
+                        <p className="text-xs text-muted-foreground">2ème passe IA — score chaque prompt et corrige si &lt; 8/10</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => form.setValue("enable_review", !enableReview)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enableReview ? "bg-amber-500" : "bg-muted"}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enableReview ? "translate-x-6" : "translate-x-1"}`} />
+                    </button>
+                  </motion.div>
+                )}
+
                 <Button type="submit" variant="luxury" size="lg" className="w-full sm:w-auto" disabled={isGenerating}>
-                  {isGenerating ? <><RefreshCw className="mr-2 h-5 w-5 animate-spin" />{useAI ? "GPT génère..." : "Génération..."}</> : <>{useAI ? <Brain className="mr-2 h-5 w-5" /> : <Zap className="mr-2 h-5 w-5" />}{useAI ? "Générer avec l'IA" : "Générer les Prompts"}</>}
+                  {isGenerating
+                    ? <><RefreshCw className="mr-2 h-5 w-5 animate-spin" />{useAI ? "GPT génère..." : "Génération..."}</>
+                    : <>{useAI ? <Brain className="mr-2 h-5 w-5" /> : <Zap className="mr-2 h-5 w-5" />}{useAI ? `Générer avec l'IA${enableReview ? " (Ultra-Qualité)" : ""}` : "Générer les Prompts"}</>}
                 </Button>
               </form>
             </CardContent>
@@ -220,6 +342,7 @@ export default function Module01() {
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-2xl font-serif">Prompts Brand Identity</h2>
                 {useAI && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold"><Brain className="w-3 h-3" /> IA</span>}
+                {enableReview && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold"><Star className="w-3 h-3" /> Ultra-Qualité</span>}
               </div>
               <p className="text-muted-foreground">
                 <span className="text-primary font-semibold">{brief.brand_name}</span>
@@ -227,7 +350,7 @@ export default function Module01() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, activeSection: null, completedSections: new Set() }); }} disabled={isStreaming}>
+              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() }); setPersonaVariants({}); setOpenPersonas({}); }} disabled={isStreaming}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Nouveau
               </Button>
               {result && (
@@ -243,13 +366,17 @@ export default function Module01() {
             {SECTION_KEYS.map((key, i) => {
               const label = SECTION_LABELS[key];
               const prompt = getPromptText(key);
+              const review = getReview(key);
               const isActive = isStreaming && streamState.activeSection === key;
               const isDone = isStreaming ? streamState.completedSections.has(key) : !!result;
               const isPending = isStreaming && !isDone && streamState.activeSection !== key && !streamState.prompts[key];
+              const variants = personaVariants[key];
+              const isLoadingVariants = loadingPersonas[key];
+              const showVariants = openPersonas[key] && variants && variants.length > 0;
 
               return (
-                <motion.div key={key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-                  <Card className={`h-full flex flex-col transition-colors duration-300 ${isActive ? "border-primary/60 shadow-lg shadow-primary/10" : isDone ? "border-white/10 hover:border-primary/30" : "border-white/5 opacity-50"}`}>
+                <motion.div key={key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="flex flex-col gap-3">
+                  <Card className={`flex flex-col transition-colors duration-300 ${isActive ? "border-primary/60 shadow-lg shadow-primary/10" : isDone ? "border-white/10 hover:border-primary/30" : "border-white/5 opacity-50"}`}>
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start">
                         <div>
@@ -259,22 +386,88 @@ export default function Module01() {
                             {label.agent}
                           </CardDescription>
                         </div>
-                        {(isDone || !isStreaming) && prompt && (
-                          <Button variant="ghost" size="icon" onClick={() => handleCopy(prompt, key)} className="text-muted-foreground hover:text-primary">
-                            {copiedStates[key] ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                          </Button>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {review && (
+                            <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border font-semibold ${scoreColor(review.score)}`}>
+                              <Star className="w-2.5 h-2.5" />
+                              {review.score}/10
+                            </span>
+                          )}
+                          {(isDone || !isStreaming) && prompt && (
+                            <Button variant="ghost" size="icon" onClick={() => handleCopy(prompt, key)} className="text-muted-foreground hover:text-primary">
+                              {copiedStates[key] ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="flex-1 pb-4">
                       <div className="bg-black/30 rounded-md p-4 h-56 overflow-y-auto font-mono text-sm text-foreground/80 leading-relaxed border border-white/5 whitespace-pre-wrap">
                         {isPending ? <span className="text-muted-foreground/40 italic">En attente...</span> : <>{prompt}{isActive && <span className="inline-block w-2 h-4 bg-primary/80 animate-pulse ml-0.5 align-middle" />}</>}
                       </div>
+
+                      {/* Améliorations suggérées par la review */}
+                      {review && review.improvements.length > 0 && (
+                        <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-3 space-y-1">
+                          <p className="text-[10px] text-amber-400/70 font-semibold uppercase tracking-wider flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Améliorations IA détectées
+                          </p>
+                          {review.improvements.map((imp, idx) => (
+                            <p key={idx} className="text-[11px] text-muted-foreground pl-2 border-l border-amber-400/20">• {imp}</p>
+                          ))}
+                        </motion.div>
+                      )}
                     </CardContent>
-                    <CardFooter className="pt-0 text-xs text-muted-foreground border-t border-white/5 mt-2 pt-3">
-                      {Object.entries(SECTION_PARAMS[key]).map(([k, v]) => `${k}=${Array.isArray(v) ? v.length : v}`).join(" | ")}
+                    <CardFooter className="pt-0 border-t border-white/5 mt-2 pt-3 flex flex-col gap-2 items-start">
+                      <p className="text-xs text-muted-foreground">
+                        {Object.entries(SECTION_PARAMS[key]).map(([k, v]) => `${k}=${Array.isArray(v) ? v.length : v}`).join(" | ")}
+                      </p>
+                      {(isDone || (!isStreaming && !!result)) && prompt && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => showVariants ? setOpenPersonas((p) => ({ ...p, [key]: false })) : handleGeneratePersonas(key)}
+                          disabled={!!isLoadingVariants}
+                          className="h-7 text-xs gap-1.5 border-violet-400/30 text-violet-400 hover:bg-violet-400/10"
+                        >
+                          {isLoadingVariants ? <><RefreshCw className="w-3 h-3 animate-spin" />Génération personas...</> : <><Users className="w-3 h-3" />{showVariants ? "Masquer les variantes" : "3 Variantes Personas"}</>}
+                        </Button>
+                      )}
                     </CardFooter>
                   </Card>
+
+                  {/* Persona Variants Panel */}
+                  <AnimatePresence>
+                    {showVariants && variants && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        className="space-y-2"
+                      >
+                        {variants.map((v, idx) => (
+                          <Card key={idx} className="border-violet-400/20 bg-violet-400/5">
+                            <CardHeader className="pb-2 pt-3 px-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-mono text-violet-400/60">PERSONA {idx + 1}</span>
+                                  <span className="text-xs font-semibold text-violet-300">{v.persona}</span>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(v.variant, `${key}_persona_${idx}`)} className="h-6 w-6 text-muted-foreground hover:text-violet-400">
+                                  {copiedStates[`${key}_persona_${idx}`] ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="px-4 pb-3">
+                              <div className="bg-black/20 rounded p-3 font-mono text-xs text-foreground/70 leading-relaxed border border-violet-400/10 max-h-40 overflow-y-auto whitespace-pre-wrap">
+                                {v.variant}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               );
             })}

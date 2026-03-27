@@ -192,6 +192,9 @@ export default function Module02() {
         product_materials: materials,
         target_audience: brief.target_audience,
         carousel_style: data.carousel_style === "auto" ? null : data.carousel_style,
+        target_demographic: brief.target_demographic || undefined,
+        competitors: brief.competitors || undefined,
+        forbidden_keywords: brief.forbidden_keywords || undefined,
       }),
     });
 

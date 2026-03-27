@@ -52,6 +52,11 @@ export interface BrandBrief {
   conv_target: string;
   roas_target: string;
   target_cpa: string;
+
+  // Stratégie avancée (amélioration qualité prompts)
+  target_demographic: string;
+  competitors: string;
+  forbidden_keywords: string;
 }
 
 export type BriefField = keyof BrandBrief;
@@ -95,6 +100,9 @@ export const BRIEF_DEFAULTS: BrandBrief = {
   conv_target: "",
   roas_target: "",
   target_cpa: "",
+  target_demographic: "",
+  competitors: "",
+  forbidden_keywords: "",
 };
 
 // Champs "importants" dont la complétude est mesurée

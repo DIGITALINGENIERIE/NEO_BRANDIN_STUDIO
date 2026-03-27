@@ -92,6 +92,13 @@ const SECTIONS = [
     dot: "bg-blue-400",
     fields: ["ca_target", "basket_target", "conv_target", "roas_target", "target_cpa", "margin_percent"],
   },
+  {
+    key: "strategie",
+    label: "Stratégie",
+    color: "text-red-400",
+    dot: "bg-red-400",
+    fields: ["target_demographic", "competitors", "forbidden_keywords"],
+  },
 ] as const;
 
 // ─── Field renderers ───────────────────────────────────────────────────────────
@@ -218,6 +225,42 @@ function PerformanceSection({ form }: { form: any }) {
           <Input {...form.register(f.name)} type="number" step="any" placeholder={f.placeholder} className="bg-black/20 h-9 text-sm" />
         </FieldRow>
       ))}
+    </div>
+  );
+}
+
+function StrategieSection({ form }: { form: any }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg border border-red-400/20 bg-red-400/5">
+        <span className="text-red-400 text-xs mt-0.5">⚡</span>
+        <p className="text-[11px] text-red-300/80 leading-relaxed">
+          Ces champs sont injectés dans le <strong>Chain-of-Thought</strong> de l'IA pour des prompts ultra-calibrés à ta marque. Plus le contexte est précis, plus les prompts sont chirurgicaux.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-3">
+        <FieldRow label="Démographie cible précise">
+          <Input
+            {...form.register("target_demographic")}
+            placeholder="ex: Femmes 28-42 ans, revenus 50-90k€, urbaines CSP+, intérêt mode slow & luxe accessible"
+            className="bg-black/20 h-9 text-sm"
+          />
+        </FieldRow>
+        <FieldRow label="Concurrents directs">
+          <Input
+            {...form.register("competitors")}
+            placeholder="ex: BOSS, Calvin Klein, Sandro — se différencier sur le prix et l'authenticité"
+            className="bg-black/20 h-9 text-sm"
+          />
+        </FieldRow>
+        <FieldRow label="Mots-clés & éléments INTERDITS">
+          <Input
+            {...form.register("forbidden_keywords")}
+            placeholder="ex: 'cheap', 'économique', couleurs flashy, visuels surchargés, emoji dans les copies"
+            className="bg-black/20 h-9 text-sm"
+          />
+        </FieldRow>
+      </div>
     </div>
   );
 }
@@ -486,6 +529,7 @@ export default function BrandBriefPanel() {
                 {activeSection === "commerce"    && <CommerceSection    form={form} />}
                 {activeSection === "visual"      && <VisualSection      form={form} />}
                 {activeSection === "performance" && <PerformanceSection form={form} />}
+                {activeSection === "strategie"   && <StrategieSection   form={form} />}
               </div>
 
               {/* Footer actions */}

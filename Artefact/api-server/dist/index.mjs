@@ -39459,95 +39459,296 @@ var scrape_gmb_default = router2;
 
 // src/routes/openai/enhance-prompts.ts
 var import_express3 = __toESM(require_express2(), 1);
+
+// src/lib/prompt-utils.ts
+var SECTOR_NEGATIVES = {
+  bijou: ["plastique", "grossier", "bon march\xE9", "clip art", "pixelis\xE9", "amateur", "d\xE9form\xE9", "flou", "stock photo g\xE9n\xE9rique"],
+  luxe: ["cheap", "low cost", "criard", "vulgaire", "surcharg\xE9", "clinquant", "faux luxe", "tape-\xE0-l'\u0153il"],
+  cosm\u00E9tique: ["agressif", "chimique", "toxique", "avant/apr\xE8s irr\xE9aliste", "visage d\xE9form\xE9", "peau \xE9trange"],
+  mode: ["d\xE9mod\xE9", "cheap", "mal coup\xE9", "couleurs criardes", "froiss\xE9", "mal ajust\xE9", "g\xE9n\xE9rique"],
+  tech: ["vieux", "obsol\xE8te", "c\xE2bles apparents en d\xE9sordre", "interface confuse", "erreurs visibles", "bugs"],
+  fitness: ["s\xE9dentaire", "mou", "blessures visibles", "mauvaise posture", "surpoids", "d\xE9courageant"],
+  d\u00E9coration: ["d\xE9sordre", "mal agenc\xE9", "couleurs qui clashent", "impersonnel", "g\xE9n\xE9rique", "ikea-like"],
+  maroquinerie: ["plastique", "faux cuir \xE9vident", "coutures grossi\xE8res", "d\xE9form\xE9", "br\xFBl\xE9"]
+};
+var TONE_NEGATIVES = {
+  luxe: ["familier", "argot", "emoji", "informal", "promotionnel criard", "SOLDES", "PROMO"],
+  minimaliste: ["charg\xE9", "surcharg\xE9", "trop color\xE9", "trop d'\xE9l\xE9ments", "complexe"],
+  chaleureux: ["froid", "distant", "corporatif", "robotique", "impersonnel"],
+  professionnel: ["d\xE9sinvolte", "informel", "trop d\xE9contract\xE9", "argot"],
+  streetwear: ["preppy", "corporate", "trop sage", "ennuyeux", "vieux"],
+  \u00E9cologique: ["plastique", "pollution visible", "artificiel", "chimique", "industriel"]
+};
+function buildNegativePrompt(sector, tone) {
+  const sectorNegs = SECTOR_NEGATIVES[sector.toLowerCase()] ?? ["g\xE9n\xE9rique", "amateur", "pixelis\xE9"];
+  const toneNegs = TONE_NEGATIVES[tone.toLowerCase()] ?? [];
+  const universal = ["watermark", "texte illisible", "compression JPEG visible", "artefacts IA", "membres suppl\xE9mentaires", "anatomie incorrecte"];
+  const all = [.../* @__PURE__ */ new Set([...sectorNegs, ...toneNegs, ...universal])];
+  return `\xC9l\xE9ments \xE0 \xC9VITER ABSOLUMENT: ${all.join(", ")}.`;
+}
+function buildSystemPrompt(brief, moduleLabel) {
+  const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
+  const competitorContext = brief.competitors ? `
+Concurrents directs: ${brief.competitors} \u2014 se diff\xE9rencier d'eux est essentiel.` : "";
+  const demographicContext = brief.target_demographic ? `
+D\xE9mographie cible pr\xE9cise: ${brief.target_demographic}` : "";
+  const forbiddenContext = brief.forbidden_keywords ? `
+Mots-cl\xE9s et \xE9l\xE9ments INTERDITS: ${brief.forbidden_keywords} \u2014 ne jamais les inclure.` : "";
+  return `Tu es un expert senior en cr\xE9ation de prompts cr\xE9atifs pour RoboNeo.com \u2014 la plateforme d'IA g\xE9n\xE9rative pour cr\xE9er des assets de marque professionnels.
+
+\u2550\u2550\u2550 IDENTIT\xC9 DE LA MARQUE \u2550\u2550\u2550
+\u2022 Nom: ${brief.brand_name}
+\u2022 Secteur: ${brief.sector}
+\u2022 Ton de communication: ${brief.tone}
+\u2022 Valeurs fondamentales: ${valuesStr}${demographicContext}${competitorContext}${forbiddenContext}
+
+\u2550\u2550\u2550 MODULE EN COURS \u2550\u2550\u2550
+${moduleLabel}
+
+\u2550\u2550\u2550 M\xC9THODE DE TRAVAIL (CHAIN-OF-THOUGHT) \u2550\u2550\u2550
+Avant de r\xE9diger chaque prompt, tu dois:
+1. ANALYSER: Identifier le positionnement exact de la marque dans son secteur
+2. DIFF\xC9RENCIER: Trouver ce qui distingue ${brief.brand_name} de ses concurrents
+3. CALIBRER: Ajuster le niveau de pr\xE9cision technique aux outils RoboNeo
+4. R\xC9DIGER: \xC9crire un prompt directement utilisable, riche en d\xE9tails sp\xE9cifiques \xE0 la marque
+
+\u2550\u2550\u2550 CALIBRATION QUALIT\xC9 (FEW-SHOT) \u2550\u2550\u2550
+Exemple de prompt INSUFFISANT (\xE0 ne pas imiter):
+\u2717 "Cr\xE9e une photo de produit pour une montre. Style luxe. Fond blanc."
+
+Exemple de prompt EXCELLENCE (niveau attendu):
+\u2713 "Cr\xE9e une photo produit ultra-r\xE9aliste pour ${brief.brand_name}: montre positionn\xE9e sur un socle de marbre blanc Calacatta avec dorures, \xE9clairage 3-points (lumi\xE8re principale 45\xB0 gauche, fill light droit, backlight dor\xE9), bokeh 85mm f/1.8, reflets r\xE9alistes sur le bo\xEEtier, cadran visible \xE0 10h10, fond gradient noir profond (#0A0A0A \u2192 #1C1C1C), anamorphic lens flare l\xE9ger en coin sup\xE9rieur droit. Format 3000x3000px, 300dpi, export PNG transparent."
+
+\u2550\u2550\u2550 EXIGENCES OBLIGATOIRES \u2550\u2550\u2550
+\u2022 Chaque prompt doit mentionner "${brief.brand_name}" explicitement
+\u2022 Inclure des codes HEX, dimensions, et sp\xE9cifications techniques pr\xE9cises
+\u2022 Adapter chaque prompt au secteur "${brief.sector}" et au ton "${brief.tone}"
+\u2022 R\xE9diger en fran\xE7ais, avec terminologie technique anglaise pour les param\xE8tres IA
+\u2022 Terminer chaque prompt avec un bloc [PARAM\xC8TRES TECHNIQUES] structur\xE9`;
+}
+async function reviewPromptQuality(content, brief, sectionKey) {
+  const reviewPrompt = `Tu es un expert QA pour des prompts cr\xE9atifs IA destin\xE9s \xE0 RoboNeo.com.
+
+\xC9value ce prompt (section: ${sectionKey}) pour la marque "${brief.brand_name}" (secteur: ${brief.sector}, ton: ${brief.tone}):
+
+"""
+${content}
+"""
+
+CRIT\xC8RES D'\xC9VALUATION (note /10 chacun):
+1. Sp\xE9cificit\xE9 \xE0 la marque (nom mentionn\xE9, secteur refl\xE9t\xE9)
+2. Pr\xE9cision technique (HEX, dimensions, param\xE8tres IA)
+3. Utilisabilit\xE9 directe dans RoboNeo (0 modification n\xE9cessaire)
+4. Richesse des d\xE9tails visuels/cr\xE9atifs
+5. Coh\xE9rence avec le ton "${brief.tone}"
+
+R\xE9ponds en JSON valide uniquement:
+{
+  "score": <moyenne sur 10>,
+  "improvements": ["am\xE9lioration 1", "am\xE9lioration 2"],
+  "refined_prompt": "<version am\xE9lior\xE9e du prompt si score < 8, sinon copie l'original>"
+}`;
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-5.2",
+      messages: [{ role: "user", content: reviewPrompt }],
+      max_completion_tokens: 2048
+    });
+    const text = response.choices[0]?.message?.content ?? "{}";
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const parsed = JSON.parse(clean);
+    return {
+      score: parsed.score ?? 7,
+      refined: parsed.refined_prompt ?? content,
+      improvements: parsed.improvements ?? []
+    };
+  } catch {
+    return { score: 7, refined: content, improvements: [] };
+  }
+}
+
+// src/routes/openai/enhance-prompts.ts
 var router3 = (0, import_express3.Router)();
+var ExtendedBody = EnhancePromptsBody.extend({
+  target_demographic: stringType().nullish(),
+  competitors: stringType().nullish(),
+  forbidden_keywords: stringType().nullish(),
+  enable_review: booleanType().nullish()
+});
 var LOGO_STYLE_MAP = {
   bijou: "luxe",
   luxe: "luxe",
   maroquinerie: "luxe",
   montres: "luxe",
+  parfum: "luxe",
   mode: "editorial",
+  couture: "editorial",
   streetwear: "street",
   cosm\u00E9tique: "minimal",
   skincare: "nature",
+  beaut\u00E9: "minimal",
   tech: "tech",
+  gadgets: "futuristic",
+  saas: "tech",
   fitness: "playful",
+  sport: "playful",
   d\u00E9coration: "artisanal",
-  gadgets: "futuristic"
+  maison: "artisanal",
+  alimentaire: "artisanal",
+  bio: "nature",
+  corporate: "corporate",
+  finance: "corporate"
+};
+var TONE_STYLE_OVERRIDE = {
+  luxe: "luxe",
+  premium: "luxe",
+  minimaliste: "minimal",
+  \u00E9cologique: "nature",
+  streetwear: "street",
+  audacieux: "street",
+  professionnel: "corporate"
 };
 var LOGO_STYLE_DESCRIPTIONS = {
-  luxe: "\xC9l\xE9gant, raffin\xE9, intemporel. Typographie s\xE9rif fine. Symbole: couronne, pierre pr\xE9cieuse. Palette: or, noir profond, blanc cass\xE9.",
-  minimal: "\xC9pur\xE9, g\xE9om\xE9trique, moderne. Typographie sans-serif fine. Symbole g\xE9om\xE9trique simple. Palette monochrome.",
-  street: "Dynamique, gras, impactant. Typographie sans-serif extra-bold. Palette vives, n\xE9on ou noir/blanc.",
-  tech: "Angulaire, pr\xE9cis, innovant. Typographie sans-serif g\xE9om\xE9trique. Symbole circuit ou onde. Palette bleu \xE9lectrique, gris.",
-  artisanal: "Organique, textur\xE9, chaleureux. Typographie manuscrite. Symboles naturels. Palette terre, beige, vert sauge.",
-  vintage: "Badge, blason, contour \xE9pais. Typographie s\xE9rif vintage. Palette s\xE9pia, bordeaux, vert olive.",
-  playful: "Arrondi, dynamique, joyeux. Typographie rounded sans-serif. Palette vives et joyeuses.",
-  corporate: "Sobre, stable, confiance. Typographie sans-serif solide. Palette bleu marine, gris, blanc.",
-  nature: "Organique, fluide, apaisant. Symboles naturels: feuille, arbre, vague. Palette vert, marron, bleu ciel.",
-  editorial: "Raffin\xE9, \xE9l\xE9gant, intemporel. Typographie s\xE9rif \xE9l\xE9gant. Palette noir, blanc, or.",
-  futuristic: "N\xE9on, d\xE9grad\xE9s dynamiques. Typographie angulaire. Palette violet, cyan, magenta.",
-  ethnic: "Color\xE9, expressif, authentique. Motifs traditionnels. Palette rouge, orange, or, terre."
+  luxe: "\xC9l\xE9gant, raffin\xE9, intemporel. Typographie s\xE9rif fine (Playfair Display, Didot, Cormorant). Symbole: couronne, pierre pr\xE9cieuse, monogramme orn\xE9. Palette: or (#D4AF37), noir profond (#1A1A1A), blanc cass\xE9 (#FAFAFA).",
+  minimal: "\xC9pur\xE9, g\xE9om\xE9trique, a\xE9r\xE9. Typographie sans-serif fine (Inter, DM Sans). Symbole g\xE9om\xE9trique simple ou logotype seul. Palette monochrome, max 2 couleurs.",
+  street: "Dynamique, gras, impactant. Typographie sans-serif extra-bold (Monument Grotesk, Druk). Palette: noir, blanc + 1 couleur vive ou n\xE9on.",
+  tech: "Angulaire, pr\xE9cis, innovant. Typographie sans-serif g\xE9om\xE9trique (Roboto Mono, Space Grotesk). Symbole: circuit, onde, hexagone, pixel. Palette: bleu \xE9lectrique (#0066FF), cyan (#00D4FF), gris fonc\xE9 (#1E1E1E).",
+  artisanal: "Organique, textur\xE9, chaleureux. Typographie manuscrite ou s\xE9rif textur\xE9e. Symboles naturels, line-art. Palette: terre cuite, beige, vert sauge, charbon.",
+  vintage: "Badge, blason, contour \xE9pais. Typographie s\xE9rif vintage. Palette: s\xE9pia, bordeaux (#6B1A1A), vert olive, moutarde (#D4A017).",
+  playful: "Arrondi, dynamique, joyeux. Typographie rounded sans-serif (Nunito, Poppins). Palette vive, max 4 couleurs harmonieuses.",
+  corporate: "Sobre, stable, confiance. Typographie sans-serif solide (Roboto, Lato, IBM Plex). Palette: bleu marine (#003087), gris (#6C757D), blanc.",
+  nature: "Organique, fluide, apaisant. Symboles naturels: feuille, arbre, vague. Typographie douce et arrondie. Palette: vert for\xEAt (#2D6A4F), beige sable, bleu ciel doux.",
+  editorial: "Raffin\xE9, \xE9l\xE9gant, haute couture. Typographie s\xE9rif \xE9l\xE9gant (Cormorant Garamond, Freight Display). Palette: noir, blanc, or ou ivoire.",
+  futuristic: "N\xE9on, d\xE9grad\xE9s dynamiques, formes fluides. Typographie angulaire. Palette: violet (#8B5CF6), cyan (#06B6D4), magenta (#EC4899).",
+  ethnic: "Color\xE9, expressif, authentique. Motifs traditionnels, richesse d\xE9corative. Palette chaude: rouge, orange, or, terre."
 };
 router3.post("/openai/enhance-prompts", async (req, res) => {
-  const parsed = EnhancePromptsBody.safeParse(req.body);
+  const parsed = ExtendedBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid request body", details: parsed.error.errors });
     return;
   }
-  const { brand_name, sector, tone, values, style_pref } = parsed.data;
-  const style = style_pref || LOGO_STYLE_MAP[sector] || "minimal";
+  const {
+    brand_name,
+    sector,
+    tone,
+    values,
+    style_pref,
+    target_demographic,
+    competitors,
+    forbidden_keywords,
+    enable_review
+  } = parsed.data;
+  const toneStyle = TONE_STYLE_OVERRIDE[tone.toLowerCase()];
+  const style = style_pref || toneStyle || LOGO_STYLE_MAP[sector.toLowerCase()] || "minimal";
   const styleDesc = LOGO_STYLE_DESCRIPTIONS[style] || LOGO_STYLE_DESCRIPTIONS["minimal"];
   const valuesStr = values.join(", ");
+  const brief = {
+    brand_name,
+    sector,
+    tone,
+    values,
+    target_demographic: target_demographic ?? void 0,
+    competitors: competitors ?? void 0,
+    forbidden_keywords: forbidden_keywords ?? void 0
+  };
+  const negativeBlock = buildNegativePrompt(sector, tone);
+  const moduleLabel = "MODULE 01 \u2014 Brand Identity (Logo, Palette, Typographie, Charte Graphique)";
+  const systemPrompt = buildSystemPrompt(brief, moduleLabel);
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
-  const systemPrompt = `Tu es un expert en cr\xE9ation de prompts pour RoboNeo.com, une plateforme de g\xE9n\xE9ration d'assets cr\xE9atifs par IA.
-Ta mission: g\xE9n\xE9rer des prompts ULTRA-PR\xC9CIS, D\xC9TAILL\xC9S et PROFESSIONNELS pour les agents RoboNeo.
-Contexte de la marque:
-- Nom: ${brand_name}
-- Secteur: ${sector}
-- Ton: ${tone}
-- Valeurs: ${valuesStr}
-- Style logo: ${style}
-
-Chaque prompt doit:
-1. \xCAtre directement utilisable dans RoboNeo sans modification
-2. Inclure des d\xE9tails sp\xE9cifiques \xE0 la marque
-3. \xCAtre en fran\xE7ais
-4. Mentionner le nom de la marque
-5. Inclure des sp\xE9cifications techniques pr\xE9cises`;
   const sections = [
     {
       key: "logo",
       agent: "Brand Design Agent / Product Display Agent",
-      userPrompt: `G\xE9n\xE8re un prompt RoboNeo complet et d\xE9taill\xE9 pour cr\xE9er le logo de la marque ${brand_name}.
-Style logo: ${style}. ${styleDesc}
-Le prompt doit inclure: le style visuel, la typographie recommand\xE9e, le symbole/ic\xF4ne, la palette de couleurs (avec codes HEX), les 4 variations requises (fond clair, fond sombre, monochrome, invers\xE9), et le format (PNG + SVG 2000x2000px).
-Commence directement par "Cr\xE9e un logo pour ${brand_name}..."`
+      userPrompt: `MODULE 01.1 \u2014 LOGO GENERATOR
+
+G\xE9n\xE8re un prompt RoboNeo ULTRA-PR\xC9CIS pour cr\xE9er le logo de ${brand_name}.
+
+CONTEXTE STYLISTIQUE D\xC9TECT\xC9:
+\u2022 Style: ${style}
+\u2022 Description: ${styleDesc}
+
+STRUCTURE DU PROMPT \xC0 G\xC9N\xC9RER:
+1. Contexte marque + positionnement
+2. Direction artistique (style, esprit, ambiance)
+3. Typographie recommand\xE9e (nom police + lien Google Fonts + alternatives)
+4. Symbole/ic\xF4ne (description pr\xE9cise + inspirations)
+5. Palette (codes HEX: primaire, secondaire, accent)
+6. 4 variations requises (fond clair, fond sombre, monochrome, invers\xE9)
+7. Sp\xE9cifications techniques (PNG 2000\xD72000px + SVG vectoriel, espace de protection)
+8. Bloc NEGATIVE_PROMPT
+
+${negativeBlock}
+
+Commence directement par: "Cr\xE9e le logo de ${brand_name}..."`
     },
     {
       key: "palette",
       agent: "Brand Design Agent",
-      userPrompt: `G\xE9n\xE8re un prompt RoboNeo complet et d\xE9taill\xE9 pour cr\xE9er la palette de couleurs de ${brand_name}.
-Le prompt doit demander: 1 couleur primaire (60% usage), 1 couleur secondaire (30%), 1 couleur accent (10%), 5 nuances neutres, validation WCAG 2.1 AA, codes HEX et RGB pour chaque couleur. 
-Adapte les choix chromatiques au secteur ${sector} et au ton ${tone}.
-Commence directement par "G\xE9n\xE8re une palette de couleurs professionnelle pour ${brand_name}..."`
+      userPrompt: `MODULE 01.2 \u2014 PALETTE GENERATOR
+
+G\xE9n\xE8re un prompt RoboNeo ULTRA-PR\xC9CIS pour cr\xE9er la palette chromatique compl\xE8te de ${brand_name}.
+
+STRUCTURE DU PROMPT \xC0 G\xC9N\xC9RER:
+1. Couleur primaire (60% usage) \u2014 code HEX + RGB + signification psychologique
+2. Couleur secondaire (30% usage) \u2014 code HEX + RGB + accord avec la primaire
+3. Couleur accent/CTA (10% usage) \u2014 code HEX + RGB + \xE9motion g\xE9n\xE9r\xE9e
+4. 5 nuances neutres (codes HEX exacts)
+5. Validation WCAG 2.1 AA (paires valides/invalides sur fond blanc et fond sombre)
+6. Applications recommand\xE9es (boutons, fonds, textes, ic\xF4nes)
+7. Palette saisonni\xE8re ou mood board optionnel
+
+${negativeBlock}
+
+Commence directement par: "G\xE9n\xE8re la palette de couleurs compl\xE8te pour ${brand_name}..."`
     },
     {
       key: "typography",
       agent: "Brand Design Agent",
-      userPrompt: `G\xE9n\xE8re un prompt RoboNeo complet et d\xE9taill\xE9 pour cr\xE9er le syst\xE8me typographique de ${brand_name}.
-Le prompt doit demander: 1 police titres (h1/h2/h3 avec tailles), 1 police corps (body 16px, interligne 1.5), 1 police accent (CTA/boutons), 2 fallbacks web-safe par police, liens Google Fonts, variables CSS.
-Adapte au ton ${tone} et au secteur ${sector}.
-Commence directement par "G\xE9n\xE8re un syst\xE8me typographique complet pour ${brand_name}..."`
+      userPrompt: `MODULE 01.3 \u2014 TYPOGRAPHY SYSTEM
+
+G\xE9n\xE8re un prompt RoboNeo ULTRA-PR\xC9CIS pour le syst\xE8me typographique de ${brand_name}.
+
+STRUCTURE DU PROMPT \xC0 G\xC9N\xC9RER:
+1. Police titres (h1/h2/h3): nom + Google Fonts URL + graisses + tailles (h1: 48px, h2: 36px, h3: 24px)
+2. Police corps (paragraphes): nom + URL + 16px + interligne 1.5 + graisses
+3. Police accent (CTA/boutons/captions): nom + URL + tailles + graisses
+4. 2 fallbacks web-safe par police
+5. Variables CSS (--font-heading, --font-body, --font-accent)
+6. Classes utilitaires (.heading-xl, .heading-lg, .body-md, .caption, .cta)
+7. Paires recommand\xE9es (quelle police sur quel fond de couleur)
+
+${negativeBlock}
+
+Commence directement par: "G\xE9n\xE8re le syst\xE8me typographique complet pour ${brand_name}..."`
     },
     {
       key: "guidelines",
       agent: "Brand Design Agent (PDF generation)",
-      userPrompt: `G\xE9n\xE8re un prompt RoboNeo complet et d\xE9taill\xE9 pour cr\xE9er la charte graphique de ${brand_name} au format PDF.
-Le prompt doit couvrir 10 r\xE8gles (R01 \xE0 R10): usage du logo, espace minimal, taille minimale, couleur primaire, couleur secondaire, accessibilit\xE9 WCAG, typographie titres, typographie corps, ton et voix, valeurs de marque.
-Pour chaque r\xE8gle: description, Do's, Don'ts, cons\xE9quences.
-Commence directement par "G\xE9n\xE8re une charte graphique compl\xE8te pour ${brand_name}..."`
+      userPrompt: `MODULE 01.4 \u2014 BRAND GUIDELINES
+
+G\xE9n\xE8re un prompt RoboNeo ULTRA-PR\xC9CIS pour cr\xE9er la charte graphique PDF de ${brand_name}.
+
+STRUCTURE DU PROMPT \xC0 G\xC9N\xC9RER:
+10 r\xE8gles graphiques obligatoires (R01 \xE0 R10):
+R01 \u2014 Usage du logo (4 variations, r\xE8gles de placement)
+R02 \u2014 Espace de protection minimal (calcul bas\xE9 sur dimensions logo)
+R03 \u2014 Taille minimale (impression 15mm, digital 32px)
+R04 \u2014 Couleur primaire (usage r\xE9serv\xE9, interdictions)
+R05 \u2014 Couleur secondaire (support, compl\xE9mentarit\xE9)
+R06 \u2014 Accessibilit\xE9 WCAG 2.1 AA (ratio \u2265 4.5:1)
+R07 \u2014 Typographie titres (hi\xE9rarchie stricte)
+R08 \u2014 Typographie corps (lisibilit\xE9, interligne)
+R09 \u2014 Ton et voix de marque (vocabulaire, style r\xE9dactionnel)
+R10 \u2014 Valeurs de marque (incarnation dans les visuels)
+
+Pour chaque r\xE8gle: description pr\xE9cise + Do's (3 exemples) + Don'ts (3 exemples) + cons\xE9quences.
+
+${negativeBlock}
+
+Commence directement par: "G\xE9n\xE8re la charte graphique compl\xE8te pour ${brand_name}..."`
     }
   ];
   for (const section of sections) {
@@ -39574,19 +39775,31 @@ Commence directement par "G\xE9n\xE8re une charte graphique compl\xE8te pour ${b
 `);
         }
       }
+      let reviewData = null;
+      if (enable_review && fullContent.length > 100) {
+        try {
+          const review = await reviewPromptQuality(fullContent, brief, section.key);
+          reviewData = { score: review.score, improvements: review.improvements };
+          if (review.score < 8 && review.refined !== fullContent) {
+            fullContent = review.refined;
+          }
+        } catch {
+        }
+      }
       res.write(
         `data: ${JSON.stringify({
           type: "section_done",
           key: section.key,
           agent: section.agent,
-          fullContent
+          fullContent,
+          review: reviewData
         })}
 
 `
       );
     } catch (err) {
       req.log.error({ err, section: section.key }, "Error enhancing prompt");
-      res.write(`data: ${JSON.stringify({ type: "error", key: section.key, message: "Erreur lors de l'am\xE9lioration" })}
+      res.write(`data: ${JSON.stringify({ type: "error", key: section.key, message: "Erreur lors de la g\xE9n\xE9ration" })}
 
 `);
     }
@@ -39922,9 +40135,26 @@ Retourne UNIQUEMENT un JSON valide:
 }`
     }
   ];
-  const systemPrompt = `Tu es un expert senior en g\xE9n\xE9ration de prompts visuels pour RoboNeo.com.
-Tu g\xE9n\xE8res des prompts pr\xE9cis, professionnels, adapt\xE9s au secteur ${sector} et \xE0 la marque ${brand_name}.
-Tu r\xE9ponds TOUJOURS en fran\xE7ais. Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans aucun texte avant ou apr\xE8s le JSON.`;
+  const body = req.body;
+  const sectorTone = body.tone ?? "professionnel";
+  const sectorValues = body.values ?? sector;
+  const negativePart = buildNegativePrompt(sector, sectorTone);
+  const baseSysPrompt = buildSystemPrompt(
+    {
+      brand_name,
+      sector,
+      tone: sectorTone,
+      values: sectorValues,
+      target_demographic: body.target_demographic ?? void 0,
+      competitors: body.competitors ?? void 0,
+      forbidden_keywords: body.forbidden_keywords ?? void 0
+    },
+    "MODULE 02 \u2014 Visual Content (Photos Produit, Lifestyle, D\xE9tail, Before/After, Try-On, Carrousel)"
+  );
+  const systemPrompt = `${baseSysPrompt}
+
+IMPORTANT: Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans texte avant ou apr\xE8s le JSON.
+Chaque prompt visuel doit inclure un champ "negative_prompt" avec les \xE9l\xE9ments \xE0 \xE9viter: "${negativePart}"`;
   for (const section of SECTIONS) {
     sendEvent(res, { type: "section_start", key: section.key, label: section.label, agent: section.agent });
     let fullContent = "";

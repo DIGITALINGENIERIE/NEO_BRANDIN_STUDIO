@@ -1,0 +1,31 @@
+Hypothèses d'améliorations pour une qualité de prompt inégalée
+1. Enrichissement du Brand Brief
+Ajouter des champs plus précis au brief global : cible démographique détaillée (âge, revenus, style de vie), concurrents directs, et les mots-clés à éviter absolument. Plus le contexte est dense, plus les prompts sont chirurgicaux.
+
+2. Détection de style plus granulaire
+La fonction detectStyle() mappe des secteurs à des styles génériques (luxe, minimal…). On pourrait la remplacer par une analyse sémantique IA des valeurs de marque pour générer un style unique, plutôt qu'une case parmi 5 prédéfinies.
+
+3. Prompts en chaîne (Chain-of-Thought)
+Avant de générer le prompt final, faire raisonner le modèle en lui demandant d'abord d'analyser la marque, puis de justifier ses choix créatifs, puis d'écrire le prompt. Résultat : des prompts beaucoup plus cohérents et intentionnels.
+
+4. Système de mémoire entre modules
+Actuellement, chaque module génère indépendamment. Idéalement, les décisions du Module 01 (logo, palette, typo) alimentent automatiquement les prompts des modules suivants pour une cohérence visuelle totale.
+
+5. Calibration par exemple (Few-Shot)
+Injecter dans le system prompt des exemples de bons vs mauvais prompts pour la même industrie, afin que le modèle calibre son niveau de précision dès le départ.
+
+6. Score de qualité et auto-amélioration
+Après génération, soumettre chaque prompt à une passe de critique IA (un second appel qui évalue et reformule si nécessaire), pour garantir qu'il respecte les standards RoboNeo avant d'être affiché.
+
+7. Templates dynamiques par persona cible
+Plutôt qu'un prompt unique, générer 3 variantes calibrées sur 3 personas différents (ex : client 25-35 ans urbain / 40-55 ans CSP+ / Gen Z) pour que l'utilisateur choisisse la meilleure direction.
+
+8. Prompts négatifs intégrés
+Systématiquement ajouter un bloc negative_prompt structuré dans chaque output (éléments visuels à éviter, clichés du secteur, couleurs incompatibles) — très utile pour les outils de génération d'image.
+
+9. Historique et apprentissage utilisateur
+Stocker les prompts validés par l'utilisateur et s'en servir comme base de référence personnelle pour les prochaines générations — le système apprend les préférences de la marque au fil du temps.
+
+10. Mode "Ultra-Précision" avec paramètres techniques
+Ajouter des paramètres spécifiques aux outils cibles (ex : ratio d'aspect pour Midjourney, longueur de script pour ElevenLabs, format pour Meta Ads), directement injectés dans le prompt généré.
+

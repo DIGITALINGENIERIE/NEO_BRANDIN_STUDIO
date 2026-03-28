@@ -1,0 +1,31 @@
+{
+  "module": "MOD-01.4 — Brand Guidelines",
+  "agent": "Brand Design Agent (PDF generation)",
+  "goldenExample": "Génère la charte graphique complète pour Theravectys au format **PDF** (A4 vertical), destinée à une marque **tech** au ton **professionnel**, incarnant **innovation, rigueur scientifique, fiabilité, expertise, engagement**. Le document doit être prêt à être partagé avec des designers et développeurs, avec une mise en page claire type 'brand book' moderne (grille, marges, sections numérotées), sans watermark, sans texte illisible, sans artefacts IA. Structure: Page de couverture + Sommaire + Vision rapide + 10 règles R01-R10 (une page par règle avec Description + 3 Do's + 3 Don'ts + Conséquences) + Quick specs.\n\n**Format**: A4 portrait (210×297mm), marges 16mm, grille 8pt\n**Polices**: Space Grotesk (titres), Inter (corps), JetBrains Mono (code)\n**Palette**: Primaire #0B1F3B, Secondaire #12B5B0, Accent #B7F000\n\n### R01 — Usage du logo\n**Description**: Logo Theravectys en 4 variations: principal couleur, monochrome dark, monochrome light, icône seule.\n**Do's**: ✓ Logo principal sur fond clair | ✓ Monochrome dark sur fond clair | ✓ Monochrome light sur fond sombre\n**Don'ts**: ✗ Déformer les proportions | ✗ Ajouter effets 3D/ombre | ✗ Icône seule pour branding principal\n**Conséquences**: Perte de crédibilité, incohérence visuelle, dilution identité\n\n### R02 — Espace de protection minimal\n**Description**: Zone = 1.5X (print) et 2X (digital). X = hauteur du T de la marque.\n**Do's**: ✓ Respecter la zone | ✓ Vérifier sur fond clair et sombre | ✓ Adapter selon support\n**Don'ts**: ✗ Coller aux bords | ✗ Superposer d'autres éléments | ✗ Réduire l'espace\n**Conséquences**: Congestion visuelle, hiérarchie cassée, perte d'impact logo\n\n### R03 — Taille minimale\n**Description**: Print: logo ≥ 15mm, icône ≥ 8mm. Digital: logo ≥ 32px, icône ≥ 20px.\n**Do's**: ✓ Vérifier avant impression | ✓ Utiliser l'icône seule en petit | ✓ Tester à différentes échelles\n**Don'ts**: ✗ Logo complet sous 15mm/32px | ✗ Icône sous 8mm/20px | ✗ Forcer en espaces trop petits\n**Conséquences**: Illisibilité, perception cheap, image dégradée\n\n### R04 — Couleur primaire\n**Description**: Primaire #0B1F3B réservée: en-têtes, titres clés, fonds premium, CTA corporate.\n**Do's**: ✓ Fond sections importantes | ✓ Associer au blanc pour contraste | ✓ Réserver éléments d'autorité\n**Don'ts**: ✗ Dégradé criard | ✗ Saturation excessive | ✗ Texte petit sans contraste validé\n**Conséquences**: Incohérence, fatigue visuelle, dilution du prestige\n\n### R05 — Couleur secondaire\n**Description**: Secondaire #12B5B0 pour signalisation, highlights, pictos, data viz (≤ 20% surface/page).\n**Do's**: ✓ Sur fond neutre | ✓ Éléments de support | ✓ Avec parcimonie\n**Don'ts**: ✗ Dominante principale | ✗ Trop de couleurs vives | ✗ Texte long\n**Conséquences**: Perte de sobriété, sensation jouet, déséquilibre\n\n### R06 — Accessibilité WCAG 2.1 AA\n**Description**: Texte normal ≥ 4.5:1, grands titres ≥ 3:1.\n| Combinaison | Ratio | Statut |\n|---|---|---|\n| #0B1F3B sur #FFFFFF | 7.2:1 | ✅ VALIDE |\n| #FFFFFF sur #0B1F3B | 7.2:1 | ✅ VALIDE |\n| #101820 sur #E9EEF2 | 8.5:1 | ✅ VALIDE |\n| #12B5B0 sur #FFFFFF | 4.3:1 | ⚠️ LIMITE titres |\n| #B7F000 sur #101820 | 5.8:1 | ✅ VALIDE |\n| #546A7B sur #FFFFFF | 3.8:1 | ⚠️ LIMITE secondaire |\n| #FFFFFF sur #12B5B0 | 4.3:1 | ⚠️ LIMITE titres |\n| #101820 sur #FFFFFF | 8.5:1 | ✅ VALIDE |\n**Do's**: ✓ Vérifier ratios | ✓ Outils automatisés | ✓ Combinaisons validées\n**Don'ts**: ✗ Combinaisons invalidées pour texte | ✗ Négliger malvoyants | ✗ Ignorer contraintes légales\n**Conséquences**: Non-conformité, baisse inclusivité, risques légaux\n\n### R07 — Typographie titres\n**Description**: Space Grotesk — H1: 44/52 -1% 700, H2: 32/40 -0.5% 600, H3: 24/32 0% 600, H4: 18/26 0% 500.\n**Do's**: ✓ Respecter hiérarchie | ✓ Max 2 graisses | ✓ Aligner grille 8pt\n**Don'ts**: ✗ Italique décoratif | ✗ Plus de 2 graisses | ✗ Mélange de polices\n**Conséquences**: Perte structure, confusion hiérarchique, incohérence\n\n### R08 — Typographie corps\n**Description**: Inter — Print: 10.5-11.5pt leading 150%, Digital: 16-18px line-height 1.5-1.7, colonnes 60-80 chars.\n**Do's**: ✓ Adapter selon support | ✓ Interligne confortable | ✓ Limiter largeur colonnes\n**Don'ts**: ✗ Justification full sans césure | ✗ Trop dense | ✗ Contraste insuffisant\n**Conséquences**: Fatigue visuelle, perte confiance, abandon lecture\n\n### R09 — Ton et voix de marque\n**Description**: Voix précise, factuelle, orientée preuve, vocabulaire accessible. Phrases courtes, verbes d'action, chiffres sourcés.\n**Do's**: ✓ Résultats sourcés | ✓ Technologie brevetée mesurable | ✓ Équipe R&D consultable\n**Don'ts**: ✗ Confiance sans preuves | ✗ Argot ou familiarité | ✗ Promesses vagues\n**Conséquences**: Décrédibilisation, dilution expertise, perte confiance\n\n### R10 — Valeurs de marque\n**Description**: Innovation → data abstractions; Rigueur → grilles propres; Fiabilité → compositions stables; Expertise → diagrammes; Engagement → sobriété.\n**Do's**: ✓ Grilles et schémas | ✓ Compositions stables | ✓ Éléments data\n**Don'ts**: ✗ Startup cliché | ✗ Anatomie incorrecte | ✗ Légendes manquantes\n**Conséquences**: Dissonance visuelle, perception marketing creux, incohérence\n\n## Quick specs\n| Rôle | HEX |\n|---|---|\n| Primaire | #0B1F3B |\n| Secondaire | #12B5B0 |\n| Accent | #B7F000 |\n| Titres | Space Grotesk |\n| Corps | Inter |\n| Code | JetBrains Mono |\n| Logo min | 15mm / 32px |",
+  "structure": {
+    "sections": [
+      "Page de couverture",
+      "Sommaire",
+      "Vision rapide",
+      "R01 — Usage du logo",
+      "R02 — Espace de protection minimal",
+      "R03 — Taille minimale",
+      "R04 — Couleur primaire",
+      "R05 — Couleur secondaire",
+      "R06 — Accessibilité WCAG 2.1 AA",
+      "R07 — Typographie titres",
+      "R08 — Typographie corps",
+      "R09 — Ton et voix de marque",
+      "R10 — Valeurs de marque",
+      "Quick specs"
+    ],
+    "requiredElements": [
+      "10 règles graphiques (R01 à R10)",
+      "Chaque règle: Description + 3 Do's + 3 Don'ts + Conséquences",
+      "Tableau WCAG avec au moins 8 combinaisons",
+      "Format A4 portrait (210×297mm)",
+      "Marges 16mm, grille 8pt",
+      "Quick specs (HEX + fonts + min sizes)"
+    ]
+  }
+}

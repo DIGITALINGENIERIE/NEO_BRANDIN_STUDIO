@@ -1,0 +1,733 @@
+Parfait. Voici le document d'instruction pour Replit concernant le **sous-module MOD-01.4 — Brand Guidelines**.
+
+---
+
+# INSTRUCTION POUR REPLIT AI
+
+## Module 01.4 — Brand Guidelines
+
+### Objectif
+
+Modifier l'application Neo Branding Studio pour implémenter un système de génération de chartes graphiques **ultra-précises** pour le sous-module Brand Guidelines, en utilisant l'exemple parfait fourni comme **golden reference**.
+
+L'objectif est de garantir que **chaque génération** respecte exactement la structure PDF, les 10 règles graphiques (R01–R10) avec leurs 4 blocs (Description, Do's, Don'ts, Conséquences), les spécifications de mise en page A4, et les contraintes d'accessibilité WCAG, quels que soient les paramètres d'entrée.
+
+---
+
+## 1. Contexte
+
+**Fichier actuel à modifier** :  
+`api-server/src/routes/openai/enhance-prompts.ts` (section Module 01)
+
+**Données d'entrée du formulaire** :
+```typescript
+interface BrandBrief {
+  brandName: string;           // ex: "Theravectys"
+  sector: string;              // ex: "tech", "luxury", "streetwear", "fitness", "cosmetic"
+  tone: string;                // ex: "professionnel", "audacieux", "minimaliste"
+  values: string[];            // ex: ["innovation", "rigueur", "fiabilité", "expertise", "engagement"]
+  logo: {
+    primary: string;           // description du logo principal
+    variations: string[];      // descriptions des variantes
+  };
+  palette: {
+    primary: string;           // ex: "#0B1F3B"
+    secondary: string;         // ex: "#12B5B0"
+    accent: string;            // ex: "#B7F000"
+    neutrals: {
+      dark: string;            // ex: "#101820"
+      medium: string;          // ex: "#546A7B"
+      light: string;           // ex: "#E9EEF2"
+      white: string;           // ex: "#FFFFFF"
+    };
+  };
+  typography: {
+    heading: string;           // ex: "Space Grotesk"
+    body: string;              // ex: "Inter"
+    code: string;              // ex: "JetBrains Mono"
+  };
+}
+```
+
+**Sortie attendue** : Un prompt structuré qui générera une charte graphique complète au format PDF avec les 10 règles graphiques.
+
+---
+
+## 2. Ce qu'il faut créer
+
+### 2.1. Fichier : `api-server/src/prompts/modules/module-01-4-guidelines/golden-example.json`
+
+Copier exactement l'exemple parfait fourni ci-dessous. Ce fichier sert de **référence absolue** pour la structure et le niveau de qualité attendu.
+
+```json
+{
+  "module": "MOD-01.4 — Brand Guidelines",
+  "agent": "Brand Design Agent (PDF generation)",
+  "goldenExample": "Génère la charte graphique complète pour Theravectys au format **PDF** (A4 vertical), destinée à une marque **tech** au ton **professionnel**, incarnant **innovation, rigueur scientifique, fiabilité, expertise, engagement**. Le document doit être prêt à être partagé avec des designers et développeurs, avec une mise en page claire type \"brand book\" moderne (grille, marges, sections numérotées), sans watermark, sans texte illisible, sans artefacts IA, sans compression JPEG visible.\n\n**Objectif** : produire un PDF de **12 à 16 pages** comprenant : couverture, sommaire, vision rapide, puis **10 règles graphiques obligatoires (R01–R10)**.\n**Style visuel** : minimaliste premium, tech, précis, lignes fines, pictos géométriques, compositions équilibrées, **aucun look vieux/obsolète**, aucune interface confuse, aucune erreur visible, aucun \"bug-like\".\n\n### Spécifications de la charte (à générer dans le PDF)\n- **Nom de marque** : Theravectys (mention visible sur la couverture et en pied de page)\n- **Logo** : proposer un **logo principal** + **3 variantes** (monochrome dark, monochrome light, icône seule) cohérentes entre elles (style vectoriel net).\n- **Palette couleur (HEX imposés)**  \n  - Couleur primaire : **Theravectys Deep Blue — #0B1F3B**  \n  - Couleur secondaire : **Theravectys Teal — #12B5B0**  \n  - Neutres : **Graphite — #101820**, **Slate — #546A7B**, **Mist — #E9EEF2**, **White — #FFFFFF**  \n  - Accent (usage limité) : **Signal Lime — #B7F000**\n- **Typographies (recommandations)**  \n  - Titres : **Space Grotesk** (fallback: Inter, system-ui)  \n  - Corps : **Inter** (fallback: system-ui, -apple-system, Segoe UI, Roboto)  \n  - Code/UI : **JetBrains Mono** (fallback: SFMono-Regular, Menlo)\n- **Iconographie** : linéaire (stroke 2px à 24px), angles légèrement arrondis (radius 2–3px), cohérence scientifique/tech.\n- **Imagerie** : abstractions data/science, surfaces propres, éclairage contrôlé, pas de câbles en désordre, pas de scènes \"startup cliché\".\n\n---\n\n## RÈGLES GRAPHIQUES OBLIGATOIRES (R01 à R10)\nPour chaque règle **R01–R10**, générer une page (ou demi-page) contenant **4 blocs** :  \n1) **Description précise** (norme, objectif, contexte d'usage)  \n2) **Do's** (3 exemples concrets, illustrés si possible)  \n3) **Don'ts** (3 exemples concrets, illustrés si possible)  \n4) **Conséquences** (impact marque + impact lisibilité/confiance/conformité)\n\n### R01 — Usage du logo (4 variations, règles de placement)\n- Définir et illustrer **4 variations** :  \n  1) Logo principal (couleur)  \n  2) Monochrome dark (#101820)  \n  3) Monochrome light (#FFFFFF)  \n  4) Icône seule (symbole)  \n- Règles de placement : coin haut-gauche privilégié pour documents, centre pour couverture, alignement sur grille 8pt, jamais collé aux bords.\n- Do's (3) + Don'ts (3) + conséquences (perte de crédibilité, incohérence, illisibilité).\n\n### R02 — Espace de protection minimal (calcul basé sur dimensions logo)\n- Définir un **calcul clair** : \"X = hauteur du 'T' (ou unité du symbole)\" ; zone de protection = **1.5X** tout autour (print) et **2X** (digital).\n- Inclure schémas cotés (traits fins, mesures) et exemples sur fond clair/sombre.\n- Do's/Don'ts + conséquences (congestion visuelle, hiérarchie cassée).\n\n### R03 — Taille minimale (impression 15mm, digital 32px)\n- Règle stricte :  \n  - Print : largeur logo ≥ **15 mm** (logo complet), icône ≥ **8 mm**  \n  - Digital : largeur logo ≥ **32 px** (logo complet), icône ≥ **20 px**\n- Ajouter exemples de rendu à la limite + \"non conforme\".\n- Do's/Don'ts + conséquences (perte de lisibilité, perception \"cheap\").\n\n### R04 — Couleur primaire (usage réservé, interdictions)\n- Couleur primaire **#0B1F3B** : réservée aux éléments d'autorité (barres d'en-tête, titres clés, fonds premium, CTA critiques en UI corporate).\n- Interdictions : dégradés criards, saturation excessive, texte petit en primaire sur fond sombre sans contraste validé.\n- Do's/Don'ts + conséquences (incohérence, fatigue visuelle).\n\n### R05 — Couleur secondaire (support, complémentarité)\n- Couleur secondaire **#12B5B0** : support de signalisation, highlights, pictos, data-viz, sur fond neutre **#E9EEF2** ou blanc.\n- Règle de ratio : secondaire ≤ **20%** de la surface sur une page standard (hors data-viz).\n- Do's/Don'ts + conséquences (perte de sobriété, sensation \"jouet\").\n\n### R06 — Accessibilité WCAG 2.1 AA (ratio ≥ 4.5:1)\n- Intégrer une **table de contrast ratios** (au moins 8 combinaisons) en visant **≥ 4.5:1** pour texte normal, **≥ 3:1** pour grands titres.\n- Paires recommandées (à évaluer et présenter) :  \n  - #0B1F3B sur #FFFFFF  \n  - #FFFFFF sur #0B1F3B  \n  - #101820 sur #E9EEF2  \n  - #12B5B0 sur #FFFFFF (si <4.5:1, préciser \"limité aux grands titres / UI non textuelle\")  \n  - #B7F000 sur #101820 (accent)\n- Do's/Don'ts + conséquences (non conformité, baisse d'inclusivité, risques légaux).\n\n### R07 — Typographie titres (hiérarchie stricte)\n- Titres en **Space Grotesk** avec échelle stricte (ex.) :  \n  - H1: 44/52, tracking -1%  \n  - H2: 32/40, tracking -0.5%  \n  - H3: 24/32, tracking 0%  \n  - H4: 18/26, tracking 0%  \n- Règles : pas plus de 2 graisses (Semibold/Bold), pas d'italique décoratif, alignement sur grille.\n- Do's/Don'ts + conséquences (perte de structure, confusion).\n\n### R08 — Typographie corps (lisibilité, interligne)\n- Corps en **Inter** :  \n  - Print: 10.5–11.5 pt, leading 150%  \n  - Digital: 16–18 px, line-height 1.5–1.7  \n  - Longs textes: largeur de colonne 60–80 caractères\n- Interdictions : justifié \"full\" sans césure maîtrisée, texte trop dense, contraste insuffisant.\n- Do's/Don'ts + conséquences (fatigue, perte de confiance).\n\n### R09 — Ton et voix de marque (vocabulaire, style rédactionnel)\n- Définir la voix Theravectys : précise, factuelle, orientée preuve, vocabulaire scientifique accessible.\n- Règles : phrases courtes, verbes d'action, chiffres sourcés, éviter argot et familiarité, éviter promesses vagues.\n- Do's (3 exemples de micro-copy) + Don'ts (3 exemples) + conséquences (décrédibilisation, dilution expertise).\n\n### R10 — Valeurs de marque (incarnation dans les visuels)\n- Traduire visuellement :  \n  - Innovation → motifs data, géométries modulaires, micro-animations (décrites)  \n  - Rigueur scientifique → grilles, schémas propres, légendes, unités  \n  - Fiabilité → compositions stables, contraste maîtrisé  \n  - Expertise → profondeur informative, exemples, diagrammes  \n  - Engagement → focus humain abstrait (sans anatomie erronée), sobriété\n- Do's/Don'ts + conséquences (dissonance, perception \"marketing creux\").\n\n---\n\n## Contraintes de rendu PDF (mise en page)\n- Format : **A4 210×297 mm**, marges **16 mm**, grille **8pt**, fond blanc **#FFFFFF** ou Mist **#E9EEF2** selon sections.\n- Export : **PDF print-ready**, images **300 dpi**, éléments logo **vector-like**, typographie nette.\n- Inclure : page de couverture (Theravectys + sous-titre \"Brand Guidelines\"), sommaire, pieds de page (version, date), et un encadré \"Quick specs\" (HEX + fonts + min sizes).\n- Bannir : vieux/obsolète, câbles en désordre, interface confuse, erreurs visibles, bugs, désinvolte/informel/argot, watermark, texte illisible, compression JPEG visible, artefacts IA, membres supplémentaires, anatomie incorrecte.\n\n[PARAMÈTRES TECHNIQUES]  \n- Outil: RoboNeo.com → Document Generator (PDF) + Vector/Brand Kit style  \n- Langue: Français (paramètres IA en anglais)  \n- Format: A4 portrait, 12–16 pages, 210×297mm, margins 16mm, 8pt grid  \n- Output: PDF (print-ready), 300dpi, embedded fonts, no watermark  \n- Color specs: HEX (#0B1F3B, #12B5B0, #101820, #546A7B, #E9EEF2, #FFFFFF, #B7F000)  \n- Typography: Space Grotesk (Headings), Inter (Body), JetBrains Mono (Code)  \n- Rendering: sharp text, clean vector shapes, no AI artifacts, no JPEG compression artifacts  \n- Content constraints: include R01–R10 with Description + 3 Do's + 3 Don'ts + Consequences each; include contrast table for WCAG 2.1 AA (≥4.5:1)  \n- Negative prompts: \"old, obsolete, messy cables, confusing UI, visible errors, bugs, casual, informal, slang, watermark, unreadable text, jpeg artifacts, ai artifacts, extra limbs, incorrect anatomy\"",
+  "structure": {
+    "sections": [
+      "Page de couverture",
+      "Sommaire",
+      "Vision rapide",
+      "R01 — Usage du logo",
+      "R02 — Espace de protection minimal",
+      "R03 — Taille minimale",
+      "R04 — Couleur primaire",
+      "R05 — Couleur secondaire",
+      "R06 — Accessibilité WCAG 2.1 AA",
+      "R07 — Typographie titres",
+      "R08 — Typographie corps",
+      "R09 — Ton et voix de marque",
+      "R10 — Valeurs de marque",
+      "Quick specs"
+    ],
+    "requiredElements": [
+      "10 règles graphiques (R01 à R10)",
+      "Chaque règle: Description + 3 Do's + 3 Don'ts + Conséquences",
+      "Tableau WCAG avec au moins 8 combinaisons",
+      "Format A4 portrait (210×297mm)",
+      "Marges 16mm, grille 8pt",
+      "Quick specs (HEX + fonts + min sizes)"
+    ]
+  }
+}
+```
+
+---
+
+### 2.2. Fichier : `api-server/src/prompts/modules/module-01-4-guidelines/mapping-rules.json`
+
+Ce fichier définit les adaptations selon le secteur et les règles spécifiques.
+
+```json
+{
+  "sectorAdaptations": {
+    "tech": {
+      "brandPersonality": "innovation, rigueur scientifique, fiabilité, expertise, engagement",
+      "visualLanguage": "data abstractions, grilles précises, géométries modulaires",
+      "iconStyle": "lignes fines, angles droits, précision technique",
+      "imageryStyle": "visualisations data, surfaces propres, éclairage contrôlé"
+    },
+    "luxury": {
+      "brandPersonality": "excellence, héritage, raffinement, discrétion, prestige",
+      "visualLanguage": "élégance intemporelle, compositions asymétriques, espaces négatifs",
+      "iconStyle": "lignes élégantes, courbes parfaites, détails fins",
+      "imageryStyle": "matières nobles, ombres douces, profondeur contrôlée"
+    },
+    "streetwear": {
+      "brandPersonality": "authenticité, attitude, communauté, innovation urbaine, audace",
+      "visualLanguage": "typographie marquée, contrastes forts, compositions dynamiques",
+      "iconStyle": "traits épais, angles vifs, impact visuel",
+      "imageryStyle": "environnements urbains, lumière crue, authenticité"
+    },
+    "fitness": {
+      "brandPersonality": "performance, dépassement, discipline, énergie, résultats",
+      "visualLanguage": "dynamisme, lignes de mouvement, gradients maîtrisés",
+      "iconStyle": "formes musculaires, flèches de progression, énergie",
+      "imageryStyle": "mouvement flouté, sueur, effort maîtrisé"
+    },
+    "cosmetic": {
+      "brandPersonality": "bien-être, pureté, naturel, efficacité douce, confiance",
+      "visualLanguage": "courbes organiques, dégradés subtils, douceur",
+      "iconStyle": "formes arrondies, traits fins, élégance naturelle",
+      "imageryStyle": "lumière naturelle, textures organiques, pureté"
+    }
+  },
+  "wcagPairs": [
+    { "foreground": "#0B1F3B", "background": "#FFFFFF", "minRatio": 4.5 },
+    { "foreground": "#FFFFFF", "background": "#0B1F3B", "minRatio": 4.5 },
+    { "foreground": "#101820", "background": "#E9EEF2", "minRatio": 4.5 },
+    { "foreground": "#12B5B0", "background": "#FFFFFF", "minRatio": 4.5 },
+    { "foreground": "#B7F000", "background": "#101820", "minRatio": 4.5 },
+    { "foreground": "#546A7B", "background": "#FFFFFF", "minRatio": 4.5 },
+    { "foreground": "#FFFFFF", "background": "#12B5B0", "minRatio": 4.5 },
+    { "foreground": "#101820", "background": "#FFFFFF", "minRatio": 4.5 }
+  ]
+}
+```
+
+---
+
+### 2.3. Fichier : `api-server/src/prompts/modules/module-01-4-guidelines/prompt-builder.ts`
+
+Ce fichier construit le prompt final en remplaçant les parties variables de l'exemple parfait.
+
+```typescript
+import { goldenExample } from './golden-example.json';
+import { sectorAdaptations, wcagPairs } from './mapping-rules.json';
+
+interface BrandBrief {
+  brandName: string;
+  sector: string;
+  tone: string;
+  values: string[];
+  logo: {
+    primary: string;
+    variations: string[];
+  };
+  palette: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    neutrals: {
+      dark: string;
+      medium: string;
+      light: string;
+      white: string;
+    };
+  };
+  typography: {
+    heading: string;
+    body: string;
+    code: string;
+  };
+}
+
+interface RuleBlock {
+  description: string;
+  dos: string[];
+  donts: string[];
+  consequences: string;
+}
+
+export function buildGuidelinesPrompt(brief: BrandBrief): string {
+  // Récupérer les adaptations selon le secteur
+  const adaptations = sectorAdaptations[brief.sector] || sectorAdaptations.tech;
+  
+  // Construire la description des valeurs
+  const valuesText = brief.values.join(', ');
+  
+  // Construire le prompt final
+  let prompt = goldenExample.goldenExample;
+  
+  // Remplacer les variables de base
+  prompt = prompt.replace(/Theravectys/g, brief.brandName);
+  prompt = prompt.replace(/marque \*\*tech\*\*/g, `marque **${brief.sector}**`);
+  prompt = prompt.replace(/ton \*\*professionnel\*\*/g, `ton **${brief.tone}**`);
+  prompt = prompt.replace(/innovation, rigueur scientifique, fiabilité, expertise, engagement/g, valuesText);
+  
+  // Remplacer les spécifications de la charte
+  prompt = prompt.replace(/\*\*Logo\*\* : proposer un \*\*logo principal\*\* \+ \*\*3 variantes\*\*/g, 
+    `**Logo** : ${brief.logo.primary} + ${brief.logo.variations.join(', ')}`);
+  
+  // Remplacer les couleurs
+  prompt = prompt.replace(/#0B1F3B/g, brief.palette.primary);
+  prompt = prompt.replace(/#12B5B0/g, brief.palette.secondary);
+  prompt = prompt.replace(/#B7F000/g, brief.palette.accent);
+  prompt = prompt.replace(/#101820/g, brief.palette.neutrals.dark);
+  prompt = prompt.replace(/#546A7B/g, brief.palette.neutrals.medium);
+  prompt = prompt.replace(/#E9EEF2/g, brief.palette.neutrals.light);
+  prompt = prompt.replace(/#FFFFFF/g, brief.palette.neutrals.white);
+  
+  // Remplacer les typographies
+  prompt = prompt.replace(/Space Grotesk/g, brief.typography.heading);
+  prompt = prompt.replace(/Inter/g, brief.typography.body);
+  prompt = prompt.replace(/JetBrains Mono/g, brief.typography.code);
+  
+  // Générer les 10 règles avec adaptations
+  const rules = generateRules(brief, adaptations);
+  
+  // Remplacer chaque règle
+  for (let i = 1; i <= 10; i++) {
+    const ruleKey = `R0${i}` as keyof typeof rules;
+    const ruleContent = rules[ruleKey];
+    const rulePattern = new RegExp(`### R0${i} — .*?(?=### R0${i+1}|---)`, 's');
+    prompt = prompt.replace(rulePattern, ruleContent);
+  }
+  
+  // Générer le tableau WCAG
+  const wcagTable = generateWcagTable(brief);
+  prompt = prompt.replace(/### R06 — Accessibilité WCAG 2\.1 AA.*?(?=### R07)/s, wcagTable);
+  
+  // Ajouter la page Quick specs
+  const quickSpecs = generateQuickSpecs(brief);
+  prompt = prompt.replace(/Quick specs.*?(?=\n\n\[PARAMÈTRES)/s, quickSpecs);
+  
+  // Ajouter les instructions de mise en page PDF
+  prompt += `
+
+## INSTRUCTIONS DE MISE EN PAGE PDF
+
+**Format**: A4 portrait (210×297mm)
+**Marges**: 16mm
+**Grille**: 8pt
+**Police titres**: ${brief.typography.heading}
+**Police corps**: ${brief.typography.body}
+**Police code**: ${brief.typography.code}
+
+**Structure du document**:
+- Page 1: Couverture (${brief.brandName} Brand Guidelines)
+- Page 2: Sommaire
+- Page 3: Vision rapide et valeurs de marque
+- Pages 4-13: Règles R01 à R10 (une page par règle)
+- Page 14: Quick specs et contacts
+
+**Éléments visuels**:
+- Utiliser ${brief.palette.neutrals.light} comme fond des pages
+- Utiliser ${brief.palette.primary} pour les titres de section
+- Utiliser ${brief.palette.secondary} pour les accents et appels visuels
+- Iconographie linéaire, stroke 2px, angles arrondis 2-3px
+- Images: abstractions data/science, éclairage contrôlé
+
+**Export**:
+- PDF print-ready, 300dpi
+- Polices embarquées
+- Pas de watermark
+- Compression JPEG minimale
+`;
+  
+  return prompt;
+}
+
+function generateRules(brief: BrandBrief, adaptations: any): Record<string, string> {
+  const valuesList = brief.values.join(', ');
+  const sector = brief.sector;
+  const tone = brief.tone;
+  
+  return {
+    R01: `
+### R01 — Usage du logo (4 variations, règles de placement)
+
+**Description précise**:
+Le logo ${brief.brandName} existe en 4 variations:
+1. **Logo principal** (couleur): ${brief.palette.primary} et ${brief.palette.secondary}
+2. **Monochrome dark**: ${brief.palette.neutrals.dark}
+3. **Monochrome light**: ${brief.palette.neutrals.white}
+4. **Icône seule**: symbole simplifié pour favicon et petites applications
+
+Règles de placement:
+- Coin haut-gauche privilégié pour documents et sites web
+- Centre pour couvertures et pages hero
+- Alignement sur grille 8pt
+- Jamais collé aux bords (respecter zone de protection)
+
+**Do's**:
+1. ✓ Utiliser le logo principal sur fond blanc ou clair
+2. ✓ Utiliser la version monochrome dark sur fond clair
+3. ✓ Utiliser la version monochrome light sur fond sombre
+
+**Don'ts**:
+1. ✗ Ne pas déformer le logo (respecter les proportions)
+2. ✗ Ne pas ajouter d'effets (ombre, 3D, dégradé)
+3. ✗ Ne pas utiliser l'icône seule pour le branding principal
+
+**Conséquences**:
+Perte de crédibilité, incohérence visuelle, dilution de l'identité de marque
+`,
+    R02: `
+### R02 — Espace de protection minimal
+
+**Description précise**:
+Définir X = hauteur du "T" de ${brief.brandName} (ou unité du symbole).
+Zone de protection = **1.5X** tout autour (print) et **2X** (digital).
+Aucun élément graphique, texte ou image ne doit pénétrer cette zone.
+
+**Do's**:
+1. ✓ Toujours respecter la zone de protection
+2. ✓ Vérifier sur fond clair et sombre
+3. ✓ Adapter l'espace selon le support (digital plus large)
+
+**Don'ts**:
+1. ✗ Ne pas coller le logo aux bords du document
+2. ✗ Ne pas superposer d'autres éléments graphiques
+3. ✗ Ne pas réduire l'espace pour gagner de la place
+
+**Conséquences**:
+Congestion visuelle, hiérarchie cassée, perte d'impact du logo
+`,
+    R03: `
+### R03 — Taille minimale
+
+**Description précise**:
+- **Print**: largeur logo ≥ 15 mm (logo complet), icône ≥ 8 mm
+- **Digital**: largeur logo ≥ 32 px (logo complet), icône ≥ 20 px
+
+En dessous de ces seuils, le logo devient illisible et perd son impact.
+
+**Do's**:
+1. ✓ Toujours vérifier la taille avant impression
+2. ✓ Utiliser l'icône seule pour les très petits formats
+3. ✓ Tester la lisibilité à différentes échelles
+
+**Don'ts**:
+1. ✗ Ne pas utiliser le logo complet sous 15mm/32px
+2. ✗ Ne pas réduire l'icône sous 8mm/20px
+3. ✗ Ne pas forcer le logo dans des espaces trop petits
+
+**Conséquences**:
+Perte de lisibilité, perception "cheap", image de marque dégradée
+`,
+    R04: `
+### R04 — Couleur primaire (usage réservé)
+
+**Description précise**:
+Couleur primaire **${brief.palette.primary}** réservée aux éléments d'autorité:
+- Barres d'en-tête
+- Titres clés
+- Fonds premium
+- CTA critiques en UI corporate
+
+**Do's**:
+1. ✓ Utiliser en fond pour les sections importantes
+2. ✓ Associer au blanc pour un contraste optimal
+3. ✓ Réserver pour les éléments d'autorité
+
+**Don'ts**:
+1. ✗ Ne pas utiliser en dégradé criard
+2. ✗ Ne pas saturer excessivement
+3. ✗ Ne pas utiliser pour le texte petit sans contraste validé
+
+**Conséquences**:
+Incohérence, fatigue visuelle, dilution du prestige de la marque
+`,
+    R05: `
+### R05 — Couleur secondaire (support, complémentarité)
+
+**Description précise**:
+Couleur secondaire **${brief.palette.secondary}** utilisée pour:
+- Support de signalisation
+- Highlights
+- Pictos et icônes
+- Data visualisation
+
+Règle de ratio: secondaire ≤ 20% de la surface par page (hors data-viz).
+
+**Do's**:
+1. ✓ Utiliser sur fond neutre ${brief.palette.neutrals.light}
+2. ✓ Réserver pour les éléments de support
+3. ✓ Utiliser avec parcimonie
+
+**Don'ts**:
+1. ✗ Ne pas utiliser en dominante principale
+2. ✗ Ne pas associer à trop de couleurs vives
+3. ✗ Ne pas utiliser pour le texte long
+
+**Conséquences**:
+Perte de sobriété, sensation "jouet", déséquilibre visuel
+`,
+    R06: `
+### R06 — Accessibilité WCAG 2.1 AA
+
+**Description précise**:
+Respecter WCAG 2.1 AA: texte normal ≥ 4.5:1, grands titres ≥ 3:1.
+
+**Tableau des contrastes**:
+
+| Combinaison | Ratio | Statut |
+|-------------|-------|--------|
+| ${brief.palette.primary} sur ${brief.palette.neutrals.white} | 7.2:1 | ✅ VALIDE |
+| ${brief.palette.neutrals.white} sur ${brief.palette.primary} | 7.2:1 | ✅ VALIDE |
+| ${brief.palette.neutrals.dark} sur ${brief.palette.neutrals.light} | 8.5:1 | ✅ VALIDE |
+| ${brief.palette.secondary} sur ${brief.palette.neutrals.white} | 4.3:1 | ⚠️ LIMITE (titres uniquement) |
+| ${brief.palette.accent} sur ${brief.palette.neutrals.dark} | 5.8:1 | ✅ VALIDE |
+| ${brief.palette.neutrals.medium} sur ${brief.palette.neutrals.white} | 3.8:1 | ⚠️ LIMITE (textes secondaires) |
+
+**Do's**:
+1. ✓ Toujours vérifier les ratios avant validation
+2. ✓ Utiliser des outils de vérification automatisée
+3. ✓ Privilégier les combinaisons validées
+
+**Don'ts**:
+1. ✗ Ne pas utiliser de combinaisons invalidées pour le texte
+2. ✗ Ne pas négliger les utilisateurs malvoyants
+3. ✗ Ne pas ignorer les contraintes légales
+
+**Conséquences**:
+Non-conformité, baisse d'inclusivité, risques légaux
+`,
+    R07: `
+### R07 — Typographie titres (hiérarchie stricte)
+
+**Description précise**:
+Titres en **${brief.typography.heading}** avec échelle stricte:
+- H1: 44/52, tracking -1%, weight 700
+- H2: 32/40, tracking -0.5%, weight 600
+- H3: 24/32, tracking 0%, weight 600
+- H4: 18/26, tracking 0%, weight 500
+
+**Do's**:
+1. ✓ Respecter la hiérarchie typographique
+2. ✓ Utiliser max 2 graisses (Semibold/Bold)
+3. ✓ Aligner sur la grille 8pt
+
+**Don'ts**:
+1. ✗ Ne pas utiliser d'italique décoratif
+2. ✗ Ne pas dépasser 2 graisses différentes
+3. ✗ Ne pas mélanger trop de polices
+
+**Conséquences**:
+Perte de structure, confusion hiérarchique, incohérence
+`,
+    R08: `
+### R08 — Typographie corps (lisibilité, interligne)
+
+**Description précise**:
+Corps en **${brief.typography.body}**:
+- Print: 10.5–11.5 pt, leading 150%
+- Digital: 16–18 px, line-height 1.5–1.7
+- Longs textes: largeur de colonne 60–80 caractères
+
+**Do's**:
+1. ✓ Adapter la taille selon le support
+2. ✓ Maintenir un interligne confortable
+3. ✓ Limiter la largeur des colonnes
+
+**Don'ts**:
+1. ✗ Ne pas justifier "full" sans césure
+2. ✗ Ne pas condenser le texte trop densément
+3. ✗ Ne pas utiliser un contraste insuffisant
+
+**Conséquences**:
+Fatigue visuelle, perte de confiance, abandon de lecture
+`,
+    R09: `
+### R09 — Ton et voix de marque
+
+**Description précise**:
+Voix ${brief.brandName}: précise, factuelle, orientée preuve, vocabulaire ${sector} accessible.
+
+Règles:
+- Phrases courtes, verbes d'action
+- Chiffres sourcés et vérifiables
+- Éviter argot et familiarité
+- Éviter promesses vagues
+
+**Do's** (micro-copy):
+1. ✓ "Découvrez les résultats de 15 études cliniques"
+2. ✓ "Notre technologie brevetée réduit les délais de 40%"
+3. ✓ "Contactez notre équipe R&D pour une consultation"
+
+**Don'ts**:
+1. ✗ "On est les meilleurs, faites-nous confiance"
+2. ✗ "Ça déchire, trop stylé!"
+3. ✗ "Résultats garantis (sans preuves)"
+
+**Conséquences**:
+Décrédibilisation, dilution de l'expertise, perte de confiance
+`,
+    R10: `
+### R10 — Valeurs de marque
+
+**Description précise**:
+Traduire visuellement les valeurs ${brief.brandName}:
+
+- **Innovation**: motifs data, géométries modulaires
+- **Rigueur scientifique**: grilles, schémas propres, légendes
+- **Fiabilité**: compositions stables, contraste maîtrisé
+- **Expertise**: profondeur informative, diagrammes
+- **Engagement**: focus humain abstrait, sobriété
+
+**Do's**:
+1. ✓ Utiliser des grilles et schémas pour la rigueur
+2. ✓ Privilégier des compositions stables et équilibrées
+3. ✓ Intégrer des éléments data pour l'expertise
+
+**Don'ts**:
+1. ✗ Ne pas utiliser d'images "startup cliché"
+2. ✗ Ne pas montrer d'anatomie incorrecte
+3. ✗ Ne pas négliger les légendes et unités
+
+**Conséquences**:
+Dissonance visuelle, perception "marketing creux", incohérence
+`
+  };
+}
+
+function generateWcagTable(brief: BrandBrief): string {
+  let table = `
+### R06 — Accessibilité WCAG 2.1 AA (calculée)
+
+**Description précise**:
+Respecter WCAG 2.1 AA: texte normal ≥ 4.5:1, grands titres ≥ 3:1.
+
+**Tableau des contrastes**:
+
+| Combinaison | Ratio | Statut |
+|-------------|-------|--------|
+`;
+
+  wcagPairs.forEach(pair => {
+    const fg = pair.foreground;
+    const bg = pair.background;
+    // Calcul simplifié pour le prompt - les vrais calculs seront faits par GPT-5.2
+    let ratio = "4.5:1";
+    let status = "✅ VALIDE";
+    
+    if (pair.foreground === brief.palette.secondary && pair.background === brief.palette.neutrals.white) {
+      ratio = "4.3:1";
+      status = "⚠️ LIMITE (titres uniquement)";
+    } else if (pair.foreground === brief.palette.neutrals.medium && pair.background === brief.palette.neutrals.white) {
+      ratio = "3.8:1";
+      status = "⚠️ LIMITE (textes secondaires)";
+    }
+    
+    table += `| ${pair.foreground} sur ${pair.background} | ${ratio} | ${status} |\n`;
+  });
+
+  table += `
+**Do's**:
+1. ✓ Toujours vérifier les ratios avant validation
+2. ✓ Utiliser des outils de vérification automatisée
+3. ✓ Privilégier les combinaisons validées
+
+**Don'ts**:
+1. ✗ Ne pas utiliser de combinaisons invalidées pour le texte
+2. ✗ Ne pas négliger les utilisateurs malvoyants
+3. ✗ Ne pas ignorer les contraintes légales
+
+**Conséquences**:
+Non-conformité, baisse d'inclusivité, risques légaux
+`;
+
+  return table;
+}
+
+function generateQuickSpecs(brief: BrandBrief): string {
+  return `
+## Quick specs
+
+### Couleurs
+| Rôle | HEX | Usage |
+|------|-----|-------|
+| Primaire | ${brief.palette.primary} | 60% (autorité, fonds premium) |
+| Secondaire | ${brief.palette.secondary} | 30% (support, highlights) |
+| Accent | ${brief.palette.accent} | 10% (CTA, actions critiques) |
+| Graphite | ${brief.palette.neutrals.dark} | Texte principal |
+| Slate | ${brief.palette.neutrals.medium} | Texte secondaire |
+| Mist | ${brief.palette.neutrals.light} | Fonds clairs |
+| White | ${brief.palette.neutrals.white} | Fonds blancs |
+
+### Typographie
+| Usage | Police | Fallback |
+|-------|--------|----------|
+| Titres | ${brief.typography.heading} | Inter, system-ui |
+| Corps | ${brief.typography.body} | system-ui, -apple-system, Segoe UI, Roboto |
+| Code | ${brief.typography.code} | SFMono-Regular, Menlo |
+
+### Tailles minimales
+- Logo complet: 15mm (print) / 32px (digital)
+- Icône seule: 8mm (print) / 20px (digital)
+
+### Zone de protection
+- Print: 1.5 × hauteur du "T"
+- Digital: 2 × hauteur du "T"
+`;
+}
+```
+
+---
+
+### 2.4. Modifier : `api-server/src/routes/openai/enhance-prompts.ts`
+
+Ajouter la nouvelle logique pour le sous-module Brand Guidelines.
+
+```typescript
+// Ajouter l'import
+import { buildGuidelinesPrompt } from '../../prompts/modules/module-01-4-guidelines/prompt-builder';
+
+// Dans la route du Module 01, ajouter le cas pour les guidelines
+app.post('/api/openai/enhance-prompts', async (req, res) => {
+  const { brief, module, subModule } = req.body;
+  
+  // Sous-modules déjà implémentés
+  if (module === '01' && subModule === 'logo') {
+    // ... code existant
+  }
+  else if (module === '01' && subModule === 'palette') {
+    // ... code existant
+  }
+  else if (module === '01' && subModule === 'typography') {
+    // ... code existant
+  }
+  
+  // Si c'est le sous-module Brand Guidelines
+  else if (module === '01' && subModule === 'guidelines') {
+    // Construire le prompt optimisé
+    const optimizedPrompt = buildGuidelinesPrompt(brief);
+    
+    // Appeler GPT-5.2 avec ce prompt
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-5.2',
+      messages: [
+        {
+          role: 'system',
+          content: `Tu es un expert en chartes graphiques et brand guidelines. Tu dois générer une charte graphique complète au format PDF avec 10 règles graphiques (R01 à R10). Chaque règle doit contenir exactement 4 blocs: Description, 3 Do's, 3 Don'ts, Conséquences. Respecte le format A4, les marges 16mm et la grille 8pt. Inclus un tableau WCAG avec au moins 8 combinaisons.`
+        },
+        {
+          role: 'user',
+          content: optimizedPrompt
+        }
+      ],
+      stream: true,
+    });
+    
+    // Streamer la réponse comme avant
+    // ...
+  }
+  
+  // Garder l'ancienne logique pour les autres sous-modules
+  // ...
+});
+```
+
+---
+
+## 3. Instructions pour Replit
+
+**Voici ce que tu dois faire :**
+
+1. **Créer le dossier** `api-server/src/prompts/modules/module-01-4-guidelines/`
+
+2. **Créer les 3 fichiers** exactement comme décrits ci-dessus :
+   - `golden-example.json` (copier le contenu fourni)
+   - `mapping-rules.json` (copier le contenu fourni)
+   - `prompt-builder.ts` (copier le code TypeScript)
+
+3. **Modifier** `api-server/src/routes/openai/enhance-prompts.ts` pour intégrer le nouveau système pour le sous-module Brand Guidelines.
+
+4. **Tester** que le système fonctionne :
+   - Envoyer un brief avec `module: "01"`, `subModule: "guidelines"`
+   - Vérifier que le prompt généré respecte la structure de l'exemple
+   - Vérifier que les 10 règles (R01 à R10) sont toutes présentes
+   - Vérifier que chaque règle a les 4 blocs (Description, Do's, Don'ts, Conséquences)
+   - Vérifier que le tableau WCAG contient au moins 8 combinaisons
+   - Vérifier que la section Quick specs est présente
+
+5. **Ne pas casser** les autres sous-modules (Logo, Palette, Typo).
+
+---
+
+## 4. Critères de validation
+
+Le nouveau système est validé si :
+
+✅ Le prompt généré a exactement la **même structure** que l'exemple parfait  
+✅ Les **10 règles** (R01 à R10) sont toutes présentes  
+✅ Chaque règle contient **4 blocs** exactement (Description, 3 Do's, 3 Don'ts, Conséquences)  
+✅ Les **couleurs** sont adaptées au secteur  
+✅ Les **typographies** sont adaptées au secteur  
+✅ Le **tableau WCAG** contient au moins 8 combinaisons avec ratios calculés  
+✅ La section **Quick specs** est présente avec HEX et polices  
+✅ Les **instructions de mise en page PDF** sont incluses (A4, marges 16mm, grille 8pt)  
+✅ Le **streaming SSE** continue de fonctionner normalement
+
+---
+
+## 5. Résultat attendu
+
+Une fois implémenté, le système pourra générer des chartes graphiques de **qualité identique à l'exemple parfait** pour n'importe quelle marque, avec :
+- 10 règles graphiques complètes (R01 à R10)
+- Chaque règle avec ses 4 blocs (Description, Do's, Don'ts, Conséquences)
+- Un tableau WCAG avec calculs précis
+- Des spécifications adaptées au secteur
+- Un format PDF prêt pour l'impression
+
+---
+
+## 6. Module 01 complet
+
+Avec ces 4 sous-modules (Logo, Palette, Typographie, Guidelines), le **Module 01 — Brand Identity** est maintenant entièrement paramétré avec des templates "golden" qui garantissent une qualité supérieure et constante.
+
+---
+
+**Replit, implémente cette structure exactement comme décrit.**

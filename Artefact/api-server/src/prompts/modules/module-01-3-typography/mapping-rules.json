@@ -1,0 +1,145 @@
+{
+  "sectorFonts": {
+    "tech": {
+      "heading": {
+        "name": "Space Grotesk",
+        "url": "https://fonts.google.com/specimen/Space+Grotesk",
+        "weights": "300,400,500,600,700",
+        "fallbacks": ["'Inter'", "system-ui"]
+      },
+      "body": {
+        "name": "Inter",
+        "url": "https://fonts.google.com/specimen/Inter",
+        "weights": "400,500,600",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'", "Roboto"]
+      },
+      "accent": {
+        "name": "JetBrains Mono",
+        "url": "https://fonts.google.com/specimen/JetBrains+Mono",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'SF Mono'", "Menlo", "monospace"]
+      },
+      "ctaSize": "14px",
+      "captionSize": "12px",
+      "ctaUppercase": "ON"
+    },
+    "luxury": {
+      "heading": {
+        "name": "Cormorant Garamond",
+        "url": "https://fonts.google.com/specimen/Cormorant+Garamond",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "body": {
+        "name": "Montserrat",
+        "url": "https://fonts.google.com/specimen/Montserrat",
+        "weights": "300,400,500,600",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Cormorant SC",
+        "url": "https://fonts.google.com/specimen/Cormorant+SC",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "ctaSize": "12px",
+      "captionSize": "11px",
+      "ctaUppercase": "ON"
+    },
+    "streetwear": {
+      "heading": {
+        "name": "Bebas Neue",
+        "url": "https://fonts.google.com/specimen/Bebas+Neue",
+        "weights": "400",
+        "fallbacks": ["'Impact'", "'Arial Black'", "sans-serif"]
+      },
+      "body": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Bebas Neue",
+        "url": "https://fonts.google.com/specimen/Bebas+Neue",
+        "weights": "400",
+        "fallbacks": ["'Impact'", "'Arial Black'"]
+      },
+      "ctaSize": "16px",
+      "captionSize": "12px",
+      "ctaUppercase": "ON"
+    },
+    "fitness": {
+      "heading": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "600,700,800",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "body": {
+        "name": "Open Sans",
+        "url": "https://fonts.google.com/specimen/Open+Sans",
+        "weights": "400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "600,700,800",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "ctaSize": "16px",
+      "captionSize": "12px",
+      "ctaUppercase": "OFF"
+    },
+    "cosmetic": {
+      "heading": {
+        "name": "Playfair Display",
+        "url": "https://fonts.google.com/specimen/Playfair+Display",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "body": {
+        "name": "Nunito Sans",
+        "url": "https://fonts.google.com/specimen/Nunito+Sans",
+        "weights": "300,400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Playfair Display",
+        "url": "https://fonts.google.com/specimen/Playfair+Display",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "ctaSize": "14px",
+      "captionSize": "12px",
+      "ctaUppercase": "OFF"
+    }
+  },
+  "typographySpecs": {
+    "heading": {
+      "h1": { "size": "48px", "lineHeight": "1.15", "tracking": "-0.02em", "weight": "700" },
+      "h2": { "size": "36px", "lineHeight": "1.2", "tracking": "-0.015em", "weight": "600" },
+      "h3": { "size": "24px", "lineHeight": "1.3", "tracking": "-0.01em", "weight": "600" },
+      "h4": { "size": "20px", "lineHeight": "1.4", "tracking": "0em", "weight": "600" }
+    },
+    "body": {
+      "base": { "size": "16px", "lineHeight": "1.5", "tracking": "0em", "weight": "400" },
+      "small": { "size": "14px", "lineHeight": "1.5", "tracking": "0em", "weight": "400" },
+      "strong": { "weight": "600" }
+    }
+  },
+  "fontRationales": {
+    "Space Grotesk": "géométrie technique, idéale pour l'univers tech",
+    "Inter": "lisibilité supérieure, standard du design system moderne",
+    "JetBrains Mono": "précision engineering, parfait pour les données",
+    "Cormorant Garamond": "élégance intemporelle, héritage typographique",
+    "Montserrat": "modernité géométrique, polyvalence premium",
+    "Cormorant SC": "distinction raffinée, small caps de prestige",
+    "Bebas Neue": "impact visuel maximal, identité streetwear forte",
+    "Poppins": "dynamisme géométrique, énergie contrôlée",
+    "Open Sans": "neutralité fonctionnelle, performance sportive",
+    "Playfair Display": "élégance naturelle, sophistication cosmétique",
+    "Nunito Sans": "douceur fonctionnelle, bien-être visuel"
+  }
+}

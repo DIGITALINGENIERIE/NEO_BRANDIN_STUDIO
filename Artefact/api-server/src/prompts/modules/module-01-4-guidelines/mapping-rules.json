@@ -1,0 +1,81 @@
+{
+  "sectorAdaptations": {
+    "tech": {
+      "brandPersonality": "innovation, rigueur scientifique, fiabilité, expertise, engagement",
+      "visualLanguage": "data abstractions, grilles précises, géométries modulaires",
+      "iconStyle": "lignes fines, angles droits, précision technique",
+      "imageryStyle": "visualisations data, surfaces propres, éclairage contrôlé",
+      "defaultFonts": { "heading": "Space Grotesk", "body": "Inter", "code": "JetBrains Mono" }
+    },
+    "luxury": {
+      "brandPersonality": "excellence, héritage, raffinement, discrétion, prestige",
+      "visualLanguage": "élégance intemporelle, compositions asymétriques, espaces négatifs",
+      "iconStyle": "lignes élégantes, courbes parfaites, détails fins",
+      "imageryStyle": "matières nobles, ombres douces, profondeur contrôlée",
+      "defaultFonts": { "heading": "Cormorant Garamond", "body": "Montserrat", "code": "Cormorant SC" }
+    },
+    "streetwear": {
+      "brandPersonality": "authenticité, attitude, communauté, innovation urbaine, audace",
+      "visualLanguage": "typographie marquée, contrastes forts, compositions dynamiques",
+      "iconStyle": "traits épais, angles vifs, impact visuel",
+      "imageryStyle": "environnements urbains, lumière crue, authenticité",
+      "defaultFonts": { "heading": "Bebas Neue", "body": "Poppins", "code": "Bebas Neue" }
+    },
+    "fitness": {
+      "brandPersonality": "performance, dépassement, discipline, énergie, résultats",
+      "visualLanguage": "dynamisme, lignes de mouvement, gradients maîtrisés",
+      "iconStyle": "formes musculaires, flèches de progression, énergie",
+      "imageryStyle": "mouvement flouté, sueur, effort maîtrisé",
+      "defaultFonts": { "heading": "Poppins", "body": "Open Sans", "code": "Poppins" }
+    },
+    "cosmetic": {
+      "brandPersonality": "bien-être, pureté, naturel, efficacité douce, confiance",
+      "visualLanguage": "courbes organiques, dégradés subtils, douceur",
+      "iconStyle": "formes arrondies, traits fins, élégance naturelle",
+      "imageryStyle": "lumière naturelle, textures organiques, pureté",
+      "defaultFonts": { "heading": "Playfair Display", "body": "Nunito Sans", "code": "Playfair Display" }
+    }
+  },
+  "sectorPalettes": {
+    "tech": {
+      "primary": "#0B1F3B",
+      "secondary": "#12B5B0",
+      "accent": "#B7F000",
+      "neutrals": { "dark": "#101820", "medium": "#546A7B", "light": "#E9EEF2", "white": "#FFFFFF" }
+    },
+    "luxury": {
+      "primary": "#1A1008",
+      "secondary": "#C9A96E",
+      "accent": "#8B6F47",
+      "neutrals": { "dark": "#0D0A05", "medium": "#7A6A55", "light": "#F5F0E8", "white": "#FFFFFF" }
+    },
+    "streetwear": {
+      "primary": "#0A0A0A",
+      "secondary": "#FF3B30",
+      "accent": "#FFD60A",
+      "neutrals": { "dark": "#000000", "medium": "#3C3C3C", "light": "#F2F2F2", "white": "#FFFFFF" }
+    },
+    "fitness": {
+      "primary": "#0F172A",
+      "secondary": "#EF4444",
+      "accent": "#F97316",
+      "neutrals": { "dark": "#111827", "medium": "#6B7280", "light": "#F3F4F6", "white": "#FFFFFF" }
+    },
+    "cosmetic": {
+      "primary": "#2D1B2E",
+      "secondary": "#E8A0BF",
+      "accent": "#C77DFF",
+      "neutrals": { "dark": "#1A0F1B", "medium": "#9D8FA0", "light": "#FAF5FB", "white": "#FFFFFF" }
+    }
+  },
+  "wcagBaseRatios": [
+    { "label": "Primaire sur Blanc", "minRatio": 4.5 },
+    { "label": "Blanc sur Primaire", "minRatio": 4.5 },
+    { "label": "Sombre sur Clair", "minRatio": 4.5 },
+    { "label": "Secondaire sur Blanc", "minRatio": 3.0 },
+    { "label": "Accent sur Sombre", "minRatio": 4.5 },
+    { "label": "Moyen sur Blanc", "minRatio": 3.0 },
+    { "label": "Blanc sur Secondaire", "minRatio": 3.0 },
+    { "label": "Sombre sur Blanc", "minRatio": 4.5 }
+  ]
+}

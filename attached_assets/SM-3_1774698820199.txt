@@ -1,0 +1,639 @@
+Parfait. Voici le document d'instruction pour Replit concernant le **sous-module MOD-01.3 — Typography System**.
+
+---
+
+# INSTRUCTION POUR REPLIT AI
+
+## Module 01.3 — Typography System
+
+### Objectif
+
+Modifier l'application Neo Branding Studio pour implémenter un système de génération de systèmes typographiques **ultra-précis** pour le sous-module Typography System, en utilisant l'exemple parfait fourni comme **golden reference**.
+
+L'objectif est de garantir que **chaque génération** respecte exactement la structure, les spécifications techniques (tailles, graisses, tracking), les URLs Google Fonts, les variables CSS et les classes utilitaires de l'exemple, quels que soient les paramètres d'entrée.
+
+---
+
+## 1. Contexte
+
+**Fichier actuel à modifier** :  
+`api-server/src/routes/openai/enhance-prompts.ts` (section Module 01)
+
+**Données d'entrée du formulaire** :
+```typescript
+interface BrandBrief {
+  brandName: string;      // ex: "Theravectys"
+  sector: string;         // ex: "tech", "luxury", "streetwear", "fitness", "cosmetic"
+  tone: string;           // ex: "professionnel", "audacieux", "minimaliste"
+  values: string[];       // ex: ["innovation", "rigueur", "fiabilité"]
+  primaryColor: string;   // ex: "#003087" (couleur primaire de la palette)
+  secondaryColor: string; // ex: "#6C757D"
+  accentColor: string;    // ex: "#2F80ED"
+  neutrals: {
+    light: string;        // ex: "#F5F7FA"
+    dark: string;         // ex: "#0B1220"
+    text: string;         // ex: "#101828"
+    textSecondary: string;// ex: "#667085"
+  };
+}
+```
+
+**Sortie attendue** : Un prompt structuré qui générera un système typographique complet avec variables CSS, classes utilitaires et paires recommandées.
+
+---
+
+## 2. Ce qu'il faut créer
+
+### 2.1. Fichier : `api-server/src/prompts/modules/module-01-3-typography/golden-example.json`
+
+Copier exactement l'exemple parfait fourni ci-dessous. Ce fichier sert de **référence absolue** pour la structure et le niveau de qualité attendu.
+
+```json
+{
+  "module": "MOD-01.3 — Typography System",
+  "agent": "Brand Design Agent",
+  "goldenExample": "Génère le système typographique complet pour Theravectys (secteur tech, ton professionnel) en construisant une proposition de Typography System moderne, rigoureuse et fiable, prête à intégrer dans une charte graphique et un Design System. Le rendu doit être clair, structuré, sans interface confuse, sans texte illisible, sans watermark, sans artefacts IA, sans style vieux/obsolète, et sans désinvolture. Produis **(1)** une recommandation de polices via Google Fonts avec URLs exactes, **(2)** une spécification typographique complète (tailles, graisses, interlignages, tracking), **(3)** des fallbacks web-safe, **(4)** des variables CSS et classes utilitaires prêtes à copier-coller, **(5)** des paires typographiques recommandées selon des fonds de couleurs de la marque.\n\n### CONTEXTE MARQUE (à respecter)\n- Marque: **Theravectys**\n- Valeurs: innovation, rigueur scientifique, fiabilité, expertise, engagement\n- Style: tech premium, lisible, sobre, haute précision\n- Palette de fonds à utiliser pour les recommandations (avec HEX):  \n  - Fond sombre primaire: **#0B1220** (deep navy)  \n  - Fond clair: **#F5F7FA** (off-white)  \n  - Accent cyan: **#00D1FF**  \n  - Accent violet: **#6C5CE7**  \n  - Gris texte: **#101828** / Gris secondaire: **#667085**  \n\n---\n\n## 1) Police titres (h1/h2/h3)\nSélectionne une police **sans-serif** moderne, tech, excellente en UI + print, très bonne lisibilité, avec plusieurs graisses. Donne:\n- Nom de la police (Google Fonts)\n- **Google Fonts URL exacte**\n- Graisses à charger (weights)\n- Tailles imposées: **h1: 48px**, **h2: 36px**, **h3: 24px**\n- Recommandations: letter-spacing (tracking) + line-height\n- Usage: titres, sections, hero\n\nExigences typographiques titres:\n- h1: 48px, line-height 1.15, letter-spacing -0.02em, font-weight 700\n- h2: 36px, line-height 1.2, letter-spacing -0.015em, font-weight 600\n- h3: 24px, line-height 1.3, letter-spacing -0.01em, font-weight 600\n\n## 2) Police corps (paragraphes)\nSélectionne une police optimisée lecture longue (UI + docs scientifiques), neutre, fiable, très lisible sur fond clair et sombre. Donne:\n- Nom de la police (Google Fonts)\n- **URL exacte**\n- Taille imposée: **16px**\n- Interligne imposé: **line-height 1.5**\n- Graisses à charger (weights)\n- Recommandations: paragraph spacing, max-width lecture (en ch)\n\nExigences corps:\n- body: 16px, line-height 1.5, letter-spacing 0em, font-weight 400\n- emphasis/strong: 500/600\n- small: 14px, line-height 1.5, font-weight 400\n\n## 3) Police accent (CTA/boutons/captions)\nSélectionne une police accent qui renforce le caractère tech (CTA nets, captions UI, labels, chiffres lisibles), idéalement avec une sensation \"engineered\". Donne:\n- Nom de la police (Google Fonts)\n- **URL exacte**\n- Tailles:\n  - CTA/button: 14px ou 16px (précise laquelle et pourquoi)\n  - caption/label: 12px ou 13px\n- Graisses: 600/700 recommandées\n- Recommandations: letter-spacing légèrement positif pour CTA (ex: +0.02em)\n\n## 4) Fallbacks web-safe (2 par police)\nPour **chaque** police (titres, corps, accent), fournis **exactement 2** fallbacks web-safe, ex:\n- system-ui\n- -apple-system\n- \"Segoe UI\"\n- Arial\n- Helvetica\n(Choisis 2 adaptés et cohérents par police.)\n\n## 5) Variables CSS\nGénère les variables CSS suivantes:\n- `--font-heading: \"…\", fallback1, fallback2;`\n- `--font-body: \"…\", fallback1, fallback2;`\n- `--font-accent: \"…\", fallback1, fallback2;`\n\nInclure aussi (si pertinent) variables de weights:\n- `--weight-regular: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;`\n\n## 6) Classes utilitaires (prêtes à copier-coller)\nFournis un bloc CSS complet avec:\n- `.heading-xl` (h1-like: 48px, lh 1.15, -0.02em)\n- `.heading-lg` (h2-like: 36px, lh 1.2, -0.015em)\n- `.body-md` (16px, lh 1.5)\n- `.caption` (12–13px, lh 1.4, +0.01em)\n- `.cta` (14–16px, lh 1.1–1.2, +0.02em, uppercase option: préciser ON/OFF)\n\nInclure:\n- `font-family`\n- `font-weight`\n- `font-size`\n- `line-height`\n- `letter-spacing`\n- `color` recommandé (utiliser #101828 sur fond clair, #F5F7FA sur fond sombre)\n\n## 7) Paires recommandées (quelle police sur quel fond)\nDonne un tableau clair \"Pairings\" (au moins 6 lignes) indiquant:\n- Contexte (ex: Landing hero, Documentation, Dashboard UI, CTA banner, Footer, Modal)\n- Police titres / police corps / police accent\n- Fond (choisir parmi **#0B1220**, **#F5F7FA**, **#00D1FF**, **#6C5CE7**)\n- Couleur texte (HEX) + ratio de contraste visé (ex: ≥ 4.5:1)\n- Règles: quand utiliser l'accent (CTA uniquement, labels, chiffres)\n\n---\n\n### CONTRAINTES \"NEGATIVE\"\nNe pas produire: vieux, obsolète, câbles apparents en désordre, interface confuse, erreurs visibles, bugs, désinvolte, informel, trop décontracté, argot, watermark, texte illisible, compression JPEG visible, artefacts IA, membres supplémentaires, anatomie incorrecte.\n\n### FORMAT DE SORTIE OBLIGATOIRE\n1) Un résumé en 6 lignes max (\"Typography rationale\")  \n2) Sections numérotées 1→7 comme ci-dessus  \n3) Un bloc final \"Copier-coller CSS\" (variables + classes)  \n\n[PARAMÈTRES TECHNIQUES]  \n- tool: RoboNeo Typography System Generator  \n- language: fr-FR (tech terms en anglais)  \n- output_format: structured_markdown + css_code_block  \n- font_source: Google Fonts (URLs explicites)  \n- color_profile: sRGB  \n- constraints: no_watermark, no_illegible_text, no_ai_artifacts, professional_tone  \n- canvas_preview: 1920x1080px, background variants (#0B1220, #F5F7FA)  \n- export: CSS (UTF-8), Markdown spec sheet, print-ready PDF A4 (300dpi)",
+  "structure": {
+    "sections": [
+      "Typography rationale",
+      "1) Police titres",
+      "2) Police corps",
+      "3) Police accent",
+      "4) Fallbacks web-safe",
+      "5) Variables CSS",
+      "6) Classes utilitaires",
+      "7) Paires recommandées",
+      "Copier-coller CSS"
+    ],
+    "requiredElements": [
+      "Google Fonts URLs exactes",
+      "h1: 48px, h2: 36px, h3: 24px",
+      "body: 16px, line-height 1.5",
+      "2 fallbacks par police",
+      "Variables CSS",
+      "Classes utilitaires",
+      "Tableau Pairings avec 6 lignes minimum"
+    ]
+  }
+}
+```
+
+---
+
+### 2.2. Fichier : `api-server/src/prompts/modules/module-01-3-typography/mapping-rules.json`
+
+Ce fichier définit les polices par défaut selon le secteur et les règles d'adaptation.
+
+```json
+{
+  "sectorFonts": {
+    "tech": {
+      "heading": {
+        "name": "Space Grotesk",
+        "url": "https://fonts.google.com/specimen/Space+Grotesk",
+        "weights": "300,400,500,600,700",
+        "fallbacks": ["'Inter'", "system-ui"]
+      },
+      "body": {
+        "name": "Inter",
+        "url": "https://fonts.google.com/specimen/Inter",
+        "weights": "400,500,600",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'", "Roboto"]
+      },
+      "accent": {
+        "name": "JetBrains Mono",
+        "url": "https://fonts.google.com/specimen/JetBrains+Mono",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'SF Mono'", "Menlo", "monospace"]
+      },
+      "ctaSize": "14px",
+      "captionSize": "12px",
+      "ctaUppercase": "ON"
+    },
+    "luxury": {
+      "heading": {
+        "name": "Cormorant Garamond",
+        "url": "https://fonts.google.com/specimen/Cormorant+Garamond",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "body": {
+        "name": "Montserrat",
+        "url": "https://fonts.google.com/specimen/Montserrat",
+        "weights": "300,400,500,600",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Cormorant SC",
+        "url": "https://fonts.google.com/specimen/Cormorant+SC",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "ctaSize": "12px",
+      "captionSize": "11px",
+      "ctaUppercase": "ON"
+    },
+    "streetwear": {
+      "heading": {
+        "name": "Bebas Neue",
+        "url": "https://fonts.google.com/specimen/Bebas+Neue",
+        "weights": "400",
+        "fallbacks": ["'Impact'", "'Arial Black'", "sans-serif"]
+      },
+      "body": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Bebas Neue",
+        "url": "https://fonts.google.com/specimen/Bebas+Neue",
+        "weights": "400",
+        "fallbacks": ["'Impact'", "'Arial Black'"]
+      },
+      "ctaSize": "16px",
+      "captionSize": "12px",
+      "ctaUppercase": "ON"
+    },
+    "fitness": {
+      "heading": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "600,700,800",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "body": {
+        "name": "Open Sans",
+        "url": "https://fonts.google.com/specimen/Open+Sans",
+        "weights": "400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Poppins",
+        "url": "https://fonts.google.com/specimen/Poppins",
+        "weights": "600,700,800",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "ctaSize": "16px",
+      "captionSize": "12px",
+      "ctaUppercase": "OFF"
+    },
+    "cosmetic": {
+      "heading": {
+        "name": "Playfair Display",
+        "url": "https://fonts.google.com/specimen/Playfair+Display",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "body": {
+        "name": "Nunito Sans",
+        "url": "https://fonts.google.com/specimen/Nunito+Sans",
+        "weights": "300,400,500,600,700",
+        "fallbacks": ["system-ui", "-apple-system", "'Segoe UI'"]
+      },
+      "accent": {
+        "name": "Playfair Display",
+        "url": "https://fonts.google.com/specimen/Playfair+Display",
+        "weights": "400,500,600,700",
+        "fallbacks": ["'Times New Roman'", "serif"]
+      },
+      "ctaSize": "14px",
+      "captionSize": "12px",
+      "ctaUppercase": "OFF"
+    }
+  },
+  "typographySpecs": {
+    "heading": {
+      "h1": { "size": "48px", "lineHeight": "1.15", "tracking": "-0.02em", "weight": "700" },
+      "h2": { "size": "36px", "lineHeight": "1.2", "tracking": "-0.015em", "weight": "600" },
+      "h3": { "size": "24px", "lineHeight": "1.3", "tracking": "-0.01em", "weight": "600" },
+      "h4": { "size": "20px", "lineHeight": "1.4", "tracking": "0em", "weight": "600" }
+    },
+    "body": {
+      "base": { "size": "16px", "lineHeight": "1.5", "tracking": "0em", "weight": "400" },
+      "small": { "size": "14px", "lineHeight": "1.5", "tracking": "0em", "weight": "400" },
+      "strong": { "weight": "600" }
+    }
+  }
+}
+```
+
+---
+
+### 2.3. Fichier : `api-server/src/prompts/modules/module-01-3-typography/prompt-builder.ts`
+
+Ce fichier construit le prompt final en remplaçant les parties variables de l'exemple parfait.
+
+```typescript
+import { goldenExample } from './golden-example.json';
+import { sectorFonts, typographySpecs } from './mapping-rules.json';
+
+interface BrandBrief {
+  brandName: string;
+  sector: string;
+  tone: string;
+  values: string[];
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  neutrals: {
+    light: string;      // fond clair
+    dark: string;       // fond sombre
+    text: string;       // texte principal
+    textSecondary: string; // texte secondaire
+  };
+}
+
+interface FontConfig {
+  name: string;
+  url: string;
+  weights: string;
+  fallbacks: string[];
+}
+
+export function buildTypographyPrompt(brief: BrandBrief): string {
+  // Récupérer les polices selon le secteur
+  const fonts = sectorFonts[brief.sector] || sectorFonts.tech;
+  
+  // Construire la description des valeurs
+  const valuesText = brief.values.join(', ');
+  
+  // Adapter le style selon le ton
+  const toneModifier = getToneModifier(brief.tone);
+  
+  // Construire le prompt final
+  let prompt = goldenExample.goldenExample;
+  
+  // Remplacer les variables de base
+  prompt = prompt.replace(/Theravectys/g, brief.brandName);
+  prompt = prompt.replace(/secteur tech/g, `secteur ${brief.sector}`);
+  prompt = prompt.replace(/ton professionnel/g, `ton ${brief.tone}`);
+  prompt = prompt.replace(/innovation, rigueur scientifique, fiabilité, expertise, engagement/g, valuesText);
+  
+  // Remplacer les couleurs de contexte
+  prompt = prompt.replace(/#0B1220/g, brief.neutrals.dark);
+  prompt = prompt.replace(/#F5F7FA/g, brief.neutrals.light);
+  prompt = prompt.replace(/#00D1FF/g, brief.accentColor);
+  prompt = prompt.replace(/#6C5CE7/g, brief.secondaryColor);
+  prompt = prompt.replace(/#101828/g, brief.neutrals.text);
+  prompt = prompt.replace(/#667085/g, brief.neutrals.textSecondary);
+  
+  // Section 1: Police titres
+  const headingSection = `
+## 1) Police titres (h1/h2/h3)
+- Nom de la police: **${fonts.heading.name}** (Google Fonts)
+- **Google Fonts URL exacte**: ${fonts.heading.url}
+- Graisses à charger: ${fonts.heading.weights}
+- Tailles imposées: 
+  - h1: ${typographySpecs.heading.h1.size}, line-height ${typographySpecs.heading.h1.lineHeight}, letter-spacing ${typographySpecs.heading.h1.tracking}, font-weight ${typographySpecs.heading.h1.weight}
+  - h2: ${typographySpecs.heading.h2.size}, line-height ${typographySpecs.heading.h2.lineHeight}, letter-spacing ${typographySpecs.heading.h2.tracking}, font-weight ${typographySpecs.heading.h2.weight}
+  - h3: ${typographySpecs.heading.h3.size}, line-height ${typographySpecs.heading.h3.lineHeight}, letter-spacing ${typographySpecs.heading.h3.tracking}, font-weight ${typographySpecs.heading.h3.weight}
+- Usage: titres, sections, hero, navigation principale
+- Recommandation typographique: famille ${fonts.heading.name} pour tous les titres, avec une hiérarchie claire basée sur les poids et tailles définis.
+`;
+  
+  // Section 2: Police corps
+  const bodySection = `
+## 2) Police corps (paragraphes)
+- Nom de la police: **${fonts.body.name}** (Google Fonts)
+- **URL exacte**: ${fonts.body.url}
+- Taille imposée: ${typographySpecs.body.base.size}
+- Interligne imposé: ${typographySpecs.body.base.lineHeight}
+- Graisses à charger: ${fonts.body.weights}
+- Recommandations: 
+  - Paragraph spacing: 1.5em
+  - Max-width lecture: 70ch pour une lisibilité optimale
+  - ${fonts.body.name} assure une excellente lisibilité sur écran comme sur papier
+`;
+  
+  // Section 3: Police accent
+  const accentSection = `
+## 3) Police accent (CTA/boutons/captions)
+- Nom de la police: **${fonts.accent.name}** (Google Fonts)
+- **URL exacte**: ${fonts.accent.url}
+- Tailles:
+  - CTA/button: ${fonts.ctaSize} (choix optimal pour les interfaces tech, offre un bon équilibre entre présence et discrétion)
+  - caption/label: ${fonts.captionSize}
+- Graisses: 600/700 recommandées
+- Recommandations: letter-spacing légèrement positif pour CTA: +0.02em, renforce le caractère "engineered"
+- Uppercase: ${fonts.ctaUppercase === 'ON' ? 'ACTIVÉ pour les boutons CTA (renforce l'impact et la lisibilité)' : 'DÉSACTIVÉ (privilégier le capitalisation standard)'}
+`;
+  
+  // Section 4: Fallbacks web-safe
+  const fallbacksSection = `
+## 4) Fallbacks web-safe (2 par police)
+- Police titres: ${fonts.heading.name} → ${fonts.heading.fallbacks.join(', ')}
+- Police corps: ${fonts.body.name} → ${fonts.body.fallbacks.join(', ')}
+- Police accent: ${fonts.accent.name} → ${fonts.accent.fallbacks.join(', ')}
+`;
+  
+  // Section 5: Variables CSS
+  const cssVariablesSection = `
+## 5) Variables CSS
+\`\`\`css
+:root {
+  /* Font families */
+  --font-heading: '${fonts.heading.name}', ${fonts.heading.fallbacks.join(', ')};
+  --font-body: '${fonts.body.name}', ${fonts.body.fallbacks.join(', ')};
+  --font-accent: '${fonts.accent.name}', ${fonts.accent.fallbacks.join(', ')};
+  
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  
+  /* Font sizes */
+  --text-xs: ${fonts.captionSize};
+  --text-sm: 14px;
+  --text-base: ${typographySpecs.body.base.size};
+  --text-lg: ${typographySpecs.heading.h3.size};
+  --text-xl: ${typographySpecs.heading.h2.size};
+  --text-2xl: ${typographySpecs.heading.h1.size};
+  
+  /* Line heights */
+  --leading-tight: ${typographySpecs.heading.h1.lineHeight};
+  --leading-normal: ${typographySpecs.body.base.lineHeight};
+  --leading-relaxed: 1.75;
+  
+  /* Letter spacing */
+  --tracking-tight: ${typographySpecs.heading.h1.tracking};
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+}
+\`\`\`
+`;
+  
+  // Section 6: Classes utilitaires
+  const utilityClassesSection = `
+## 6) Classes utilitaires (prêtes à copier-coller)
+\`\`\`css
+/* Headings */
+.heading-xl {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: ${brief.neutrals.text};
+}
+
+.heading-lg {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  letter-spacing: ${typographySpecs.heading.h2.tracking};
+  color: ${brief.neutrals.text};
+}
+
+/* Body */
+.body-md {
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  color: ${brief.neutrals.text};
+}
+
+/* Caption */
+.caption {
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: ${brief.neutrals.textSecondary};
+}
+
+/* CTA Button */
+.cta {
+  font-family: var(--font-accent);
+  font-weight: var(--weight-semibold);
+  font-size: ${fonts.ctaSize};
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  ${fonts.ctaUppercase === 'ON' ? 'text-transform: uppercase;' : ''}
+  color: ${brief.neutrals.light};
+  background: ${brief.primaryColor};
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.cta:hover {
+  background: ${adjustColor(brief.primaryColor, -10)};
+  transform: translateY(-1px);
+}
+\`\`\`
+`;
+  
+  // Section 7: Paires recommandées
+  const pairingsSection = `
+## 7) Paires recommandées (quelle police sur quel fond)
+
+| Contexte | Police titres | Police corps | Police accent | Fond | Couleur texte | Ratio | Règles |
+|----------|--------------|--------------|---------------|------|---------------|-------|--------|
+| Landing hero | ${fonts.heading.name} | - | - | ${brief.neutrals.dark} | ${brief.neutrals.light} | ≥ 7:1 | Titres percutants sur fond sombre |
+| Documentation | ${fonts.heading.name} | ${fonts.body.name} | - | ${brief.neutrals.light} | ${brief.neutrals.text} | ≥ 4.5:1 | Lecture longue optimale |
+| Dashboard UI | ${fonts.heading.name} | ${fonts.body.name} | ${fonts.accent.name} | ${brief.neutrals.light} | ${brief.neutrals.text} | ≥ 4.5:1 | Données techniques lisibles |
+| CTA banner | ${fonts.heading.name} | - | ${fonts.accent.name} | ${brief.primaryColor} | ${brief.neutrals.light} | ≥ 4.5:1 | Accent sur conversion |
+| Footer | ${fonts.heading.name} | ${fonts.body.name} | - | ${brief.neutrals.dark} | ${brief.neutrals.textSecondary} | ≥ 4.5:1 | Informations secondaires |
+| Modal | ${fonts.heading.name} | ${fonts.body.name} | ${fonts.accent.name} | ${brief.neutrals.light} | ${brief.neutrals.text} | ≥ 4.5:1 | Focus utilisateur |
+
+**Règles d'utilisation de l'accent**:
+- Utiliser ${fonts.accent.name} UNIQUEMENT pour:
+  - Les CTA (boutons d'action)
+  - Les labels de formulaire
+  - Les chiffres et données techniques
+  - Les codes et éléments de programmation
+- Ne PAS utiliser pour les textes longs ou les paragraphes
+`;
+  
+  // Assembler le prompt final
+  prompt = prompt.replace(/## 1\) Police titres.*?(?=## 2\) Police corps)/s, headingSection);
+  prompt = prompt.replace(/## 2\) Police corps.*?(?=## 3\) Police accent)/s, bodySection);
+  prompt = prompt.replace(/## 3\) Police accent.*?(?=## 4\) Fallbacks)/s, accentSection);
+  prompt = prompt.replace(/## 4\) Fallbacks web-safe.*?(?=## 5\) Variables CSS)/s, fallbacksSection);
+  prompt = prompt.replace(/## 5\) Variables CSS.*?(?=## 6\) Classes utilitaires)/s, cssVariablesSection);
+  prompt = prompt.replace(/## 6\) Classes utilitaires.*?(?=## 7\) Paires recommandées)/s, utilityClassesSection);
+  prompt = prompt.replace(/## 7\) Paires recommandées.*?(?=---)/s, pairingsSection);
+  
+  // Ajouter le résumé (Typography rationale)
+  const rationale = `
+## Typography rationale
+
+**${brief.brandName}** adopte un système typographique ${brief.tone} aligné sur son positionnement ${brief.sector}.
+
+- **${fonts.heading.name}** pour les titres: ${getFontRationale(fonts.heading.name, brief.sector)}
+- **${fonts.body.name}** pour le corps: lisibilité optimale sur tous supports
+- **${fonts.accent.name}** pour l'accent: renforce le caractère ${brief.sector === 'tech' ? 'technique et précis' : brief.sector === 'luxury' ? 'élégant et distinctif' : 'identitaire et mémorable'}
+
+Cette combinaison garantit:
+- Hiérarchie visuelle claire (h1→h2→h3→body)
+- Accessibilité WCAG 2.1 AA (contrasts validés)
+- Scalabilité responsive (16px base)
+- Cohérence cross-platform (fallbacks web-safe)
+`;
+  
+  // Insérer le résumé au début
+  prompt = prompt.replace(/Génère le système typographique/, `${rationale}\n\nGénère le système typographique`);
+  
+  return prompt;
+}
+
+// Fonctions utilitaires
+function getToneModifier(tone: string): string {
+  const modifiers: Record<string, string> = {
+    professionnel: " avec une approche maîtrisée et experte",
+    audacieux: " avec une touche d'innovation disruptive",
+    minimaliste: " dans une approche épurée et essentielle"
+  };
+  return modifiers[tone] || "";
+}
+
+function getFontRationale(fontName: string, sector: string): string {
+  const rationales: Record<string, string> = {
+    'Space Grotesk': 'géométrie technique, idéale pour l\'univers tech',
+    'Inter': 'lisibilité supérieure, standard du design system moderne',
+    'JetBrains Mono': 'précision engineering, parfait pour les données',
+    'Cormorant Garamond': 'élégance intemporelle, héritage typographique',
+    'Montserrat': 'modernité géométrique, polyvalence premium',
+    'Bebas Neue': 'impact visuel maximal, identité streetwear forte',
+    'Poppins': 'dynamisme géométrique, énergie contrôlée',
+    'Open Sans': 'neutralité fonctionnelle, performance sportive',
+    'Playfair Display': 'élégance naturelle, sophistication cosmétique',
+    'Nunito Sans': 'douceur fonctionnelle, bien-être visuel'
+  };
+  return rationales[fontName] || `parfaite pour l'univers ${sector}`;
+}
+
+function adjustColor(hex: string, percent: number): string {
+  // Conversion simplifiée pour le prompt
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  
+  const adjust = (c: number) => {
+    const newC = c + (c * percent / 100);
+    return Math.min(255, Math.max(0, Math.round(newC)));
+  };
+  
+  const newR = adjust(r);
+  const newG = adjust(g);
+  const newB = adjust(b);
+  
+  return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+}
+```
+
+---
+
+### 2.4. Modifier : `api-server/src/routes/openai/enhance-prompts.ts`
+
+Ajouter la nouvelle logique pour le sous-module Typography System.
+
+```typescript
+// Ajouter l'import
+import { buildTypographyPrompt } from '../../prompts/modules/module-01-3-typography/prompt-builder';
+
+// Dans la route du Module 01, ajouter le cas pour la typographie
+app.post('/api/openai/enhance-prompts', async (req, res) => {
+  const { brief, module, subModule } = req.body;
+  
+  // Sous-modules déjà implémentés
+  if (module === '01' && subModule === 'logo') {
+    // ... code existant
+  }
+  else if (module === '01' && subModule === 'palette') {
+    // ... code existant
+  }
+  
+  // Si c'est le sous-module Typography System
+  else if (module === '01' && subModule === 'typography') {
+    // Construire le prompt optimisé
+    const optimizedPrompt = buildTypographyPrompt(brief);
+    
+    // Appeler GPT-5.2 avec ce prompt
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-5.2',
+      messages: [
+        {
+          role: 'system',
+          content: `Tu es un expert en typographie et design system. Tu dois générer un système typographique complet, structuré, avec variables CSS et classes utilitaires. Respecte EXACTEMENT la structure de l'exemple fourni. Utilise les URLs Google Fonts exactes. Fournis les fallbacks web-safe. Calcule les paires recommandées avec les ratios de contraste.`
+        },
+        {
+          role: 'user',
+          content: optimizedPrompt
+        }
+      ],
+      stream: true,
+    });
+    
+    // Streamer la réponse comme avant
+    // ...
+  }
+  
+  // Garder l'ancienne logique pour les autres sous-modules
+  // ...
+});
+```
+
+---
+
+## 3. Instructions pour Replit
+
+**Voici ce que tu dois faire :**
+
+1. **Créer le dossier** `api-server/src/prompts/modules/module-01-3-typography/`
+
+2. **Créer les 3 fichiers** exactement comme décrits ci-dessus :
+   - `golden-example.json` (copier le contenu fourni)
+   - `mapping-rules.json` (copier le contenu fourni)
+   - `prompt-builder.ts` (copier le code TypeScript)
+
+3. **Modifier** `api-server/src/routes/openai/enhance-prompts.ts` pour intégrer le nouveau système pour le sous-module Typography System.
+
+4. **Tester** que le système fonctionne :
+   - Envoyer un brief avec `module: "01"`, `subModule: "typography"`
+   - Vérifier que le prompt généré respecte la structure de l'exemple
+   - Vérifier que les polices sont adaptées au secteur
+   - Vérifier que les URLs Google Fonts sont exactes
+   - Vérifier que les variables CSS et classes utilitaires sont présentes
+   - Vérifier que le tableau Pairings contient au moins 6 lignes
+
+5. **Ne pas casser** les autres sous-modules (Logo, Palette, Guidelines) qui continuent à utiliser l'ancienne logique pour l'instant.
+
+---
+
+## 4. Critères de validation
+
+Le nouveau système est validé si :
+
+✅ Le prompt généré a exactement la **même structure** que l'exemple parfait  
+✅ Toutes les **sections** sont présentes (1 à 7 + résumé + CSS)  
+✅ Les **polices** sont adaptées au secteur (tech → Space Grotesk/Inter, luxe → Cormorant/Montserrat, etc.)  
+✅ Les **URLs Google Fonts** sont exactes et fonctionnelles  
+✅ Les **tailles imposées** sont respectées (h1:48px, h2:36px, h3:24px, body:16px)  
+✅ Les **2 fallbacks** par police sont présents  
+✅ Les **variables CSS** sont complètes (font families, weights, sizes)  
+✅ Les **classes utilitaires** sont prêtes à copier-coller  
+✅ Le tableau **Pairings** contient au moins 6 lignes avec contextes différents  
+✅ Le **résumé** (Typography rationale) est présent et concis  
+✅ Le **streaming SSE** continue de fonctionner normalement
+
+---
+
+## 5. Résultat attendu
+
+Une fois implémenté, le système pourra générer des systèmes typographiques de **qualité identique à l'exemple parfait** pour n'importe quelle marque, avec :
+- Des polices adaptées au secteur
+- Des URLs Google Fonts exactes
+- Des variables CSS et classes utilitaires prêtes à l'emploi
+- Un tableau de paires recommandées avec ratios de contraste
+
+---
+
+**Replit, implémente cette structure exactement comme décrit.**

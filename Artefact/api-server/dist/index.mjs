@@ -39596,6 +39596,196 @@ R\xE9ponds en JSON: [{"persona": "nom du persona", "variant": "prompt adapt\xE9"
   }
 }
 
+// src/prompts/modules/module-01-1-logo/prompt-builder.ts
+var SECTOR_MAPPINGS = {
+  tech: {
+    style: "corporate minimaliste, sobre et stable",
+    ambiance: "trusted technology: s\xE9rieux, moderne, non ostentatoire",
+    symbolConcept: "vecteurs, trajectoires contr\xF4l\xE9es et rigueur scientifique",
+    primaryColor: "#003087",
+    secondaryColor: "#6C757D",
+    accentColor: "#2F80ED"
+  },
+  luxury: {
+    style: "minimaliste \xE9l\xE9gant, pr\xE9cision horlog\xE8re",
+    ambiance: "prestige intemporel: \xE9l\xE9gance, raffinement, discr\xE9tion",
+    symbolConcept: "\xE9l\xE9gance, h\xE9ritage, pr\xE9cision artisanale",
+    primaryColor: "#1A2C3E",
+    secondaryColor: "#C5A572",
+    accentColor: "#D4AF37"
+  },
+  streetwear: {
+    style: "audacieux typographique, authenticit\xE9 urbaine",
+    ambiance: "street credibility: authentique, urbain, sans compromis",
+    symbolConcept: "\xE9nergie urbaine, mouvement, authenticit\xE9",
+    primaryColor: "#1A1A1A",
+    secondaryColor: "#E63946",
+    accentColor: "#F4A261"
+  },
+  fitness: {
+    style: "dynamique \xE9nergique, angles vifs",
+    ambiance: "performance: motivation, d\xE9passement, force ma\xEEtris\xE9e",
+    symbolConcept: "dynamique, progression, force ma\xEEtris\xE9e",
+    primaryColor: "#1E3A8A",
+    secondaryColor: "#EF4444",
+    accentColor: "#22C55E"
+  },
+  cosmetic: {
+    style: "doux organique, puret\xE9, rondeurs subtiles",
+    ambiance: "beaut\xE9 naturelle: douceur, efficacit\xE9, bien-\xEAtre",
+    symbolConcept: "puret\xE9, \xE9clat, transformation naturelle",
+    primaryColor: "#F5E6D3",
+    secondaryColor: "#D4A5A5",
+    accentColor: "#A7C7B9"
+  }
+};
+var GOLDEN_EXAMPLE = `Cr\xE9e le logo de Theravectys pour une marque tech corporate positionn\xE9e sur l'innovation, la rigueur scientifique et la fiabilit\xE9 (expertise B2B, environnement R&D/ing\xE9nierie). Le logo doit inspirer stabilit\xE9, confiance et pr\xE9cision, avec une ex\xE9cution premium, lisible et scalable pour usages web/app, documents officiels et supports institutionnels.
+
+**Direction artistique (style, esprit, ambiance)**
+Style corporate minimaliste, sobre et stable. Composition nette, g\xE9om\xE9trie propre, alignements rigoureux (grid-based design), contraste ma\xEEtris\xE9. Ambiance "trusted technology": s\xE9rieux, moderne, non ostentatoire. \xC9viter tout effet gadget. Rendu final **flat vector** (pas de 3D, pas de textures), contours propres, angles ma\xEEtris\xE9s (mix subtil d'angles droits et coins l\xE9g\xE8rement arrondis pour la fiabilit\xE9).
+
+**Typographie recommand\xE9e (sans-serif solide)**
+- Police principale: **IBM Plex Sans** (Google Fonts) \u2014 https://fonts.google.com/specimen/IBM+Plex+Sans
+  - Recommandation: "Theravectys" en **SemiBold 600** (tracking -1% \xE0 0%), capitalisation: "Theravectys" (T majuscule, reste minuscules)
+- Alternatives: **Roboto** https://fonts.google.com/specimen/Roboto ; **Lato** https://fonts.google.com/specimen/Lato ; **Inter** https://fonts.google.com/specimen/Inter
+- Ajustements: kerning optique activ\xE9, hauteur de x confortable, lisibilit\xE9 maximale \xE0 24px de largeur.
+
+**Symbole / ic\xF4ne (description pr\xE9cise + inspirations)**
+Cr\xE9er un symbole abstrait \xE0 gauche du wordmark, \xE9voquant \xE0 la fois **vecteurs**, **trajectoires contr\xF4l\xE9es** et **rigueur scientifique**:
+- Ic\xF4ne bas\xE9e sur un **"V" stylis\xE9** construit avec 2 segments g\xE9om\xE9triques (\xE9paisseur uniforme), formant une **fl\xE8che vectorielle** discr\xE8te vers l'avant (innovation) et une impression de **stabilit\xE9** (base plus large, sommet ma\xEEtris\xE9).
+- Int\xE9grer une **micro-grille** implicite via 2\u20133 points nodaux (petits cercles) align\xE9s sur une trajectoire, comme une visualisation scientifique propre.
+- Style: lignes pleines, angles propres, aucune r\xE9f\xE9rence m\xE9dicale clich\xE9e.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).
+
+**Palette chromatique**
+- Primaire: **#003087** \u2014 bleu marine confiance (60% des usages: fond, ic\xF4ne principale)
+- Secondaire: **#6C757D** \u2014 gris corporate neutre (30%: textes secondaires, lignes, fonds l\xE9gers)
+- Accent: **#2F80ED** \u2014 tech highlight (10%: points nodaux, hover states, highlights)
+- Neutres: #FFFFFF (fond clair), #F8F9FA (fond off-white), #0B1220 (fond sombre), #1C2B4A (bleu nuit)
+
+**4 variations requises**
+1. **Fond clair (principal)**: fond #FFFFFF, ic\xF4ne et wordmark en #003087 \u2014 usage web, documents, pr\xE9sentations
+2. **Fond sombre**: fond #0B1220, wordmark et ic\xF4ne en #FFFFFF avec accent #2F80ED sur les points nodaux \u2014 usage digital dark mode, \xE9crans, \xE9v\xE9nements
+3. **Monochrome noir**: fond #FFFFFF, logo entier en #1A1A1A \u2014 impression N&B, documents officiels, tampons
+4. **Invers\xE9 (knockout)**: blanc #FFFFFF sur fond bleu marine #003087 \u2014 usage institutionnel, cartes de visite, en-t\xEAtes officiels
+
+**Sp\xE9cifications techniques**
+- Format export: PNG 2000\xD72000px (fond transparent) + SVG vectoriel illimit\xE9
+- Zone de s\xE9curit\xE9: espace blanc = hauteur de la lettre majuscule "T" du wordmark sur tous les c\xF4t\xE9s
+- Taille minimale: 80px de largeur en digital, 20mm en impression
+- Grille constructive: grille 8px, toutes les dimensions multiples de 8
+- Proportions: ratio largeur/hauteur du logo complet entre 3:1 et 4:1
+- Alignement: symbole et wordmark sur baseline commune, centrage vertical optique
+
+**NEGATIVE_PROMPT**
+vieux, obsol\xE8te, r\xE9tro, vintage, d\xE9sordonn\xE9, c\xE2bles apparents en d\xE9sordre, interface confuse, erreurs visibles, bugs, d\xE9sinvolte, informel, trop d\xE9contract\xE9, argot, watermark, mockup photor\xE9aliste, gradients agressifs, 3D, bevel/emboss, textures, bruit, glitch, texte illisible, kerning mauvais, compression JPEG visible, artefacts IA, formes incoh\xE9rentes, d\xE9tails trop fins non-scalables, symboles m\xE9dicaux clich\xE9s, ADN, seringue, croix, mascotte, cartoon, low-res
+
+**PARAM\xC8TRES TECHNIQUES**
+--ar 1:1 --style raw --no watermark --no texture --no gradient --no 3D --v 6`;
+function buildSymbolDescription(sector, symbolConcept) {
+  const base = `Cr\xE9er un symbole abstrait \xE0 gauche du wordmark, \xE9voquant ${symbolConcept}:`;
+  if (sector === "tech") {
+    return `${base}
+- Ic\xF4ne bas\xE9e sur un "V" stylis\xE9 construit avec 2 segments g\xE9om\xE9triques (\xE9paisseur uniforme), formant une fl\xE8che vectorielle discr\xE8te vers l'avant (innovation) et une impression de stabilit\xE9 (base plus large, sommet ma\xEEtris\xE9).
+- Int\xE9grer une micro-grille implicite via 2\u20133 points nodaux (petits cercles) align\xE9s sur une trajectoire, comme une visualisation scientifique propre.
+- Style: lignes pleines, angles propres, aucune r\xE9f\xE9rence m\xE9dicale clich\xE9e.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+  }
+  if (sector === "luxury") {
+    return `${base}
+- Ic\xF4ne bas\xE9e sur un monogramme stylis\xE9 \xE9voquant l'h\xE9ritage et la pr\xE9cision artisanale.
+- Lignes \xE9pur\xE9es, g\xE9om\xE9trie parfaite, sym\xE9trie ma\xEEtris\xE9e.
+- Style: lignes fines, \xE9l\xE9gance discr\xE8te, sans surcharge d\xE9corative.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+  }
+  if (sector === "streetwear") {
+    return `${base}
+- Ic\xF4ne bas\xE9e sur une lettre stylis\xE9e ou un pictogramme urbain audacieux.
+- Trait \xE9pais, angles vifs, pr\xE9sence marqu\xE9e.
+- Style: impact visuel fort, typographique, authenticit\xE9.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+  }
+  if (sector === "fitness") {
+    return `${base}
+- Ic\xF4ne bas\xE9e sur un symbole de mouvement (fl\xE8che, vague, dynamique).
+- Lignes \xE9nergiques, sensation de vitesse et de puissance contr\xF4l\xE9e.
+- Style: dynamique, motivant, performance.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+  }
+  if (sector === "cosmetic") {
+    return `${base}
+- Ic\xF4ne bas\xE9e sur une forme organique (goutte, p\xE9tale, cercle parfait).
+- Courbes douces, fluidit\xE9, sensation de puret\xE9.
+- Style: naturel, apaisant, \xE9l\xE9gance subtile.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+  }
+  return `${base}
+- Ic\xF4ne abstraite adapt\xE9e \xE0 l'univers de la marque.
+- Style \xE9pur\xE9, lisible, scalable.
+- Taille du symbole: hauteur = hauteur de x du wordmark \xD7 1.2, alignement vertical centr\xE9 sur la baseline du texte.
+- Espacement symbole/wordmark: 12px (grille 8px arrondie sup\xE9rieure).`;
+}
+function buildNegativePromptSuffix(sector) {
+  const base = "vieux, obsol\xE8te, r\xE9tro, vintage, d\xE9sordonn\xE9, c\xE2bles apparents en d\xE9sordre, interface confuse, erreurs visibles, bugs, d\xE9sinvolte, informel, trop d\xE9contract\xE9, argot, watermark, mockup photor\xE9aliste, gradients agressifs, 3D, bevel/emboss, textures, bruit, glitch, texte illisible, kerning mauvais, compression JPEG visible, artefacts IA, formes incoh\xE9rentes, d\xE9tails trop fins non-scalables, symboles m\xE9dicaux clich\xE9s, ADN, seringue, croix, mascotte, cartoon, low-res";
+  if (sector === "luxury") return `${base}, cheap, bas de gamme, imitation, plastique, brillant excessif`;
+  if (sector === "streetwear") return `${base}, commercial, corporate, trop propre, aseptis\xE9, institutionnel`;
+  if (sector === "fitness") return `${base}, statique, mou, sans \xE9nergie, passif, lourd`;
+  if (sector === "cosmetic") return `${base}, agressif, angulaire, synth\xE9tique, artificiel`;
+  return base;
+}
+function buildLogoPrompt(brief) {
+  const sector = brief.sector.toLowerCase();
+  const mapping = SECTOR_MAPPINGS[sector] ?? SECTOR_MAPPINGS["tech"];
+  const style = brief.logoStyle ?? mapping.style;
+  const { ambiance, symbolConcept, primaryColor, secondaryColor, accentColor } = mapping;
+  const valuesText = brief.values.join(", ");
+  const v0 = brief.values[0] ?? "stabilit\xE9";
+  const v1 = brief.values[1] ?? "confiance";
+  const v2 = brief.values[2] ?? "pr\xE9cision";
+  const symbolDescription = buildSymbolDescription(sector, symbolConcept);
+  const negativePrompt = buildNegativePromptSuffix(sector);
+  let prompt = GOLDEN_EXAMPLE;
+  prompt = prompt.replace(/Theravectys/g, brief.brandName);
+  prompt = prompt.replace(/tech corporate/g, `${brief.sector} ${brief.tone}`);
+  prompt = prompt.replace(/l'innovation, la rigueur scientifique et la fiabilité/g, valuesText);
+  prompt = prompt.replace(/stabilité, confiance et précision/g, `${v0}, ${v1}, ${v2}`);
+  prompt = prompt.replace(/Style corporate minimaliste, sobre et stable/g, `Style ${style}`);
+  prompt = prompt.replace(
+    /Ambiance "trusted technology": sérieux, moderne, non ostentatoire/g,
+    `Ambiance "${ambiance}"`
+  );
+  prompt = prompt.replace(
+    /Créer un symbole abstrait à gauche du wordmark, évoquant à la fois \*\*vecteurs\*\*, \*\*trajectoires contrôlées\*\* et \*\*rigueur scientifique\*\*:[\s\S]*?(?=\n\n\*\*Palette)/,
+    `${symbolDescription}
+`
+  );
+  prompt = prompt.replace(/#003087/g, primaryColor);
+  prompt = prompt.replace(/#6C757D/g, secondaryColor);
+  prompt = prompt.replace(/#2F80ED/g, accentColor);
+  prompt = prompt.replace(/bleu marine confiance/g, `${primaryColor} (couleur primaire)`);
+  prompt = prompt.replace(/gris corporate neutre/g, `${secondaryColor} (couleur secondaire)`);
+  prompt = prompt.replace(/tech highlight/g, `highlight ${brief.sector}`);
+  prompt = prompt.replace(
+    /fond #FFFFFF, icône et wordmark en #003087/g,
+    `fond #FFFFFF, ic\xF4ne et wordmark en ${primaryColor}`
+  );
+  prompt = prompt.replace(
+    /blanc #FFFFFF sur fond bleu marine #003087/g,
+    `blanc #FFFFFF sur fond ${primaryColor}`
+  );
+  prompt = prompt.replace(
+    /vieux, obsolète, rétro, vintage[\s\S]*?low-res/,
+    negativePrompt
+  );
+  return prompt;
+}
+
 // src/routes/openai/enhance-prompts.ts
 var router3 = (0, import_express3.Router)();
 var ExtendedBody = EnhancePromptsBody.extend({
@@ -39687,31 +39877,19 @@ router3.post("/openai/enhance-prompts", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+  const logoOptimizedPrompt = buildLogoPrompt({
+    brandName: brand_name,
+    sector,
+    tone,
+    values,
+    logoStyle: style_pref ?? void 0
+  });
   const sections = [
     {
       key: "logo",
       agent: "Brand Design Agent / Product Display Agent",
-      userPrompt: `MODULE 01.1 \u2014 LOGO GENERATOR
-
-G\xE9n\xE8re un prompt RoboNeo ULTRA-PR\xC9CIS pour cr\xE9er le logo de ${brand_name}.
-
-CONTEXTE STYLISTIQUE D\xC9TECT\xC9:
-\u2022 Style: ${style}
-\u2022 Description: ${styleDesc}
-
-STRUCTURE DU PROMPT \xC0 G\xC9N\xC9RER:
-1. Contexte marque + positionnement
-2. Direction artistique (style, esprit, ambiance)
-3. Typographie recommand\xE9e (nom police + lien Google Fonts + alternatives)
-4. Symbole/ic\xF4ne (description pr\xE9cise + inspirations)
-5. Palette (codes HEX: primaire, secondaire, accent)
-6. 4 variations requises (fond clair, fond sombre, monochrome, invers\xE9)
-7. Sp\xE9cifications techniques (PNG 2000\xD72000px + SVG vectoriel, espace de protection)
-8. Bloc NEGATIVE_PROMPT
-
-${negativeBlock}
-
-Commence directement par: "Cr\xE9e le logo de ${brand_name}..."`
+      systemPrompt: `Tu es un expert en g\xE9n\xE9ration de prompts pour logo. \xC0 partir de la structure de r\xE9f\xE9rence fournie (golden example adapt\xE9 \xE0 la marque), g\xE9n\xE8re un prompt ULTRA-PR\xC9CIS, structur\xE9 et pr\xEAt \xE0 \xEAtre utilis\xE9 dans RoboNeo.com. Respecte EXACTEMENT les 8 sections: Direction artistique, Typographie recommand\xE9e, Symbole/ic\xF4ne, Palette chromatique, 4 variations requises, Sp\xE9cifications techniques, NEGATIVE_PROMPT, PARAM\xC8TRES TECHNIQUES. Ne r\xE9sume pas, ne raccourcis pas \u2014 chaque section doit \xEAtre aussi d\xE9taill\xE9e que le mod\xE8le.`,
+      userPrompt: logoOptimizedPrompt
     },
     {
       key: "palette",
@@ -39786,11 +39964,12 @@ Commence directement par: "G\xE9n\xE8re la charte graphique compl\xE8te pour ${b
 
 `);
       let fullContent = "";
+      const activeSystemPrompt = section.systemPrompt ?? systemPrompt;
       const stream = await openai.chat.completions.create({
         model: "gpt-5.2",
         max_completion_tokens: 8192,
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: activeSystemPrompt },
           { role: "user", content: section.userPrompt }
         ],
         stream: true

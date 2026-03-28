@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { EnhancePromptsBody } from "@workspace/api-zod";
 import { buildSystemPrompt, buildNegativePrompt, reviewPromptQuality, type EnhancedBrief } from "../../lib/prompt-utils";
+import { buildLogoPrompt } from "../../prompts/modules/module-01-1-logo/prompt-builder";
 import * as zod from "zod";
 
 const router: IRouter = Router();
@@ -86,31 +87,20 @@ router.post("/openai/enhance-prompts", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  const logoOptimizedPrompt = buildLogoPrompt({
+    brandName: brand_name,
+    sector,
+    tone,
+    values,
+    logoStyle: style_pref ?? undefined,
+  });
+
   const sections = [
     {
       key: "logo",
       agent: "Brand Design Agent / Product Display Agent",
-      userPrompt: `MODULE 01.1 — LOGO GENERATOR
-
-Génère un prompt RoboNeo ULTRA-PRÉCIS pour créer le logo de ${brand_name}.
-
-CONTEXTE STYLISTIQUE DÉTECTÉ:
-• Style: ${style}
-• Description: ${styleDesc}
-
-STRUCTURE DU PROMPT À GÉNÉRER:
-1. Contexte marque + positionnement
-2. Direction artistique (style, esprit, ambiance)
-3. Typographie recommandée (nom police + lien Google Fonts + alternatives)
-4. Symbole/icône (description précise + inspirations)
-5. Palette (codes HEX: primaire, secondaire, accent)
-6. 4 variations requises (fond clair, fond sombre, monochrome, inversé)
-7. Spécifications techniques (PNG 2000×2000px + SVG vectoriel, espace de protection)
-8. Bloc NEGATIVE_PROMPT
-
-${negativeBlock}
-
-Commence directement par: "Crée le logo de ${brand_name}..."`,
+      systemPrompt: `Tu es un expert en génération de prompts pour logo. À partir de la structure de référence fournie (golden example adapté à la marque), génère un prompt ULTRA-PRÉCIS, structuré et prêt à être utilisé dans RoboNeo.com. Respecte EXACTEMENT les 8 sections: Direction artistique, Typographie recommandée, Symbole/icône, Palette chromatique, 4 variations requises, Spécifications techniques, NEGATIVE_PROMPT, PARAMÈTRES TECHNIQUES. Ne résume pas, ne raccourcis pas — chaque section doit être aussi détaillée que le modèle.`,
+      userPrompt: logoOptimizedPrompt,
     },
     {
       key: "palette",
@@ -186,11 +176,13 @@ Commence directement par: "Génère la charte graphique complète pour ${brand_n
 
       let fullContent = "";
 
+      const activeSystemPrompt = (section as { systemPrompt?: string }).systemPrompt ?? systemPrompt;
+
       const stream = await openai.chat.completions.create({
         model: "gpt-5.2",
         max_completion_tokens: 8192,
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: activeSystemPrompt },
           { role: "user", content: section.userPrompt },
         ],
         stream: true,

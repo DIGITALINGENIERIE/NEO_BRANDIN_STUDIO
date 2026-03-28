@@ -1,0 +1,55 @@
+{
+  "sectorMappings": {
+    "tech": {
+      "style": "corporate minimaliste, sobre et stable",
+      "ambiance": "trusted technology: sérieux, moderne, non ostentatoire",
+      "symbolConcept": "vecteurs, trajectoires contrôlées et rigueur scientifique",
+      "primaryColor": "#003087",
+      "secondaryColor": "#6C757D",
+      "accentColor": "#2F80ED"
+    },
+    "luxury": {
+      "style": "minimaliste élégant, précision horlogère",
+      "ambiance": "prestige intemporel: élégance, raffinement, discrétion",
+      "symbolConcept": "élégance, héritage, précision artisanale",
+      "primaryColor": "#1A2C3E",
+      "secondaryColor": "#C5A572",
+      "accentColor": "#D4AF37"
+    },
+    "streetwear": {
+      "style": "audacieux typographique, authenticité urbaine",
+      "ambiance": "street credibility: authentique, urbain, sans compromis",
+      "symbolConcept": "énergie urbaine, mouvement, authenticité",
+      "primaryColor": "#1A1A1A",
+      "secondaryColor": "#E63946",
+      "accentColor": "#F4A261"
+    },
+    "fitness": {
+      "style": "dynamique énergique, angles vifs",
+      "ambiance": "performance: motivation, dépassement, force maîtrisée",
+      "symbolConcept": "dynamique, progression, force maîtrisée",
+      "primaryColor": "#1E3A8A",
+      "secondaryColor": "#EF4444",
+      "accentColor": "#22C55E"
+    },
+    "cosmetic": {
+      "style": "doux organique, pureté, rondeurs subtiles",
+      "ambiance": "beauté naturelle: douceur, efficacité, bien-être",
+      "symbolConcept": "pureté, éclat, transformation naturelle",
+      "primaryColor": "#F5E6D3",
+      "secondaryColor": "#D4A5A5",
+      "accentColor": "#A7C7B9"
+    }
+  },
+  "toneMappings": {
+    "professionnel": {
+      "descriptors": ["sérieux", "rigoureux", "expert"]
+    },
+    "audacieux": {
+      "descriptors": ["innovant", "avant-gardiste", "disruptif"]
+    },
+    "minimaliste": {
+      "descriptors": ["épuré", "essentiel", "fonctionnel"]
+    }
+  }
+}

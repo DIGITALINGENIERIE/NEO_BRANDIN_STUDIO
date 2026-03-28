@@ -1,0 +1,324 @@
+
+---
+
+# INSTRUCTION POUR REPLIT AI
+
+## Module 01.1 — Logo Generator
+
+### Objectif
+
+Modifier l'application Neo Branding Studio pour implémenter un système de génération de prompts **ultra-précis** pour le sous-module Logo Generator, en utilisant l'exemple parfait fourni comme **golden reference**.
+
+L'objectif est de garantir que **chaque génération** respecte exactement la structure, le niveau de détail et les contraintes techniques de l'exemple, quels que soient les paramètres d'entrée (nom de marque, secteur, valeurs, etc.).
+
+---
+
+## 1. Contexte
+
+**Fichier actuel à modifier** :  
+`api-server/src/routes/openai/enhance-prompts.ts` (section Module 01)
+
+**Données d'entrée du formulaire** :
+```typescript
+interface BrandBrief {
+  brandName: string;      // ex: "Theravectys"
+  sector: string;         // ex: "tech", "luxury", "streetwear", "fitness", "cosmetic"
+  tone: string;           // ex: "professionnel", "audacieux", "minimaliste"
+  values: string[];       // ex: ["innovation", "rigueur", "fiabilité"]
+  logoStyle?: string;     // optionnel: si l'utilisateur précise un style
+}
+```
+
+**Sortie actuelle** : streaming SSE vers le frontend avec les sections générées.
+
+---
+
+## 2. Ce qu'il faut créer
+
+### 2.1. Fichier : `api-server/src/prompts/modules/module-01-1-logo/golden-example.json`
+
+Copier exactement l'exemple parfait fourni ci-dessous. Ce fichier servira de **référence absolue** pour la structure et le niveau de qualité attendu.
+
+```json
+{
+  "module": "MOD-01.1 — Logo Generator",
+  "agent": "Brand Design Agent / Product Display Agent",
+  "goldenExample": "Crée le logo de Theravectys pour une marque tech corporate positionnée sur l’innovation, la rigueur scientifique et la fiabilité (expertise B2B, environnement R&D/ingénierie). Le logo doit inspirer stabilité, confiance et précision, avec une exécution premium, lisible et scalable pour usages web/app, documents officiels et supports institutionnels.\n\n**Direction artistique (style, esprit, ambiance)**  \nStyle corporate minimaliste, sobre et stable. Composition nette, géométrie propre, alignements rigoureux (grid-based design), contraste maîtrisé. Ambiance \"trusted technology\": sérieux, moderne, non ostentatoire. Éviter tout effet gadget. Rendu final **flat vector** (pas de 3D, pas de textures), contours propres, angles maîtrisés (mix subtil d’angles droits et coins légèrement arrondis pour la fiabilité). \n\n**Typographie recommandée (sans-serif solide)**  \n- Police principale: **IBM Plex Sans** (Google Fonts) — https://fonts.google.com/specimen/IBM+Plex+Sans  \n  - Recommandation: \"Theravectys\" en **SemiBold 600** (tracking -1% à 0%), capitalisation: \"Theravectys\" (T majuscule, reste minuscules)  \n- Alternatives: **Roboto** https://fonts.google.com/specimen/Roboto ; **Lato** https://fonts.google.com/specimen/Lato ; **Inter** https://fonts.google.com/specimen/Inter  \n- Ajustements: kerning optique activé, hauteur de x confortable, lisibilité maximale à 24px de largeur.\n\n**Symbole / icône (description précise + inspirations)**  \nCréer un symbole abstrait à gauche du wordmark, évoquant à la fois **vecteurs**, **trajectoires contrôlées** et **rigueur scientifique**:  \n- Icône basée sur un **\"V\" stylisé** construit avec 2 segments géométriques (épaisseur uniforme), formant une **flèche vectorielle** discrète vers l’avant (innovation) et une impression de **stabilité** (base plus large, sommet maîtrisé).  \n- Intégrer une **micro-grille** implicite via 2–3 points nodaux (petits cercles) alignés sur une trajectoire, comme une visualisation scientifique propre (inspiration: schémas de vector field / graph nodes), sans complexité excessive.  \n- Style: lignes pleines (pas de wire messy), angles propres, aucune référence médicale clichée (pas de croix, pas d’ADN, pas de seringue).  \n- Proportions: icône = hauteur du mot \"Theravectys\" (±5%), espacement icône/texte = 0.35× hauteur de la lettre \"T\".\n\n**Palette (HEX)**  \n- Primaire (bleu marine confiance): **#003087**  \n- Secondaire (gris corporate neutre): **#6C757D**  \n- Accent (optionnel, parcimonieux, tech highlight): **#2F80ED** (à utiliser uniquement sur un point nodal ou détail, jamais dominant)  \n- Neutre: **#FFFFFF** (fond clair) et **#0B1220** (fond sombre corporate)\n\n**4 variations requises**  \n1) **Fond clair**: fond #FFFFFF, icône et wordmark en #003087, détails secondaires éventuels en #6C757D, accent #2F80ED très discret.  \n2) **Fond sombre**: fond #0B1220, wordmark et icône en #FFFFFF, détail secondaire possible en #6C757D (ou #FFFFFF à 85% si support le permet).  \n3) **Monochrome**: 100% noir #000000 sur fond blanc #FFFFFF (aucun accent).  \n4) **Inversé**: 100% blanc #FFFFFF sur fond bleu marine #003087.\n\n**Spécifications techniques (exports + grille + espace de protection)**  \n- Générer en **vector logo, flat design, crisp edges**.  \n- Exports: **PNG 2000×2000px** (fond transparent) + **SVG vectoriel** (paths propres, pas d’images embarquées).  \n- Zone de sécurité (clear space): au minimum **0.5×** la hauteur du \"T\" tout autour du logo.  \n- Variante horizontale prioritaire (icône à gauche + wordmark), plus une variante empilée optionnelle (icône au-dessus).  \n- Respecter une grille 8px (grid-based), alignements optiques, pas de surcharges décoratives, lisible en favicon (réduction icône seule).\n\n**NEGATIVE_PROMPT**  \nvieux, obsolète, rétro, vintage, désordonné, câbles apparents en désordre, interface confuse, erreurs visibles, bugs, désinvolte, informel, trop décontracté, argot, watermark, mockup photoréaliste, gradients agressifs, 3D, bevel/emboss, textures, bruit, glitch, texte illisible, kerning mauvais, compression JPEG visible, artefacts IA, formes incohérentes, détails trop fins non-scalables, symboles médicaux clichés, ADN, seringue, croix, mascotte, cartoon, low-res\n\n[PARAMÈTRES TECHNIQUES]  \n- Tool: RoboNeo Logo Generator  \n- Style: corporate minimal, flat vector, grid-based  \n- Output: PNG transparent 2000×2000px (300dpi) + SVG vector (clean paths)  \n- Aspect ratio: 1:1 (artboard) + composition horizontale centrée  \n- Color palette HEX: #003087, #6C757D, #FFFFFF, #0B1220, accent #2F80ED (minimal)  \n- Typography: IBM Plex Sans SemiBold 600 (fallback: Roboto/Lato/Inter)  \n- Sharpness: high, anti-aliasing clean, no raster effects  \n- Variations: light background, dark background, monochrome, inverted  \n- Constraints: clear space ≥ 0.5× cap-height du \"T\"; scalable down to 24px width without loss of legibility",
+  "structure": {
+    "sections": [
+      "Direction artistique",
+      "Typographie recommandée",
+      "Symbole / icône",
+      "Palette",
+      "4 variations requises",
+      "Spécifications techniques",
+      "NEGATIVE_PROMPT",
+      "PARAMÈTRES TECHNIQUES"
+    ],
+    "requiredElements": [
+      "police avec URL Google Fonts",
+      "4 variations (clair, sombre, monochrome, inversé)",
+      "PNG + SVG exports",
+      "zone de sécurité calculée",
+      "grille 8px"
+    ]
+  }
+}
+```
+
+---
+
+### 2.2. Fichier : `api-server/src/prompts/modules/module-01-1-logo/mapping-rules.json`
+
+Ce fichier définit comment adapter l'exemple parfait en fonction du secteur et des valeurs de la marque.
+
+```json
+{
+  "sectorMappings": {
+    "tech": {
+      "style": "corporate minimaliste, sobre et stable",
+      "ambiance": "trusted technology: sérieux, moderne, non ostentatoire",
+      "symbolConcept": "vecteurs, trajectoires contrôlées et rigueur scientifique",
+      "primaryColor": "#003087",
+      "secondaryColor": "#6C757D",
+      "accentColor": "#2F80ED"
+    },
+    "luxury": {
+      "style": "minimaliste élégant, précision horlogère",
+      "ambiance": "prestige intemporel: élégance, raffinement, discrétion",
+      "symbolConcept": "élégance, héritage, précision artisanale",
+      "primaryColor": "#1A2C3E",
+      "secondaryColor": "#C5A572",
+      "accentColor": "#D4AF37"
+    },
+    "streetwear": {
+      "style": "audacieux typographique, authenticité urbaine",
+      "ambiance": "street credibility: authentique, urbain, sans compromis",
+      "symbolConcept": "énergie urbaine, mouvement, authenticité",
+      "primaryColor": "#1A1A1A",
+      "secondaryColor": "#E63946",
+      "accentColor": "#F4A261"
+    },
+    "fitness": {
+      "style": "dynamique énergique, angles vifs",
+      "ambiance": "performance: motivation, dépassement, force maîtrisée",
+      "symbolConcept": "dynamique, progression, force maîtrisée",
+      "primaryColor": "#1E3A8A",
+      "secondaryColor": "#EF4444",
+      "accentColor": "#22C55E"
+    },
+    "cosmetic": {
+      "style": "doux organique, pureté, rondeurs subtiles",
+      "ambiance": "beauté naturelle: douceur, efficacité, bien-être",
+      "symbolConcept": "pureté, éclat, transformation naturelle",
+      "primaryColor": "#F5E6D3",
+      "secondaryColor": "#D4A5A5",
+      "accentColor": "#A7C7B9"
+    }
+  },
+  "toneMappings": {
+    "professionnel": {
+      "descriptors": ["sérieux", "rigoureux", "expert"]
+    },
+    "audacieux": {
+      "descriptors": ["innovant", "avant-gardiste", "disruptif"]
+    },
+    "minimaliste": {
+      "descriptors": ["épuré", "essentiel", "fonctionnel"]
+    }
+  }
+}
+```
+
+---
+
+### 2.3. Fichier : `api-server/src/prompts/modules/module-01-1-logo/prompt-builder.ts`
+
+Ce fichier construit le prompt final en remplaçant les parties variables de l'exemple parfait.
+
+```typescript
+import { goldenExample } from './golden-example.json';
+import { sectorMappings, toneMappings } from './mapping-rules.json';
+
+interface BrandBrief {
+  brandName: string;
+  sector: string;
+  tone: string;
+  values: string[];
+  logoStyle?: string;
+}
+
+export function buildLogoPrompt(brief: BrandBrief): string {
+  // Récupérer les mappings selon le secteur
+  const sectorMapping = sectorMappings[brief.sector] || sectorMappings.tech;
+  
+  // Adapter le style selon le secteur
+  let style = sectorMapping.style;
+  let ambiance = sectorMapping.ambiance;
+  let symbolConcept = sectorMapping.symbolConcept;
+  
+  // Si l'utilisateur a spécifié un style, le prioriser
+  if (brief.logoStyle) {
+    style = brief.logoStyle;
+  }
+  
+  // Construire la description des valeurs
+  const valuesText = brief.values.join(', ');
+  
+  // Adapter les couleurs selon le secteur
+  const primaryColor = sectorMapping.primaryColor;
+  const secondaryColor = sectorMapping.secondaryColor;
+  const accentColor = sectorMapping.accentColor;
+  
+  // Adapter le symbole si nécessaire (pour streetwear, fitness, etc.)
+  let symbolDescription = `Créer un symbole abstrait à gauche du wordmark, évoquant à la fois ${symbolConcept}:`;
+  
+  if (brief.sector === 'tech') {
+    symbolDescription += `
+- Icône basée sur un "V" stylisé construit avec 2 segments géométriques (épaisseur uniforme), formant une flèche vectorielle discrète vers l'avant (innovation) et une impression de stabilité (base plus large, sommet maîtrisé).
+- Intégrer une micro-grille implicite via 2–3 points nodaux (petits cercles) alignés sur une trajectoire, comme une visualisation scientifique propre.
+- Style: lignes pleines, angles propres, aucune référence médicale clichée.`;
+  } else if (brief.sector === 'luxury') {
+    symbolDescription += `
+- Icône basée sur un monogramme stylisé évoquant l'héritage et la précision.
+- Lignes épurées, géométrie parfaite, symétrie maîtrisée.
+- Style: lignes fines, élégance discrète, sans surcharge décorative.`;
+  } else if (brief.sector === 'streetwear') {
+    symbolDescription += `
+- Icône basée sur une lettre stylisée ou un pictogramme urbain audacieux.
+- Trait épais, angles vifs, présence marquée.
+- Style: impact visuel fort, typographique, authenticité.`;
+  } else if (brief.sector === 'fitness') {
+    symbolDescription += `
+- Icône basée sur un symbole de mouvement (flèche, vague, dynamique).
+- Lignes énergiques, sensation de vitesse et de puissance contrôlée.
+- Style: dynamique, motivant, performance.`;
+  } else if (brief.sector === 'cosmetic') {
+    symbolDescription += `
+- Icône basée sur une forme organique (goutte, pétale, cercle parfait).
+- Courbes douces, fluidité, sensation de pureté.
+- Style: naturel, apaisant, élégance subtile.`;
+  }
+  
+  // Construire le prompt final en remplaçant les variables
+  let prompt = goldenExample.goldenExample;
+  
+  // Remplacer les variables
+  prompt = prompt.replace(/Theravectys/g, brief.brandName);
+  prompt = prompt.replace(/tech corporate/g, `${brief.sector} ${brief.tone}`);
+  prompt = prompt.replace(/innovation, la rigueur scientifique et la fiabilité/g, valuesText);
+  prompt = prompt.replace(/stabilité, confiance et précision/g, `${brief.values[0] || 'stabilité'}, ${brief.values[1] || 'confiance'}, ${brief.values[2] || 'précision'}`);
+  prompt = prompt.replace(/Style corporate minimaliste, sobre et stable/g, `Style ${style}`);
+  prompt = prompt.replace(/Ambiance "trusted technology": sérieux, moderne, non ostentatoire/g, `Ambiance "${ambiance}"`);
+  prompt = prompt.replace(/évoquant à la fois \*\*vecteurs\*\*, \*\*trajectoires contrôlées\*\* et \*\*rigueur scientifique\*\*/g, `évoquant ${symbolConcept}`);
+  prompt = prompt.replace(/Icône basée sur un \*\*"V" stylisé\*\* construit avec 2 segments géométriques.*?(?=\n\n)/s, symbolDescription.split('\n').slice(1).join('\n'));
+  prompt = prompt.replace(/#003087/g, primaryColor);
+  prompt = prompt.replace(/#6C757D/g, secondaryColor);
+  prompt = prompt.replace(/#2F80ED/g, accentColor);
+  prompt = prompt.replace(/bleu marine confiance/g, `${primaryColor} (couleur primaire)`);
+  prompt = prompt.replace(/gris corporate neutre/g, `${secondaryColor} (couleur secondaire)`);
+  prompt = prompt.replace(/tech highlight/g, `highlight ${brief.sector}`);
+  
+  // S'assurer que les 4 variations utilisent les bonnes couleurs
+  prompt = prompt.replace(/fond #FFFFFF, icône et wordmark en #003087/g, `fond #FFFFFF, icône et wordmark en ${primaryColor}`);
+  prompt = prompt.replace(/fond #0B1220, wordmark et icône en #FFFFFF/g, `fond #0B1220, wordmark et icône en #FFFFFF`);
+  prompt = prompt.replace(/blanc #FFFFFF sur fond bleu marine #003087/g, `blanc #FFFFFF sur fond ${primaryColor}`);
+  
+  // Ajouter la liste NEGATIVE_PROMPT spécifique au secteur
+  const negativePrompt = `vieux, obsolète, rétro, vintage, désordonné, watermark, 3D, textures, artefacts IA${brief.sector === 'luxury' ? ', cheap, bas de gamme, imitation' : ''}${brief.sector === 'streetwear' ? ', commercial, corporate, trop propre' : ''}${brief.sector === 'fitness' ? ', statique, mou, sans énergie' : ''}`;
+  prompt = prompt.replace(/vieux, obsolète, rétro, vintage, désordonné, câbles apparents en désordre, interface confuse, erreurs visibles, bugs, désinvolte, informel, trop décontracté, argot, watermark, mockup photoréaliste, gradients agressifs, 3D, bevel\/emboss, textures, bruit, glitch, texte illisible, kerning mauvais, compression JPEG visible, artefacts IA, formes incohérentes, détails trop fins non-scalables, symboles médicaux clichés, ADN, seringue, croix, mascotte, cartoon, low-res/g, negativePrompt);
+  
+  return prompt;
+}
+```
+
+---
+
+### 2.4. Modifier : `api-server/src/routes/openai/enhance-prompts.ts`
+
+Ajouter la nouvelle logique pour le sous-module Logo Generator.
+
+```typescript
+// Ajouter l'import
+import { buildLogoPrompt } from '../../prompts/modules/module-01-1-logo/prompt-builder';
+
+// Dans la route du Module 01, avant d'appeler GPT
+app.post('/api/openai/enhance-prompts', async (req, res) => {
+  const { brief, module, subModule } = req.body;
+  
+  // Si c'est le sous-module Logo Generator
+  if (module === '01' && subModule === 'logo') {
+    // Construire le prompt optimisé
+    const optimizedPrompt = buildLogoPrompt(brief);
+    
+    // Appeler GPT-5.2 avec ce prompt
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-5.2',
+      messages: [
+        {
+          role: 'system',
+          content: `Tu es un expert en génération de prompts pour logo. Tu dois générer un prompt parfait, structuré, précis, prêt à être utilisé dans RoboNeo.com. Respecte EXACTEMENT la structure de l'exemple fourni.`
+        },
+        {
+          role: 'user',
+          content: optimizedPrompt
+        }
+      ],
+      stream: true,
+    });
+    
+    // Streamer la réponse comme avant
+    // ...
+  }
+  
+  // Garder l'ancienne logique pour les autres sous-modules
+  // ...
+});
+```
+
+---
+
+## 3. Instructions pour Replit
+
+**Voici ce que tu dois faire :**
+
+1. **Créer le dossier** `api-server/src/prompts/modules/module-01-1-logo/`
+
+2. **Créer les 3 fichiers** exactement comme décrits ci-dessus :
+   - `golden-example.json` (copier le contenu fourni)
+   - `mapping-rules.json` (copier le contenu fourni)
+   - `prompt-builder.ts` (copier le code TypeScript)
+
+3. **Modifier** `api-server/src/routes/openai/enhance-prompts.ts` pour intégrer le nouveau système pour le sous-module Logo Generator.
+
+4. **Tester** que le système fonctionne :
+   - Envoyer un brief avec `module: "01"`, `subModule: "logo"`
+   - Vérifier que le prompt généré respecte la structure de l'exemple
+   - Vérifier que les variables sont correctement remplacées (nom de marque, secteur, couleurs)
+
+5. **Ne pas casser** les autres sous-modules (Palette, Typo, Guidelines) qui continuent à utiliser l'ancienne logique pour l'instant.
+
+---
+
+## 4. Critères de validation
+
+Le nouveau système est validé si :
+
+✅ Le prompt généré a exactement la **même structure** que l'exemple parfait  
+✅ Toutes les **sections** sont présentes (Direction artistique, Typographie, Symbole, Palette, 4 variations, Spécifications techniques, NEGATIVE_PROMPT, PARAMÈTRES TECHNIQUES)  
+✅ Les **couleurs** sont adaptées au secteur (ex: tech → bleu marine, luxe → or et bleu profond)  
+✅ Le **symbole** est adapté au secteur (tech → V stylisé, luxe → monogramme, streetwear → lettrage audacieux)  
+✅ Le **nom de la marque** est correctement injecté partout  
+✅ Les **valeurs** sont correctement injectées dans la description  
+✅ La **liste NEGATIVE_PROMPT** est adaptée au secteur  
+✅ Le **streaming SSE** continue de fonctionner normalement
+
+---
+
+## 5. Résultat attendu
+
+Une fois implémenté, le système pourra générer des prompts logo de **qualité identique à l'exemple parfait** pour n'importe quelle marque, avec les variables automatiquement adaptées selon le secteur et les valeurs.
+
+---
+
+**Replit, implémente cette structure exactement comme décrit.**

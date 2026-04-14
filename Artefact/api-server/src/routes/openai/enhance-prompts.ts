@@ -8,6 +8,12 @@ import * as zod from "zod";
 
 const router: IRouter = Router();
 
+function estimateTokenCount(text: string): number {
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return Math.max(1, Math.ceil(trimmed.length / 4));
+}
+
 // ─── Extended schema (accepts new optional quality fields) ────────────────────
 
 const ExtendedBody = EnhancePromptsBody.extend({
@@ -89,6 +95,13 @@ router.post("/openai/enhance-prompts", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+
+  const generationStartedAt = Date.now();
+  let totalQwenMs = 0;
+  let totalQwenTokens = 0;
+  const gptScores: number[] = [];
+  const claudeScores: number[] = [];
+  const winnerCounts = { gpt: 0, claude: 0, tie: 0 };
 
   const logoOptimizedPrompt = buildLogoPrompt({
     brandName: brand_name,
@@ -183,6 +196,7 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
       res.write(`data: ${JSON.stringify({ type: "section_start", key: section.key })}\n\n`);
 
       let fullContent = "";
+      const qwenStartedAt = Date.now();
 
       const activeSystemPrompt = (section as { systemPrompt?: string }).systemPrompt ?? systemPrompt;
 
@@ -202,6 +216,11 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
           res.write(`data: ${JSON.stringify({ type: "chunk", key: section.key, content })}\n\n`);
         }
       }
+
+      const qwenMs = Date.now() - qwenStartedAt;
+      const qwenOutputTokens = estimateTokenCount(fullContent);
+      totalQwenMs += qwenMs;
+      totalQwenTokens += qwenOutputTokens;
 
       // ── Optional quality review pass (Séquence : Cerebras → GPT → Claude) ──
       let reviewData: {
@@ -237,6 +256,9 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
 
           const avgScore = Math.round(((gptResult.score + claudeResult.score) / 2) * 10) / 10;
           reviewData = { score: avgScore, improvements: allImprovements, gpt_score: gptResult.score, claude_score: claudeResult.score, winner };
+          gptScores.push(gptResult.score);
+          claudeScores.push(claudeResult.score);
+          winnerCounts[winner] += 1;
 
           if (avgScore < 8 && winnerResult.refined !== fullContent) {
             fullContent = winnerResult.refined;
@@ -253,6 +275,11 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
           agent: section.agent,
           fullContent,
           review: reviewData,
+          metrics: {
+            qwen_ms: qwenMs,
+            qwen_output_tokens: qwenOutputTokens,
+            qwen_tokens_per_second: qwenMs > 0 ? Math.round((qwenOutputTokens / qwenMs) * 10000) / 10 : 0,
+          },
         })}\n\n`
       );
     } catch (err) {
@@ -261,7 +288,25 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
     }
   }
 
-  res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+  const average = (scores: number[]) => scores.length > 0
+    ? Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
+    : null;
+
+  res.write(`data: ${JSON.stringify({
+    type: "done",
+    performance: {
+      total_ms: Date.now() - generationStartedAt,
+      qwen_ms: totalQwenMs,
+      qwen_output_tokens: totalQwenTokens,
+      qwen_tokens_per_second: totalQwenMs > 0 ? Math.round((totalQwenTokens / totalQwenMs) * 10000) / 10 : 0,
+      gpt_average_score: average(gptScores),
+      claude_average_score: average(claudeScores),
+      winner_counts: winnerCounts,
+      review_sections: gptScores.length,
+      section_count: sections.length,
+      review_enabled: Boolean(enable_review),
+    },
+  })}\n\n`);
   res.end();
 });
 

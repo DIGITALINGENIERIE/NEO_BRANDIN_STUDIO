@@ -63,9 +63,26 @@ interface SectionTiming {
   gptEnd?: number;
   claudeStart?: number;
   claudeEnd?: number;
+  qwenMs?: number;
+  qwenTokens?: number;
+  qwenTokensPerSecond?: number;
+}
+
+interface PerformanceSummary {
+  total_ms: number;
+  qwen_ms: number;
+  qwen_output_tokens: number;
+  qwen_tokens_per_second: number;
+  gpt_average_score: number | null;
+  claude_average_score: number | null;
+  winner_counts: { gpt: number; claude: number; tie: number };
+  review_sections: number;
+  section_count: number;
+  review_enabled: boolean;
 }
 
 const fmtMs = (ms: number) => ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
+const fmtRate = (rate: number) => Number.isFinite(rate) ? rate.toFixed(1) : "0.0";
 const elapsed = (start?: number, end?: number): string | null => {
   if (!start) return null;
   return fmtMs((end ?? Date.now()) - start);
@@ -86,6 +103,7 @@ export default function Module01() {
   const [loadingReview, setLoadingReview] = useState<Partial<Record<SectionKey, boolean>>>({});
   const [improvedPrompts, setImprovedPrompts] = useState<Partial<Record<SectionKey, string>>>({});
   const [sectionTimings, setSectionTimings] = useState<Partial<Record<SectionKey, SectionTiming>>>({});
+  const [performanceSummary, setPerformanceSummary] = useState<PerformanceSummary | null>(null);
   const tickRef = useRef(0);
   const [, setTick] = useState(0);
 
@@ -110,6 +128,7 @@ export default function Module01() {
     const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
     setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() });
     setSectionTimings({});
+    setPerformanceSummary(null);
 
     const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts`, {
       method: "POST",
@@ -185,10 +204,18 @@ export default function Module01() {
             if (event.review) {
               finalReviews[event.key as SectionKey] = event.review;
             }
-            // Figer le chrono Cerebras si pas de review
             setSectionTimings((p) => {
               const t = p[event.key as SectionKey] ?? {};
-              return { ...p, [event.key]: { ...t, cerebrasEnd: t.cerebrasEnd ?? Date.now() } };
+              return {
+                ...p,
+                [event.key]: {
+                  ...t,
+                  cerebrasEnd: t.cerebrasEnd ?? Date.now(),
+                  qwenMs: event.metrics?.qwen_ms,
+                  qwenTokens: event.metrics?.qwen_output_tokens,
+                  qwenTokensPerSecond: event.metrics?.qwen_tokens_per_second,
+                },
+              };
             });
             setStreamState((p) => {
               const next = new Set(p.completedSections);
@@ -201,6 +228,8 @@ export default function Module01() {
                 completedSections: next,
               };
             });
+          } else if (event.type === "done" && event.performance) {
+            setPerformanceSummary(event.performance);
           }
         } catch {}
       }
@@ -314,6 +343,7 @@ export default function Module01() {
     setOpenPersonas({});
     setImprovedPrompts({});
     setLoadingReview({});
+    setPerformanceSummary(null);
     try {
       const generated = useAI ? await generateWithAI(data) : generatePrompts({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values: brief.values, style_pref: data.style_pref } as BrandBrief);
       if (!useAI) await new Promise((r) => setTimeout(r, 400));
@@ -364,6 +394,14 @@ export default function Module01() {
   const getReview = (key: SectionKey): ReviewData | null => {
     return streamState.reviews[key] ?? null;
   };
+
+  const bestAgent = performanceSummary?.gpt_average_score !== null && performanceSummary?.claude_average_score !== null && performanceSummary?.gpt_average_score !== undefined && performanceSummary?.claude_average_score !== undefined
+    ? performanceSummary.gpt_average_score > performanceSummary.claude_average_score
+      ? "GPT"
+      : performanceSummary.claude_average_score > performanceSummary.gpt_average_score
+        ? "Claude"
+        : "Égalité"
+    : null;
 
   const scoreColor = (score: number) => {
     if (score >= 9) return "text-green-400 bg-green-400/10 border-green-400/30";
@@ -464,7 +502,7 @@ export default function Module01() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() }); setPersonaVariants({}); setOpenPersonas({}); setImprovedPrompts({}); setLoadingReview({}); }} disabled={isStreaming}>
+              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() }); setPersonaVariants({}); setOpenPersonas({}); setImprovedPrompts({}); setLoadingReview({}); setPerformanceSummary(null); }} disabled={isStreaming}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Nouveau
               </Button>
               {result && (
@@ -543,6 +581,7 @@ export default function Module01() {
                                 : <span className="text-green-500 text-[10px] flex-shrink-0">✓</span>}
                               <span className="text-muted-foreground/60">Qwen-3</span>
                               <span className="font-bold tabular-nums">{elapsed(t.cerebrasStart, t.cerebrasEnd)}</span>
+                              {t.qwenTokensPerSecond !== undefined && <span className="text-muted-foreground/50">· {fmtRate(t.qwenTokensPerSecond)} tok/s</span>}
                             </div>
                             {/* GPT */}
                             {showGpt ? (
@@ -676,6 +715,74 @@ export default function Module01() {
               );
             })}
           </div>
+
+          {result && useAI && performanceSummary && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="text-xl text-foreground">Récapitulatif de performance</CardTitle>
+                  <CardDescription>Vue finale du pipeline Qwen-3 → GPT → Claude après génération complète.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Temps total</p>
+                      <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">{fmtMs(performanceSummary.total_ms)}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{performanceSummary.section_count} sections finalisées</p>
+                    </div>
+                    <div className="rounded-lg border border-green-400/20 bg-green-400/5 p-4">
+                      <p className="text-xs uppercase tracking-wider text-green-300/70">Vitesse Qwen-3</p>
+                      <p className="mt-2 text-2xl font-bold tabular-nums text-green-300">{fmtRate(performanceSummary.qwen_tokens_per_second)} tokens/s</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{performanceSummary.qwen_output_tokens.toLocaleString("fr-FR")} tokens estimés en {fmtMs(performanceSummary.qwen_ms)}</p>
+                    </div>
+                    <div className="rounded-lg border border-amber-400/20 bg-amber-400/5 p-4">
+                      <p className="text-xs uppercase tracking-wider text-amber-300/70">Score comparatif</p>
+                      <p className="mt-2 text-2xl font-bold text-amber-300">{bestAgent ?? "Non évalué"}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {performanceSummary.review_enabled
+                          ? `${performanceSummary.review_sections} sections analysées par GPT et Claude`
+                          : "Activez le mode Ultra-Qualité pour comparer GPT et Claude"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {performanceSummary.gpt_average_score !== null && performanceSummary.claude_average_score !== null && (
+                    <div className="rounded-lg border border-white/10 bg-black/20 p-4 space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">Comparatif GPT vs Claude</p>
+                          <p className="text-xs text-muted-foreground">Moyenne des scores qualité attribués après la sortie complète de Qwen-3.</p>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          Gagnants exigeants : GPT {performanceSummary.winner_counts.gpt} · Claude {performanceSummary.winner_counts.claude} · Égalité {performanceSummary.winner_counts.tie}
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-blue-300 font-semibold">GPT</span>
+                            <span className="tabular-nums text-blue-200">{performanceSummary.gpt_average_score}/10</span>
+                          </div>
+                          <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, performanceSummary.gpt_average_score * 10)}%` }} className="h-full rounded-full bg-blue-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-orange-300 font-semibold">Claude</span>
+                            <span className="tabular-nums text-orange-200">{performanceSummary.claude_average_score}/10</span>
+                          </div>
+                          <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, performanceSummary.claude_average_score * 10)}%` }} className="h-full rounded-full bg-orange-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

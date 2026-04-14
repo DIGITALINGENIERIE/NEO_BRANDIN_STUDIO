@@ -101,6 +101,8 @@ Le client OpenAI côté serveur est initialisé à la demande : le serveur peut 
 
 Le brief global se sauvegarde automatiquement dans `localStorage` avec un historique des 12 derniers briefs, restaurable depuis le panneau "Brief Global de Marque".
 
+Module 01 suit le pipeline Qwen-3/Cerebras → GPT-5.2 → Claude : les agents GPT et Claude ne démarrent qu'après la génération complète Qwen-3 de chaque section. Le serveur envoie ensuite un récapitulatif SSE final avec temps total, durée Qwen-3, tokens estimés, tokens/s et scores moyens GPT/Claude pour l'affichage graphique en bas de page.
+
 ## API Routes
 
 Toutes les routes sont montées sous `/api` :

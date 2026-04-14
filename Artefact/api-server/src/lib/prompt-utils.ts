@@ -3,7 +3,7 @@
  * Implements: Chain-of-Thought, Few-Shot Calibration, Negative Prompts, Quality Review
  */
 
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { cerebrasAI, CEREBRAS_MODEL } from "./cerebras-client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -151,10 +151,10 @@ Réponds en JSON valide uniquement:
 }`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-5.2",
+    const response = await cerebrasAI.chat.completions.create({
+      model: CEREBRAS_MODEL,
       messages: [{ role: "user", content: reviewPrompt }],
-      max_completion_tokens: 2048,
+      max_tokens: 2048,
     });
 
     const text = response.choices[0]?.message?.content ?? "{}";
@@ -177,8 +177,8 @@ export async function generatePersonaVariants(
   basePrompt: string,
   brief: EnhancedBrief
 ): Promise<{ persona: string; variant: string }[]> {
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.2",
+  const response = await cerebrasAI.chat.completions.create({
+    model: CEREBRAS_MODEL,
     messages: [
       {
         role: "system",
@@ -195,7 +195,7 @@ Génère 3 variantes calibrées pour 3 personas différents (adapte le ton, les 
 Réponds en JSON: [{"persona": "nom du persona", "variant": "prompt adapté"}]`,
       },
     ],
-    max_completion_tokens: 2048,
+    max_tokens: 2048,
   });
 
   try {

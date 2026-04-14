@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { cerebrasAI, CEREBRAS_MODEL } from "../lib/cerebras-client";
 
 const router = Router();
 
@@ -122,13 +122,13 @@ Génère un objet JSON avec ces champs :
 - support_email: email de contact si disponible
 - shipping_info: infos de livraison si disponibles`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.2",
+  const response = await cerebrasAI.chat.completions.create({
+    model: CEREBRAS_MODEL,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    max_completion_tokens: 1024,
+    max_tokens: 1024,
   });
 
   const content = response.choices[0]?.message?.content ?? "{}";

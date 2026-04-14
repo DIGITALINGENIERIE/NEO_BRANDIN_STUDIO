@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { cerebrasAI, CEREBRAS_MODEL } from "../../lib/cerebras-client";
 import { buildSystemPrompt, buildNegativePrompt } from "../../lib/prompt-utils";
 
 const router: IRouter = Router();
@@ -348,13 +348,13 @@ Chaque prompt visuel doit inclure un champ "negative_prompt" avec les éléments
 
     let fullContent = "";
     try {
-      const stream = await openai.chat.completions.create({
-        model: "gpt-5.2",
+      const stream = await cerebrasAI.chat.completions.create({
+        model: CEREBRAS_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildUserPrompt() },
         ],
-        max_completion_tokens: 2000,
+        max_tokens: 2000,
         stream: true,
       });
 

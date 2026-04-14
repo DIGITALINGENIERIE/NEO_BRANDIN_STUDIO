@@ -1584,10 +1584,10 @@ var require_bom_handling = __commonJS({
 var require_merge_exports = __commonJS({
   "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/lib/helpers/merge-exports.js"(exports, module) {
     "use strict";
-    var hasOwn2 = typeof Object.hasOwn === "undefined" ? Function.call.bind(Object.prototype.hasOwnProperty) : Object.hasOwn;
+    var hasOwn3 = typeof Object.hasOwn === "undefined" ? Function.call.bind(Object.prototype.hasOwnProperty) : Object.hasOwn;
     function mergeModules(target, module2) {
       for (var key in module2) {
-        if (hasOwn2(module2, key)) {
+        if (hasOwn3(module2, key)) {
           target[key] = module2[key];
         }
       }
@@ -15195,11 +15195,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path2) {
-      if (!path2 || typeof path2 !== "string") {
+    function lookup(path3) {
+      if (!path3 || typeof path3 !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path2).toLowerCase().slice(1);
+      var extension2 = extname("x." + path3).toLowerCase().slice(1);
       if (!extension2) {
         return false;
       }
@@ -15867,7 +15867,7 @@ var require_object_inspect = __commonJS({
         depth = 0;
       }
       if (depth >= maxDepth && maxDepth > 0 && typeof obj === "object") {
-        return isArray2(obj) ? "[Array]" : "[Object]";
+        return isArray3(obj) ? "[Array]" : "[Object]";
       }
       var indent = getIndent(opts, depth);
       if (typeof seen === "undefined") {
@@ -15913,7 +15913,7 @@ var require_object_inspect = __commonJS({
         s += "</" + $toLowerCase.call(String(obj.nodeName)) + ">";
         return s;
       }
-      if (isArray2(obj)) {
+      if (isArray3(obj)) {
         if (obj.length === 0) {
           return "[]";
         }
@@ -16013,7 +16013,7 @@ var require_object_inspect = __commonJS({
     function canTrustToString(obj) {
       return !toStringTag || !(typeof obj === "object" && (toStringTag in obj || typeof obj[toStringTag] !== "undefined"));
     }
-    function isArray2(obj) {
+    function isArray3(obj) {
       return toStr(obj) === "[object Array]" && canTrustToString(obj);
     }
     function isDate(obj) {
@@ -16062,11 +16062,11 @@ var require_object_inspect = __commonJS({
       }
       return false;
     }
-    var hasOwn2 = Object.prototype.hasOwnProperty || function(key) {
+    var hasOwn3 = Object.prototype.hasOwnProperty || function(key) {
       return key in this;
     };
     function has2(obj, key) {
-      return hasOwn2.call(obj, key);
+      return hasOwn3.call(obj, key);
     }
     function toStr(obj) {
       return objectToString.call(obj);
@@ -16241,7 +16241,7 @@ var require_object_inspect = __commonJS({
       return lineJoiner + $join.call(xs, "," + lineJoiner) + "\n" + indent.prev;
     }
     function arrObjKeys(obj, inspect) {
-      var isArr = isArray2(obj);
+      var isArr = isArray3(obj);
       var xs = [];
       if (isArr) {
         xs.length = obj.length;
@@ -17064,7 +17064,7 @@ var require_get_intrinsic = __commonJS({
       "%WeakSetPrototype%": ["WeakSet", "prototype"]
     };
     var bind = require_function_bind();
-    var hasOwn2 = require_hasown();
+    var hasOwn3 = require_hasown();
     var $concat = bind.call($call, Array.prototype.concat);
     var $spliceApply = bind.call($apply, Array.prototype.splice);
     var $replace = bind.call($call, String.prototype.replace);
@@ -17089,11 +17089,11 @@ var require_get_intrinsic = __commonJS({
     var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
       var intrinsicName = name;
       var alias;
-      if (hasOwn2(LEGACY_ALIASES, intrinsicName)) {
+      if (hasOwn3(LEGACY_ALIASES, intrinsicName)) {
         alias = LEGACY_ALIASES[intrinsicName];
         intrinsicName = "%" + alias[0] + "%";
       }
-      if (hasOwn2(INTRINSICS, intrinsicName)) {
+      if (hasOwn3(INTRINSICS, intrinsicName)) {
         var value = INTRINSICS[intrinsicName];
         if (value === needsEval) {
           value = doEval(intrinsicName);
@@ -17142,7 +17142,7 @@ var require_get_intrinsic = __commonJS({
         }
         intrinsicBaseName += "." + part;
         intrinsicRealName = "%" + intrinsicBaseName + "%";
-        if (hasOwn2(INTRINSICS, intrinsicRealName)) {
+        if (hasOwn3(INTRINSICS, intrinsicRealName)) {
           value = INTRINSICS[intrinsicRealName];
         } else if (value != null) {
           if (!(part in value)) {
@@ -17160,7 +17160,7 @@ var require_get_intrinsic = __commonJS({
               value = value[part];
             }
           } else {
-            isOwn = hasOwn2(value, part);
+            isOwn = hasOwn3(value, part);
             value = value[part];
           }
           if (isOwn && !skipFurtherCaching) {
@@ -17397,7 +17397,7 @@ var require_utils2 = __commonJS({
     var formats = require_formats();
     var getSideChannel = require_side_channel();
     var has2 = Object.prototype.hasOwnProperty;
-    var isArray2 = Array.isArray;
+    var isArray3 = Array.isArray;
     var overflowChannel = getSideChannel();
     var markOverflow = function markOverflow2(obj, maxIndex) {
       overflowChannel.set(obj, maxIndex);
@@ -17423,7 +17423,7 @@ var require_utils2 = __commonJS({
       while (queue.length > 1) {
         var item = queue.pop();
         var obj = item.obj[item.prop];
-        if (isArray2(obj)) {
+        if (isArray3(obj)) {
           var compacted = [];
           for (var j = 0; j < obj.length; ++j) {
             if (typeof obj[j] !== "undefined") {
@@ -17448,7 +17448,7 @@ var require_utils2 = __commonJS({
         return target;
       }
       if (typeof source !== "object" && typeof source !== "function") {
-        if (isArray2(target)) {
+        if (isArray3(target)) {
           var nextIndex = target.length;
           if (options && typeof options.arrayLimit === "number" && nextIndex > options.arrayLimit) {
             return markOverflow(arrayToObject(target.concat(source), options), nextIndex);
@@ -17486,10 +17486,10 @@ var require_utils2 = __commonJS({
         return combined;
       }
       var mergeTarget = target;
-      if (isArray2(target) && !isArray2(source)) {
+      if (isArray3(target) && !isArray3(source)) {
         mergeTarget = arrayToObject(target, options);
       }
-      if (isArray2(target) && isArray2(source)) {
+      if (isArray3(target) && isArray3(source)) {
         source.forEach(function(item, i) {
           if (has2.call(target, i)) {
             var targetItem = target[i];
@@ -17628,7 +17628,7 @@ var require_utils2 = __commonJS({
       return result;
     };
     var maybeMap = function maybeMap2(val, fn) {
-      if (isArray2(val)) {
+      if (isArray3(val)) {
         var mapped = [];
         for (var i = 0; i < val.length; i += 1) {
           mapped[mapped.length] = fn(val[i]);
@@ -17674,10 +17674,10 @@ var require_stringify = __commonJS({
         return prefix;
       }
     };
-    var isArray2 = Array.isArray;
+    var isArray3 = Array.isArray;
     var push = Array.prototype.push;
     var pushToArray = function(arr, valueOrArray) {
-      push.apply(arr, isArray2(valueOrArray) ? valueOrArray : [valueOrArray]);
+      push.apply(arr, isArray3(valueOrArray) ? valueOrArray : [valueOrArray]);
     };
     var toISO = Date.prototype.toISOString;
     var defaultFormat = formats["default"];
@@ -17732,7 +17732,7 @@ var require_stringify = __commonJS({
         obj = filter(prefix, obj);
       } else if (obj instanceof Date) {
         obj = serializeDate(obj);
-      } else if (generateArrayPrefix === "comma" && isArray2(obj)) {
+      } else if (generateArrayPrefix === "comma" && isArray3(obj)) {
         obj = utils.maybeMap(obj, function(value2) {
           if (value2 instanceof Date) {
             return serializeDate(value2);
@@ -17758,20 +17758,20 @@ var require_stringify = __commonJS({
         return values;
       }
       var objKeys;
-      if (generateArrayPrefix === "comma" && isArray2(obj)) {
+      if (generateArrayPrefix === "comma" && isArray3(obj)) {
         if (encodeValuesOnly && encoder) {
           obj = utils.maybeMap(obj, encoder);
         }
         objKeys = [{ value: obj.length > 0 ? obj.join(",") || null : void 0 }];
-      } else if (isArray2(filter)) {
+      } else if (isArray3(filter)) {
         objKeys = filter;
       } else {
         var keys = Object.keys(obj);
         objKeys = sort ? keys.sort(sort) : keys;
       }
       var encodedPrefix = encodeDotInKeys ? String(prefix).replace(/\./g, "%2E") : String(prefix);
-      var adjustedPrefix = commaRoundTrip && isArray2(obj) && obj.length === 1 ? encodedPrefix + "[]" : encodedPrefix;
-      if (allowEmptyArrays && isArray2(obj) && obj.length === 0) {
+      var adjustedPrefix = commaRoundTrip && isArray3(obj) && obj.length === 1 ? encodedPrefix + "[]" : encodedPrefix;
+      if (allowEmptyArrays && isArray3(obj) && obj.length === 0) {
         return adjustedPrefix + "[]";
       }
       for (var j = 0; j < objKeys.length; ++j) {
@@ -17781,7 +17781,7 @@ var require_stringify = __commonJS({
           continue;
         }
         var encodedKey = allowDots && encodeDotInKeys ? String(key).replace(/\./g, "%2E") : String(key);
-        var keyPrefix = isArray2(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, encodedKey) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + encodedKey : "[" + encodedKey + "]");
+        var keyPrefix = isArray3(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, encodedKey) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + encodedKey : "[" + encodedKey + "]");
         sideChannel.set(object, step);
         var valueSideChannel = getSideChannel();
         valueSideChannel.set(sentinel2, sideChannel);
@@ -17794,7 +17794,7 @@ var require_stringify = __commonJS({
           strictNullHandling,
           skipNulls,
           encodeDotInKeys,
-          generateArrayPrefix === "comma" && encodeValuesOnly && isArray2(obj) ? null : encoder,
+          generateArrayPrefix === "comma" && encodeValuesOnly && isArray3(obj) ? null : encoder,
           filter,
           sort,
           allowDots,
@@ -17834,7 +17834,7 @@ var require_stringify = __commonJS({
       }
       var formatter = formats.formatters[format];
       var filter = defaults2.filter;
-      if (typeof opts.filter === "function" || isArray2(opts.filter)) {
+      if (typeof opts.filter === "function" || isArray3(opts.filter)) {
         filter = opts.filter;
       }
       var arrayFormat;
@@ -17879,7 +17879,7 @@ var require_stringify = __commonJS({
       if (typeof options.filter === "function") {
         filter = options.filter;
         obj = filter("", obj);
-      } else if (isArray2(options.filter)) {
+      } else if (isArray3(options.filter)) {
         filter = options.filter;
         objKeys = filter;
       }
@@ -17943,7 +17943,7 @@ var require_parse = __commonJS({
     "use strict";
     var utils = require_utils2();
     var has2 = Object.prototype.hasOwnProperty;
-    var isArray2 = Array.isArray;
+    var isArray3 = Array.isArray;
     var defaults2 = {
       allowDots: false,
       allowEmptyArrays: false,
@@ -18031,7 +18031,7 @@ var require_parse = __commonJS({
               parseArrayValue(
                 part.slice(pos + 1),
                 options,
-                isArray2(obj[key]) ? obj[key].length : 0
+                isArray3(obj[key]) ? obj[key].length : 0
               ),
               function(encodedVal) {
                 return options.decoder(encodedVal, defaults2.decoder, charset, "value");
@@ -18043,9 +18043,9 @@ var require_parse = __commonJS({
           val = interpretNumericEntities(String(val));
         }
         if (part.indexOf("[]=") > -1) {
-          val = isArray2(val) ? [val] : val;
+          val = isArray3(val) ? [val] : val;
         }
-        if (options.comma && isArray2(val) && val.length > options.arrayLimit) {
+        if (options.comma && isArray3(val) && val.length > options.arrayLimit) {
           if (options.throwOnLimitExceeded) {
             throw new RangeError("Array limit exceeded. Only " + options.arrayLimit + " element" + (options.arrayLimit === 1 ? "" : "s") + " allowed in an array.");
           }
@@ -18671,13 +18671,13 @@ var require_view = __commonJS({
   "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/view.js"(exports, module) {
     "use strict";
     var debug = require_src()("express:view");
-    var path2 = __require("node:path");
+    var path3 = __require("node:path");
     var fs = __require("node:fs");
-    var dirname = path2.dirname;
-    var basename = path2.basename;
-    var extname = path2.extname;
-    var join = path2.join;
-    var resolve = path2.resolve;
+    var dirname = path3.dirname;
+    var basename = path3.basename;
+    var extname = path3.extname;
+    var join = path3.join;
+    var resolve = path3.resolve;
     module.exports = View;
     function View(name, options) {
       var opts = options || {};
@@ -18706,17 +18706,17 @@ var require_view = __commonJS({
       this.path = this.lookup(fileName);
     }
     View.prototype.lookup = function lookup(name) {
-      var path3;
+      var path4;
       var roots = [].concat(this.root);
       debug('lookup "%s"', name);
-      for (var i = 0; i < roots.length && !path3; i++) {
+      for (var i = 0; i < roots.length && !path4; i++) {
         var root = roots[i];
         var loc = resolve(root, name);
         var dir = dirname(loc);
         var file = basename(loc);
-        path3 = this.resolve(dir, file);
+        path4 = this.resolve(dir, file);
       }
-      return path3;
+      return path4;
     };
     View.prototype.render = function render(options, callback) {
       var sync = true;
@@ -18738,21 +18738,21 @@ var require_view = __commonJS({
     };
     View.prototype.resolve = function resolve2(dir, file) {
       var ext = this.ext;
-      var path3 = join(dir, file);
-      var stat = tryStat(path3);
+      var path4 = join(dir, file);
+      var stat = tryStat(path4);
       if (stat && stat.isFile()) {
-        return path3;
+        return path4;
       }
-      path3 = join(dir, basename(file, ext), "index" + ext);
-      stat = tryStat(path3);
+      path4 = join(dir, basename(file, ext), "index" + ext);
+      stat = tryStat(path4);
       if (stat && stat.isFile()) {
-        return path3;
+        return path4;
       }
     };
-    function tryStat(path3) {
-      debug('stat "%s"', path3);
+    function tryStat(path4) {
+      debug('stat "%s"', path4);
       try {
-        return fs.statSync(path3);
+        return fs.statSync(path4);
       } catch (e) {
         return void 0;
       }
@@ -19950,15 +19950,15 @@ var require_dist = __commonJS({
           if (token.type === endType)
             break;
           if (token.type === "char" || token.type === "escape") {
-            let path2 = token.value;
+            let path3 = token.value;
             let cur = tokens[pos];
             while (cur.type === "char" || cur.type === "escape") {
-              path2 += cur.value;
+              path3 += cur.value;
               cur = tokens[++pos];
             }
             output.push({
               type: "text",
-              value: encodePath(path2)
+              value: encodePath(path3)
             });
             continue;
           }
@@ -19982,16 +19982,16 @@ var require_dist = __commonJS({
       }
       return new TokenData(consumeUntil("end"), str2);
     }
-    function compile(path2, options = {}) {
+    function compile(path3, options = {}) {
       const { encode: encode2 = encodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const data = typeof path2 === "object" ? path2 : parse(path2, options);
+      const data = typeof path3 === "object" ? path3 : parse(path3, options);
       const fn = tokensToFunction(data.tokens, delimiter, encode2);
-      return function path3(params = {}) {
-        const [path4, ...missing] = fn(params);
+      return function path4(params = {}) {
+        const [path5, ...missing] = fn(params);
         if (missing.length) {
           throw new TypeError(`Missing parameters: ${missing.join(", ")}`);
         }
-        return path4;
+        return path5;
       };
     }
     function tokensToFunction(tokens, delimiter, encode2) {
@@ -20047,9 +20047,9 @@ var require_dist = __commonJS({
         return [encodeValue(value)];
       };
     }
-    function match(path2, options = {}) {
+    function match(path3, options = {}) {
       const { decode = decodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const { regexp, keys } = pathToRegexp(path2, options);
+      const { regexp, keys } = pathToRegexp(path3, options);
       const decoders = keys.map((key) => {
         if (decode === false)
           return NOOP_VALUE;
@@ -20061,7 +20061,7 @@ var require_dist = __commonJS({
         const m = regexp.exec(input);
         if (!m)
           return false;
-        const path3 = m[0];
+        const path4 = m[0];
         const params = /* @__PURE__ */ Object.create(null);
         for (let i = 1; i < m.length; i++) {
           if (m[i] === void 0)
@@ -20070,15 +20070,15 @@ var require_dist = __commonJS({
           const decoder = decoders[i - 1];
           params[key.name] = decoder(m[i]);
         }
-        return { path: path3, params };
+        return { path: path4, params };
       };
     }
-    function pathToRegexp(path2, options = {}) {
+    function pathToRegexp(path3, options = {}) {
       const { delimiter = DEFAULT_DELIMITER, end = true, sensitive = false, trailing = true } = options;
       const keys = [];
       const flags = sensitive ? "" : "i";
       const sources = [];
-      for (const input of pathsToArray(path2, [])) {
+      for (const input of pathsToArray(path3, [])) {
         const data = typeof input === "object" ? input : parse(input, options);
         for (const tokens of flatten(data.tokens, 0, [])) {
           sources.push(toRegExpSource(tokens, delimiter, keys, data.originalPath));
@@ -20208,18 +20208,18 @@ var require_layer = __commonJS({
     var TRAILING_SLASH_REGEXP = /\/+$/;
     var MATCHING_GROUP_REGEXP = /\((?:\?<(.*?)>)?(?!\?)/g;
     module.exports = Layer;
-    function Layer(path2, options, fn) {
+    function Layer(path3, options, fn) {
       if (!(this instanceof Layer)) {
-        return new Layer(path2, options, fn);
+        return new Layer(path3, options, fn);
       }
-      debug("new %o", path2);
+      debug("new %o", path3);
       const opts = options || {};
       this.handle = fn;
       this.keys = [];
       this.name = fn.name || "<anonymous>";
       this.params = void 0;
       this.path = void 0;
-      this.slash = path2 === "/" && opts.end === false;
+      this.slash = path3 === "/" && opts.end === false;
       function matcher(_path) {
         if (_path instanceof RegExp) {
           const keys = [];
@@ -20258,7 +20258,7 @@ var require_layer = __commonJS({
           decode: decodeParam
         });
       }
-      this.matchers = Array.isArray(path2) ? path2.map(matcher) : [matcher(path2)];
+      this.matchers = Array.isArray(path3) ? path3.map(matcher) : [matcher(path3)];
     }
     Layer.prototype.handleError = function handleError(error, req, res, next) {
       const fn = this.handle;
@@ -20298,9 +20298,9 @@ var require_layer = __commonJS({
         next(err);
       }
     };
-    Layer.prototype.match = function match(path2) {
+    Layer.prototype.match = function match(path3) {
       let match2;
-      if (path2 != null) {
+      if (path3 != null) {
         if (this.slash) {
           this.params = {};
           this.path = "";
@@ -20308,7 +20308,7 @@ var require_layer = __commonJS({
         }
         let i = 0;
         while (!match2 && i < this.matchers.length) {
-          match2 = this.matchers[i](path2);
+          match2 = this.matchers[i](path3);
           i++;
         }
       }
@@ -20336,13 +20336,13 @@ var require_layer = __commonJS({
         throw err;
       }
     }
-    function loosen(path2) {
-      if (path2 instanceof RegExp || path2 === "/") {
-        return path2;
+    function loosen(path3) {
+      if (path3 instanceof RegExp || path3 === "/") {
+        return path3;
       }
-      return Array.isArray(path2) ? path2.map(function(p) {
+      return Array.isArray(path3) ? path3.map(function(p) {
         return loosen(p);
-      }) : String(path2).replace(TRAILING_SLASH_REGEXP, "");
+      }) : String(path3).replace(TRAILING_SLASH_REGEXP, "");
     }
   }
 });
@@ -20358,9 +20358,9 @@ var require_route = __commonJS({
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
     module.exports = Route;
-    function Route(path2) {
-      debug("new %o", path2);
-      this.path = path2;
+    function Route(path3) {
+      debug("new %o", path3);
+      this.path = path3;
       this.stack = [];
       this.methods = /* @__PURE__ */ Object.create(null);
     }
@@ -20568,8 +20568,8 @@ var require_router = __commonJS({
         if (++sync > 100) {
           return setImmediate(next, err);
         }
-        const path2 = getPathname(req);
-        if (path2 == null) {
+        const path3 = getPathname(req);
+        if (path3 == null) {
           return done(layerError);
         }
         let layer;
@@ -20577,7 +20577,7 @@ var require_router = __commonJS({
         let route;
         while (match !== true && idx < stack.length) {
           layer = stack[idx++];
-          match = matchLayer(layer, path2);
+          match = matchLayer(layer, path3);
           route = layer.route;
           if (typeof match !== "boolean") {
             layerError = layerError || match;
@@ -20615,18 +20615,18 @@ var require_router = __commonJS({
           } else if (route) {
             layer.handleRequest(req, res, next);
           } else {
-            trimPrefix(layer, layerError, layerPath, path2);
+            trimPrefix(layer, layerError, layerPath, path3);
           }
           sync = 0;
         });
       }
-      function trimPrefix(layer, layerError, layerPath, path2) {
+      function trimPrefix(layer, layerError, layerPath, path3) {
         if (layerPath.length !== 0) {
-          if (layerPath !== path2.substring(0, layerPath.length)) {
+          if (layerPath !== path3.substring(0, layerPath.length)) {
             next(layerError);
             return;
           }
-          const c = path2[layerPath.length];
+          const c = path3[layerPath.length];
           if (c && c !== "/") {
             next(layerError);
             return;
@@ -20650,7 +20650,7 @@ var require_router = __commonJS({
     };
     Router15.prototype.use = function use(handler) {
       let offset = 0;
-      let path2 = "/";
+      let path3 = "/";
       if (typeof handler !== "function") {
         let arg = handler;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -20658,7 +20658,7 @@ var require_router = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path2 = handler;
+          path3 = handler;
         }
       }
       const callbacks = flatten.call(slice.call(arguments, offset), Infinity);
@@ -20670,8 +20670,8 @@ var require_router = __commonJS({
         if (typeof fn !== "function") {
           throw new TypeError("argument handler must be a function");
         }
-        debug("use %o %s", path2, fn.name || "<anonymous>");
-        const layer = new Layer(path2, {
+        debug("use %o %s", path3, fn.name || "<anonymous>");
+        const layer = new Layer(path3, {
           sensitive: this.caseSensitive,
           strict: false,
           end: false
@@ -20681,9 +20681,9 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router15.prototype.route = function route(path2) {
-      const route2 = new Route(path2);
-      const layer = new Layer(path2, {
+    Router15.prototype.route = function route(path3) {
+      const route2 = new Route(path3);
+      const layer = new Layer(path3, {
         sensitive: this.caseSensitive,
         strict: this.strict,
         end: true
@@ -20696,8 +20696,8 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router15.prototype[method] = function(path2) {
-        const route = this.route(path2);
+      Router15.prototype[method] = function(path3) {
+        const route = this.route(path3);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
@@ -20726,9 +20726,9 @@ var require_router = __commonJS({
       const fqdnIndex = url.substring(0, pathLength).indexOf("://");
       return fqdnIndex !== -1 ? url.substring(0, url.indexOf("/", 3 + fqdnIndex)) : void 0;
     }
-    function matchLayer(layer, path2) {
+    function matchLayer(layer, path3) {
       try {
-        return layer.match(path2);
+        return layer.match(path3);
       } catch (err) {
         return err;
       }
@@ -20956,7 +20956,7 @@ var require_application = __commonJS({
     };
     app2.use = function use(fn) {
       var offset = 0;
-      var path2 = "/";
+      var path3 = "/";
       if (typeof fn !== "function") {
         var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -20964,7 +20964,7 @@ var require_application = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path2 = fn;
+          path3 = fn;
         }
       }
       var fns = flatten.call(slice.call(arguments, offset), Infinity);
@@ -20974,12 +20974,12 @@ var require_application = __commonJS({
       var router15 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router15.use(path2, fn2);
+          return router15.use(path3, fn2);
         }
-        debug(".use app under %s", path2);
-        fn2.mountpath = path2;
+        debug(".use app under %s", path3);
+        fn2.mountpath = path3;
         fn2.parent = this;
-        router15.use(path2, function mounted_app(req, res, next) {
+        router15.use(path3, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -20991,8 +20991,8 @@ var require_application = __commonJS({
       }, this);
       return this;
     };
-    app2.route = function route(path2) {
-      return this.router.route(path2);
+    app2.route = function route(path3) {
+      return this.router.route(path3);
     };
     app2.engine = function engine(ext, fn) {
       if (typeof fn !== "function") {
@@ -21035,7 +21035,7 @@ var require_application = __commonJS({
       }
       return this;
     };
-    app2.path = function path2() {
+    app2.path = function path3() {
       return this.parent ? this.parent.path() + this.mountpath : "";
     };
     app2.enabled = function enabled(setting) {
@@ -21051,17 +21051,17 @@ var require_application = __commonJS({
       return this.set(setting, false);
     };
     methods.forEach(function(method) {
-      app2[method] = function(path2) {
+      app2[method] = function(path3) {
         if (method === "get" && arguments.length === 1) {
-          return this.set(path2);
+          return this.set(path3);
         }
-        var route = this.route(path2);
+        var route = this.route(path3);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
     });
-    app2.all = function all(path2) {
-      var route = this.route(path2);
+    app2.all = function all(path3) {
+      var route = this.route(path3);
       var args = slice.call(arguments, 1);
       for (var i = 0; i < methods.length; i++) {
         route[methods[i]].apply(route, args);
@@ -21971,7 +21971,7 @@ var require_request = __commonJS({
       var subdomains2 = !isIP(hostname) ? hostname.split(".").reverse() : [hostname];
       return subdomains2.slice(offset);
     });
-    defineGetter(req, "path", function path2() {
+    defineGetter(req, "path", function path3() {
       return parse(this).pathname;
     });
     defineGetter(req, "host", function host() {
@@ -22383,27 +22383,27 @@ var require_send = __commonJS({
     var ms = require_ms();
     var onFinished = require_on_finished();
     var parseRange = require_range_parser();
-    var path2 = __require("path");
+    var path3 = __require("path");
     var statuses = require_statuses();
-    var Stream2 = __require("stream");
+    var Stream3 = __require("stream");
     var util2 = __require("util");
-    var extname = path2.extname;
-    var join = path2.join;
-    var normalize = path2.normalize;
-    var resolve = path2.resolve;
-    var sep = path2.sep;
+    var extname = path3.extname;
+    var join = path3.join;
+    var normalize = path3.normalize;
+    var resolve = path3.resolve;
+    var sep = path3.sep;
     var BYTES_RANGE_REGEXP = /^ *bytes=/;
     var MAX_MAXAGE = 60 * 60 * 24 * 365 * 1e3;
     var UP_PATH_REGEXP = /(?:^|[\\/])\.\.(?:[\\/]|$)/;
     module.exports = send;
-    function send(req, path3, options) {
-      return new SendStream(req, path3, options);
+    function send(req, path4, options) {
+      return new SendStream(req, path4, options);
     }
-    function SendStream(req, path3, options) {
-      Stream2.call(this);
+    function SendStream(req, path4, options) {
+      Stream3.call(this);
       var opts = options || {};
       this.options = opts;
-      this.path = path3;
+      this.path = path4;
       this.req = req;
       this._acceptRanges = opts.acceptRanges !== void 0 ? Boolean(opts.acceptRanges) : true;
       this._cacheControl = opts.cacheControl !== void 0 ? Boolean(opts.cacheControl) : true;
@@ -22421,7 +22421,7 @@ var require_send = __commonJS({
       this._maxage = !isNaN(this._maxage) ? Math.min(Math.max(0, this._maxage), MAX_MAXAGE) : 0;
       this._root = opts.root ? resolve(opts.root) : null;
     }
-    util2.inherits(SendStream, Stream2);
+    util2.inherits(SendStream, Stream3);
     SendStream.prototype.error = function error(status, err) {
       if (hasListeners(this, "error")) {
         return this.emit("error", createHttpError(status, err));
@@ -22517,10 +22517,10 @@ var require_send = __commonJS({
       var lastModified = this.res.getHeader("Last-Modified");
       return parseHttpDate(lastModified) <= parseHttpDate(ifRange);
     };
-    SendStream.prototype.redirect = function redirect(path3) {
+    SendStream.prototype.redirect = function redirect(path4) {
       var res = this.res;
       if (hasListeners(this, "directory")) {
-        this.emit("directory", res, path3);
+        this.emit("directory", res, path4);
         return;
       }
       if (this.hasTrailingSlash()) {
@@ -22540,38 +22540,38 @@ var require_send = __commonJS({
     SendStream.prototype.pipe = function pipe(res) {
       var root = this._root;
       this.res = res;
-      var path3 = decode(this.path);
-      if (path3 === -1) {
+      var path4 = decode(this.path);
+      if (path4 === -1) {
         this.error(400);
         return res;
       }
-      if (~path3.indexOf("\0")) {
+      if (~path4.indexOf("\0")) {
         this.error(400);
         return res;
       }
       var parts;
       if (root !== null) {
-        if (path3) {
-          path3 = normalize("." + sep + path3);
+        if (path4) {
+          path4 = normalize("." + sep + path4);
         }
-        if (UP_PATH_REGEXP.test(path3)) {
-          debug('malicious path "%s"', path3);
+        if (UP_PATH_REGEXP.test(path4)) {
+          debug('malicious path "%s"', path4);
           this.error(403);
           return res;
         }
-        parts = path3.split(sep);
-        path3 = normalize(join(root, path3));
+        parts = path4.split(sep);
+        path4 = normalize(join(root, path4));
       } else {
-        if (UP_PATH_REGEXP.test(path3)) {
-          debug('malicious path "%s"', path3);
+        if (UP_PATH_REGEXP.test(path4)) {
+          debug('malicious path "%s"', path4);
           this.error(403);
           return res;
         }
-        parts = normalize(path3).split(sep);
-        path3 = resolve(path3);
+        parts = normalize(path4).split(sep);
+        path4 = resolve(path4);
       }
       if (containsDotFile(parts)) {
-        debug('%s dotfile "%s"', this._dotfiles, path3);
+        debug('%s dotfile "%s"', this._dotfiles, path4);
         switch (this._dotfiles) {
           case "allow":
             break;
@@ -22585,13 +22585,13 @@ var require_send = __commonJS({
         }
       }
       if (this._index.length && this.hasTrailingSlash()) {
-        this.sendIndex(path3);
+        this.sendIndex(path4);
         return res;
       }
-      this.sendFile(path3);
+      this.sendFile(path4);
       return res;
     };
-    SendStream.prototype.send = function send2(path3, stat) {
+    SendStream.prototype.send = function send2(path4, stat) {
       var len = stat.size;
       var options = this.options;
       var opts = {};
@@ -22603,9 +22603,9 @@ var require_send = __commonJS({
         this.headersAlreadySent();
         return;
       }
-      debug('pipe "%s"', path3);
-      this.setHeader(path3, stat);
-      this.type(path3);
+      debug('pipe "%s"', path4);
+      this.setHeader(path4, stat);
+      this.type(path4);
       if (this.isConditionalGET()) {
         if (this.isPreconditionFailure()) {
           this.error(412);
@@ -22654,28 +22654,28 @@ var require_send = __commonJS({
         res.end();
         return;
       }
-      this.stream(path3, opts);
+      this.stream(path4, opts);
     };
-    SendStream.prototype.sendFile = function sendFile(path3) {
+    SendStream.prototype.sendFile = function sendFile(path4) {
       var i = 0;
       var self = this;
-      debug('stat "%s"', path3);
-      fs.stat(path3, function onstat(err, stat) {
-        var pathEndsWithSep = path3[path3.length - 1] === sep;
-        if (err && err.code === "ENOENT" && !extname(path3) && !pathEndsWithSep) {
+      debug('stat "%s"', path4);
+      fs.stat(path4, function onstat(err, stat) {
+        var pathEndsWithSep = path4[path4.length - 1] === sep;
+        if (err && err.code === "ENOENT" && !extname(path4) && !pathEndsWithSep) {
           return next(err);
         }
         if (err) return self.onStatError(err);
-        if (stat.isDirectory()) return self.redirect(path3);
+        if (stat.isDirectory()) return self.redirect(path4);
         if (pathEndsWithSep) return self.error(404);
-        self.emit("file", path3, stat);
-        self.send(path3, stat);
+        self.emit("file", path4, stat);
+        self.send(path4, stat);
       });
       function next(err) {
         if (self._extensions.length <= i) {
           return err ? self.onStatError(err) : self.error(404);
         }
-        var p = path3 + "." + self._extensions[i++];
+        var p = path4 + "." + self._extensions[i++];
         debug('stat "%s"', p);
         fs.stat(p, function(err2, stat) {
           if (err2) return next(err2);
@@ -22685,7 +22685,7 @@ var require_send = __commonJS({
         });
       }
     };
-    SendStream.prototype.sendIndex = function sendIndex(path3) {
+    SendStream.prototype.sendIndex = function sendIndex(path4) {
       var i = -1;
       var self = this;
       function next(err) {
@@ -22693,7 +22693,7 @@ var require_send = __commonJS({
           if (err) return self.onStatError(err);
           return self.error(404);
         }
-        var p = join(path3, self._index[i]);
+        var p = join(path4, self._index[i]);
         debug('stat "%s"', p);
         fs.stat(p, function(err2, stat) {
           if (err2) return next(err2);
@@ -22704,10 +22704,10 @@ var require_send = __commonJS({
       }
       next();
     };
-    SendStream.prototype.stream = function stream(path3, options) {
+    SendStream.prototype.stream = function stream(path4, options) {
       var self = this;
       var res = this.res;
-      var stream2 = fs.createReadStream(path3, options);
+      var stream2 = fs.createReadStream(path4, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
       function cleanup() {
@@ -22722,17 +22722,17 @@ var require_send = __commonJS({
         self.emit("end");
       });
     };
-    SendStream.prototype.type = function type(path3) {
+    SendStream.prototype.type = function type(path4) {
       var res = this.res;
       if (res.getHeader("Content-Type")) return;
-      var ext = extname(path3);
+      var ext = extname(path4);
       var type2 = mime.contentType(ext) || "application/octet-stream";
       debug("content-type %s", type2);
       res.setHeader("Content-Type", type2);
     };
-    SendStream.prototype.setHeader = function setHeader(path3, stat) {
+    SendStream.prototype.setHeader = function setHeader(path4, stat) {
       var res = this.res;
-      this.emit("headers", res, path3, stat);
+      this.emit("headers", res, path4, stat);
       if (this._acceptRanges && !res.getHeader("Accept-Ranges")) {
         debug("accept ranges");
         res.setHeader("Accept-Ranges", "bytes");
@@ -22790,9 +22790,9 @@ var require_send = __commonJS({
       }
       return err instanceof Error ? createError(status, err, { expose: false }) : createError(status, err);
     }
-    function decode(path3) {
+    function decode(path4) {
       try {
-        return decodeURIComponent(path3);
+        return decodeURIComponent(path4);
       } catch (err) {
         return -1;
       }
@@ -22936,7 +22936,7 @@ var require_response = __commonJS({
     var http = __require("node:http");
     var onFinished = require_on_finished();
     var mime = require_mime_types();
-    var path2 = __require("node:path");
+    var path3 = __require("node:path");
     var pathIsAbsolute = __require("node:path").isAbsolute;
     var statuses = require_statuses();
     var sign = require_cookie_signature().sign;
@@ -22945,8 +22945,8 @@ var require_response = __commonJS({
     var setCharset = require_utils3().setCharset;
     var cookie = require_cookie();
     var send = require_send();
-    var extname = path2.extname;
-    var resolve = path2.resolve;
+    var extname = path3.extname;
+    var resolve = path3.resolve;
     var vary = require_vary();
     var { Buffer: Buffer2 } = __require("node:buffer");
     var res = Object.create(http.ServerResponse.prototype);
@@ -23092,26 +23092,26 @@ var require_response = __commonJS({
       this.type("txt");
       return this.send(body);
     };
-    res.sendFile = function sendFile(path3, options, callback) {
+    res.sendFile = function sendFile(path4, options, callback) {
       var done = callback;
       var req = this.req;
       var res2 = this;
       var next = req.next;
       var opts = options || {};
-      if (!path3) {
+      if (!path4) {
         throw new TypeError("path argument is required to res.sendFile");
       }
-      if (typeof path3 !== "string") {
+      if (typeof path4 !== "string") {
         throw new TypeError("path must be a string to res.sendFile");
       }
       if (typeof options === "function") {
         done = options;
         opts = {};
       }
-      if (!opts.root && !pathIsAbsolute(path3)) {
+      if (!opts.root && !pathIsAbsolute(path4)) {
         throw new TypeError("path must be absolute or specify root to res.sendFile");
       }
-      var pathname = encodeURI(path3);
+      var pathname = encodeURI(path4);
       opts.etag = this.app.enabled("etag");
       var file = send(req, pathname, opts);
       sendfile(res2, file, opts, function(err) {
@@ -23122,7 +23122,7 @@ var require_response = __commonJS({
         }
       });
     };
-    res.download = function download(path3, filename, options, callback) {
+    res.download = function download(path4, filename, options, callback) {
       var done = callback;
       var name = filename;
       var opts = options || null;
@@ -23139,7 +23139,7 @@ var require_response = __commonJS({
         opts = filename;
       }
       var headers = {
-        "Content-Disposition": contentDisposition(name || path3)
+        "Content-Disposition": contentDisposition(name || path4)
       };
       if (opts && opts.headers) {
         var keys = Object.keys(opts.headers);
@@ -23152,7 +23152,7 @@ var require_response = __commonJS({
       }
       opts = Object.create(opts);
       opts.headers = headers;
-      var fullPath = !opts.root ? resolve(path3) : path3;
+      var fullPath = !opts.root ? resolve(path4) : path4;
       return this.sendFile(fullPath, opts, done);
     };
     res.contentType = res.type = function contentType(type) {
@@ -23435,11 +23435,11 @@ var require_serve_static = __commonJS({
         }
         var forwardError = !fallthrough;
         var originalUrl = parseUrl.original(req);
-        var path2 = parseUrl(req).pathname;
-        if (path2 === "/" && originalUrl.pathname.substr(-1) !== "/") {
-          path2 = "";
+        var path3 = parseUrl(req).pathname;
+        if (path3 === "/" && originalUrl.pathname.substr(-1) !== "/") {
+          path3 = "";
         }
-        var stream = send(req, path2, opts);
+        var stream = send(req, path3, opts);
         stream.on("directory", onDirectory);
         if (setHeaders) {
           stream.on("headers", setHeaders);
@@ -24087,8 +24087,8 @@ var require_req = __commonJS({
       if (req.originalUrl) {
         _req.url = req.originalUrl;
       } else {
-        const path2 = req.path;
-        _req.url = typeof path2 === "string" ? path2 : req.url ? req.url.path || req.url : void 0;
+        const path3 = req.path;
+        _req.url = typeof path3 === "string" ? path3 : req.url ? req.url.path || req.url : void 0;
       }
       if (req.query) {
         _req.query = req.query;
@@ -24253,14 +24253,14 @@ var require_redact = __commonJS({
       }
       return obj;
     }
-    function parsePath(path2) {
+    function parsePath(path3) {
       const parts = [];
       let current = "";
       let inBrackets = false;
       let inQuotes = false;
       let quoteChar = "";
-      for (let i = 0; i < path2.length; i++) {
-        const char = path2[i];
+      for (let i = 0; i < path3.length; i++) {
+        const char = path3[i];
         if (!inBrackets && char === ".") {
           if (current) {
             parts.push(current);
@@ -24391,10 +24391,10 @@ var require_redact = __commonJS({
       return current;
     }
     function redactPaths(obj, paths, censor, remove = false) {
-      for (const path2 of paths) {
-        const parts = parsePath(path2);
+      for (const path3 of paths) {
+        const parts = parsePath(path3);
         if (parts.includes("*")) {
-          redactWildcardPath(obj, parts, censor, path2, remove);
+          redactWildcardPath(obj, parts, censor, path3, remove);
         } else {
           if (remove) {
             removeKey(obj, parts);
@@ -24479,8 +24479,8 @@ var require_redact = __commonJS({
           }
         } else {
           if (afterWildcard.includes("*")) {
-            const wrappedCensor = typeof censor === "function" ? (value, path2) => {
-              const fullPath = [...pathArray.slice(0, pathLength), ...path2];
+            const wrappedCensor = typeof censor === "function" ? (value, path3) => {
+              const fullPath = [...pathArray.slice(0, pathLength), ...path3];
               return censor(value, fullPath);
             } : censor;
             redactWildcardPath(current, afterWildcard, wrappedCensor, originalPath, remove);
@@ -24515,8 +24515,8 @@ var require_redact = __commonJS({
         return null;
       }
       const pathStructure = /* @__PURE__ */ new Map();
-      for (const path2 of pathsToClone) {
-        const parts = parsePath(path2);
+      for (const path3 of pathsToClone) {
+        const parts = parsePath(path3);
         let current = pathStructure;
         for (let i = 0; i < parts.length; i++) {
           const part = parts[i];
@@ -24568,24 +24568,24 @@ var require_redact = __commonJS({
       }
       return cloneSelectively(obj, pathStructure);
     }
-    function validatePath(path2) {
-      if (typeof path2 !== "string") {
+    function validatePath(path3) {
+      if (typeof path3 !== "string") {
         throw new Error("Paths must be (non-empty) strings");
       }
-      if (path2 === "") {
+      if (path3 === "") {
         throw new Error("Invalid redaction path ()");
       }
-      if (path2.includes("..")) {
-        throw new Error(`Invalid redaction path (${path2})`);
+      if (path3.includes("..")) {
+        throw new Error(`Invalid redaction path (${path3})`);
       }
-      if (path2.includes(",")) {
-        throw new Error(`Invalid redaction path (${path2})`);
+      if (path3.includes(",")) {
+        throw new Error(`Invalid redaction path (${path3})`);
       }
       let bracketCount = 0;
       let inQuotes = false;
       let quoteChar = "";
-      for (let i = 0; i < path2.length; i++) {
-        const char = path2[i];
+      for (let i = 0; i < path3.length; i++) {
+        const char = path3[i];
         if ((char === '"' || char === "'") && bracketCount > 0) {
           if (!inQuotes) {
             inQuotes = true;
@@ -24599,20 +24599,20 @@ var require_redact = __commonJS({
         } else if (char === "]" && !inQuotes) {
           bracketCount--;
           if (bracketCount < 0) {
-            throw new Error(`Invalid redaction path (${path2})`);
+            throw new Error(`Invalid redaction path (${path3})`);
           }
         }
       }
       if (bracketCount !== 0) {
-        throw new Error(`Invalid redaction path (${path2})`);
+        throw new Error(`Invalid redaction path (${path3})`);
       }
     }
     function validatePaths(paths) {
       if (!Array.isArray(paths)) {
         throw new TypeError("paths must be an array");
       }
-      for (const path2 of paths) {
-        validatePath(path2);
+      for (const path3 of paths) {
+        validatePath(path3);
       }
     }
     function slowRedact(options = {}) {
@@ -24780,8 +24780,8 @@ var require_redaction = __commonJS({
         if (shape[k] === null) {
           o[k] = (value) => topCensor(value, [k]);
         } else {
-          const wrappedCensor = typeof censor === "function" ? (value, path2) => {
-            return censor(value, [k, ...path2]);
+          const wrappedCensor = typeof censor === "function" ? (value, path3) => {
+            return censor(value, [k, ...path3]);
           } : censor;
           o[k] = Redact({
             paths: shape[k],
@@ -24965,7 +24965,7 @@ var require_atomic_sleep = __commonJS({
   "../../node_modules/.pnpm/atomic-sleep@1.0.0/node_modules/atomic-sleep/index.js"(exports, module) {
     "use strict";
     if (typeof SharedArrayBuffer !== "undefined" && typeof Atomics !== "undefined") {
-      let sleep2 = function(ms) {
+      let sleep3 = function(ms) {
         const valid = ms > 0 && ms < Infinity;
         if (valid === false) {
           if (typeof ms !== "number" && typeof ms !== "bigint") {
@@ -24976,9 +24976,9 @@ var require_atomic_sleep = __commonJS({
         Atomics.wait(nil, 0, 0, Number(ms));
       };
       const nil = new Int32Array(new SharedArrayBuffer(4));
-      module.exports = sleep2;
+      module.exports = sleep3;
     } else {
-      let sleep2 = function(ms) {
+      let sleep3 = function(ms) {
         const valid = ms > 0 && ms < Infinity;
         if (valid === false) {
           if (typeof ms !== "number" && typeof ms !== "bigint") {
@@ -24990,7 +24990,7 @@ var require_atomic_sleep = __commonJS({
         while (target > Date.now()) {
         }
       };
-      module.exports = sleep2;
+      module.exports = sleep3;
     }
   }
 });
@@ -25002,8 +25002,8 @@ var require_sonic_boom = __commonJS({
     var fs = __require("fs");
     var EventEmitter = __require("events");
     var inherits = __require("util").inherits;
-    var path2 = __require("path");
-    var sleep2 = require_atomic_sleep();
+    var path3 = __require("path");
+    var sleep3 = require_atomic_sleep();
     var assert = __require("assert");
     var BUSY_WRITE_TIMEOUT = 100;
     var kEmptyBuffer = Buffer.allocUnsafe(0);
@@ -25056,7 +25056,7 @@ var require_sonic_boom = __commonJS({
       const mode = sonic.mode;
       if (sonic.sync) {
         try {
-          if (sonic.mkdir) fs.mkdirSync(path2.dirname(file), { recursive: true });
+          if (sonic.mkdir) fs.mkdirSync(path3.dirname(file), { recursive: true });
           const fd = fs.openSync(file, flags, mode);
           fileOpened(null, fd);
         } catch (err) {
@@ -25064,7 +25064,7 @@ var require_sonic_boom = __commonJS({
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs.mkdir(path2.dirname(file), { recursive: true }, (err) => {
+        fs.mkdir(path3.dirname(file), { recursive: true }, (err) => {
           if (err) return fileOpened(err);
           fs.open(file, flags, mode, fileOpened);
         });
@@ -25149,7 +25149,7 @@ var require_sonic_boom = __commonJS({
           if ((err.code === "EAGAIN" || err.code === "EBUSY") && this.retryEAGAIN(err, this._writingBuf.length, this._len - this._writingBuf.length)) {
             if (this.sync) {
               try {
-                sleep2(BUSY_WRITE_TIMEOUT);
+                sleep3(BUSY_WRITE_TIMEOUT);
                 this.release(void 0, 0);
               } catch (err2) {
                 this.release(err2);
@@ -25462,7 +25462,7 @@ var require_sonic_boom = __commonJS({
           if (shouldRetry && !this.retryEAGAIN(err, buf.length, this._len - buf.length)) {
             throw err;
           }
-          sleep2(BUSY_WRITE_TIMEOUT);
+          sleep3(BUSY_WRITE_TIMEOUT);
         }
       }
       try {
@@ -25499,7 +25499,7 @@ var require_sonic_boom = __commonJS({
           if (shouldRetry && !this.retryEAGAIN(err, buf.length, this._len - buf.length)) {
             throw err;
           }
-          sleep2(BUSY_WRITE_TIMEOUT);
+          sleep3(BUSY_WRITE_TIMEOUT);
         }
       }
     }
@@ -26240,7 +26240,7 @@ var require_transport = __commonJS({
     var { createRequire } = __require("module");
     var getCallers = require_caller();
     var { join, isAbsolute, sep } = __require("node:path");
-    var sleep2 = require_atomic_sleep();
+    var sleep3 = require_atomic_sleep();
     var onExit = require_on_exit_leak_free();
     var ThreadStream = require_thread_stream();
     function setupOnExit(stream) {
@@ -26274,7 +26274,7 @@ var require_transport = __commonJS({
           return;
         }
         stream.flushSync();
-        sleep2(100);
+        sleep3(100);
         stream.end();
       }
       return stream;
@@ -26404,7 +26404,7 @@ var require_tools = __commonJS({
         }
       };
     }
-    function noop2() {
+    function noop3() {
     }
     function genLog(level, hook) {
       if (!hook) return LOG;
@@ -26590,10 +26590,10 @@ var require_tools = __commonJS({
       return stream;
       function filterBrokenPipe(err) {
         if (err.code === "EPIPE") {
-          stream.write = noop2;
-          stream.end = noop2;
-          stream.flushSync = noop2;
-          stream.destroy = noop2;
+          stream.write = noop3;
+          stream.end = noop3;
+          stream.flushSync = noop3;
+          stream.destroy = noop3;
           return;
         }
         stream.removeListener("error", filterBrokenPipe);
@@ -26647,7 +26647,7 @@ var require_tools = __commonJS({
         }
         const { enabled, onChild } = opts;
         if (enabled === false) opts.level = "silent";
-        if (!onChild) opts.onChild = noop2;
+        if (!onChild) opts.onChild = noop3;
         if (!stream) {
           if (!hasBeenTampered(process.stdout)) {
             stream = buildSafeSonicBoom({ fd: process.stdout.fd || 1 });
@@ -26688,7 +26688,7 @@ var require_tools = __commonJS({
       return destination;
     }
     module.exports = {
-      noop: noop2,
+      noop: noop3,
       buildSafeSonicBoom,
       asChindings,
       asJson,
@@ -26736,7 +26736,7 @@ var require_levels = __commonJS({
       hooksSym,
       levelCompSym
     } = require_symbols();
-    var { noop: noop2, genLog } = require_tools();
+    var { noop: noop3, genLog } = require_tools();
     var { DEFAULT_LEVELS, SORTING_ORDER } = require_constants();
     var levelMethods = {
       fatal: (hook) => {
@@ -26807,7 +26807,7 @@ var require_levels = __commonJS({
       const hook = this[hooksSym].logMethod;
       for (const key in values) {
         if (levelComparison(values[key], levelVal) === false) {
-          this[key] = noop2;
+          this[key] = noop3;
           continue;
         }
         this[key] = isStandardLevel(key, useOnlyCustomLevelsVal) ? levelMethods[key](hook) : genLog(values[key], hook);
@@ -26970,7 +26970,7 @@ var require_proto = __commonJS({
       asJson,
       buildFormatters,
       stringify: stringify2,
-      noop: noop2
+      noop: noop3
     } = require_tools();
     var {
       version
@@ -27032,7 +27032,7 @@ var require_proto = __commonJS({
         }
         instance[chindingsSym] = asChindings(instance, bindings2);
         instance[setLevelSym](this.level);
-        if (this.onChild !== noop2) {
+        if (this.onChild !== noop3) {
           this.onChild(instance);
         }
         return instance;
@@ -27149,7 +27149,7 @@ var require_proto = __commonJS({
       }
       const stream = this[streamSym];
       if (typeof stream.flush === "function") {
-        stream.flush(cb || noop2);
+        stream.flush(cb || noop3);
       } else if (cb) cb();
     }
   }
@@ -27924,9 +27924,9 @@ var require_pino = __commonJS({
   "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/pino.js"(exports, module) {
     function pinoBundlerAbsolutePath(p) {
       try {
-        const path2 = __require("path");
+        const path3 = __require("path");
         const outputDir = "/home/runner/workspace/Artefact/api-server/dist";
-        return path2.resolve(outputDir, p.replace(/^\.\//, ""));
+        return path3.resolve(outputDir, p.replace(/^\.\//, ""));
       } catch (e) {
         const f = new Function("p", "return new URL(p, import.meta.url).pathname");
         return f(p);
@@ -27950,7 +27950,7 @@ var require_pino = __commonJS({
       buildFormatters,
       stringify: stringify2,
       normalizeDestFileDescriptor,
-      noop: noop2
+      noop: noop3
     } = require_tools();
     var { version } = require_meta();
     var {
@@ -28109,7 +28109,7 @@ var require_pino = __commonJS({
         [chindingsSym]: chindings,
         [formattersSym]: allFormatters,
         [hooksSym]: hooks,
-        silent: noop2,
+        silent: noop3,
         onChild,
         [msgPrefixSym]: msgPrefix
       });
@@ -28757,8 +28757,8 @@ function getErrorMap() {
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path2, errorMaps, issueData } = params;
-  const fullPath = [...path2, ...issueData.path || []];
+  const { data, path: path3, errorMaps, issueData } = params;
+  const fullPath = [...path3, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -28873,11 +28873,11 @@ var errorUtil;
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path2, key) {
+  constructor(parent, value, path3, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path2;
+    this._path = path3;
     this._key = key;
   }
   get path() {
@@ -33678,8 +33678,8 @@ var AbstractPage = class {
   }
 };
 var PagePromise = class extends APIPromise {
-  constructor(client, request, Page2) {
-    super(client, request, async (client2, props) => new Page2(client2, props.response, await defaultParseResponse(client2, props), props.options));
+  constructor(client, request, Page3) {
+    super(client, request, async (client2, props) => new Page3(client2, props.response, await defaultParseResponse(client2, props), props.options));
   }
   /**
    * Allow auto-paginating iteration on an unawaited list call, eg:
@@ -33924,12 +33924,12 @@ function encodeURIPath(str2) {
   return str2.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]+/g, encodeURIComponent);
 }
 var EMPTY = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.create(null));
-var createPathTagFunction = (pathEncoder = encodeURIPath) => function path2(statics, ...params) {
+var createPathTagFunction = (pathEncoder = encodeURIPath) => function path3(statics, ...params) {
   if (statics.length === 1)
     return statics[0];
   let postPath = false;
   const invalidSegments = [];
-  const path3 = statics.reduce((previousValue, currentValue, index) => {
+  const path4 = statics.reduce((previousValue, currentValue, index) => {
     if (/[?#]/.test(currentValue)) {
       postPath = true;
     }
@@ -33946,7 +33946,7 @@ var createPathTagFunction = (pathEncoder = encodeURIPath) => function path2(stat
     }
     return previousValue + currentValue + (index === params.length ? "" : encoded);
   }, "");
-  const pathOnly = path3.split(/[?#]/, 1)[0];
+  const pathOnly = path4.split(/[?#]/, 1)[0];
   const invalidSegmentPattern = /(?<=^|\/)(?:\.|%2e){1,2}(?=\/|$)/gi;
   let match;
   while ((match = invalidSegmentPattern.exec(pathOnly)) !== null) {
@@ -33967,10 +33967,10 @@ var createPathTagFunction = (pathEncoder = encodeURIPath) => function path2(stat
     }, "");
     throw new OpenAIError(`Path parameters result in path with invalid segments:
 ${invalidSegments.map((e) => e.error).join("\n")}
-${path3}
+${path4}
 ${underline}`);
   }
-  return path3;
+  return path4;
 };
 var path = /* @__PURE__ */ createPathTagFunction(encodeURIPath);
 
@@ -35039,7 +35039,7 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     }
     return null;
   }, _ChatCompletionStream_accumulateChatCompletion = function _ChatCompletionStream_accumulateChatCompletion2(chunk) {
-    var _a3, _b, _c, _d;
+    var _a4, _b, _c, _d;
     let snapshot = __classPrivateFieldGet(this, _ChatCompletionStream_currentChatCompletionSnapshot, "f");
     const { choices, ...rest } = chunk;
     if (!snapshot) {
@@ -35063,7 +35063,7 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
           assertIsEmpty(rest3);
           Object.assign(choice.logprobs, rest3);
           if (content2) {
-            (_a3 = choice.logprobs).content ?? (_a3.content = []);
+            (_a4 = choice.logprobs).content ?? (_a4.content = []);
             choice.logprobs.content.push(...content2);
           }
           if (refusal2) {
@@ -38932,9 +38932,9 @@ var OpenAI = class {
     this.apiKey = token;
     return true;
   }
-  buildURL(path2, query, defaultBaseURL) {
+  buildURL(path3, query, defaultBaseURL) {
     const baseURL = !__classPrivateFieldGet(this, _OpenAI_instances, "m", _OpenAI_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
-    const url = isAbsoluteURL(path2) ? new URL(path2) : new URL(baseURL + (baseURL.endsWith("/") && path2.startsWith("/") ? path2.slice(1) : path2));
+    const url = isAbsoluteURL(path3) ? new URL(path3) : new URL(baseURL + (baseURL.endsWith("/") && path3.startsWith("/") ? path3.slice(1) : path3));
     const defaultQuery = this.defaultQuery();
     const pathQuery = Object.fromEntries(url.searchParams);
     if (!isEmptyObj(defaultQuery) || !isEmptyObj(pathQuery)) {
@@ -38959,24 +38959,24 @@ var OpenAI = class {
    */
   async prepareRequest(request, { url, options }) {
   }
-  get(path2, opts) {
-    return this.methodRequest("get", path2, opts);
+  get(path3, opts) {
+    return this.methodRequest("get", path3, opts);
   }
-  post(path2, opts) {
-    return this.methodRequest("post", path2, opts);
+  post(path3, opts) {
+    return this.methodRequest("post", path3, opts);
   }
-  patch(path2, opts) {
-    return this.methodRequest("patch", path2, opts);
+  patch(path3, opts) {
+    return this.methodRequest("patch", path3, opts);
   }
-  put(path2, opts) {
-    return this.methodRequest("put", path2, opts);
+  put(path3, opts) {
+    return this.methodRequest("put", path3, opts);
   }
-  delete(path2, opts) {
-    return this.methodRequest("delete", path2, opts);
+  delete(path3, opts) {
+    return this.methodRequest("delete", path3, opts);
   }
-  methodRequest(method, path2, opts) {
+  methodRequest(method, path3, opts) {
     return this.request(Promise.resolve(opts).then((opts2) => {
-      return { method, path: path2, ...opts2 };
+      return { method, path: path3, ...opts2 };
     }));
   }
   request(options, remainingRetries = null) {
@@ -39080,12 +39080,12 @@ var OpenAI = class {
     }));
     return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
   }
-  getAPIList(path2, Page2, opts) {
-    return this.requestAPIList(Page2, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path2, ...opts2 })) : { method: "get", path: path2, ...opts });
+  getAPIList(path3, Page3, opts) {
+    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path3, ...opts2 })) : { method: "get", path: path3, ...opts });
   }
-  requestAPIList(Page2, options) {
+  requestAPIList(Page3, options) {
     const request = this.makeRequest(options, null, void 0);
-    return new PagePromise(this, request, Page2);
+    return new PagePromise(this, request, Page3);
   }
   async fetchWithTimeout(url, init, ms, controller) {
     const { signal, method, ...options } = init || {};
@@ -39160,8 +39160,8 @@ var OpenAI = class {
   }
   async buildRequest(inputOptions, { retryCount = 0 } = {}) {
     const options = { ...inputOptions };
-    const { method, path: path2, query, defaultBaseURL } = options;
-    const url = this.buildURL(path2, query, defaultBaseURL);
+    const { method, path: path3, query, defaultBaseURL } = options;
+    const url = this.buildURL(path3, query, defaultBaseURL);
     if ("timeout" in options)
       validatePositiveInteger("timeout", options.timeout);
     options.timeout = options.timeout ?? this.timeout;
@@ -39594,6 +39594,5834 @@ var scrape_gmb_default = router2;
 // src/routes/openai/enhance-prompts.ts
 var import_express3 = __toESM(require_express2(), 1);
 
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/tslib.mjs
+function __classPrivateFieldSet2(receiver, state, value, kind, f) {
+  if (kind === "m")
+    throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f)
+    throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+    throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+}
+function __classPrivateFieldGet2(receiver, state, kind, f) {
+  if (kind === "a" && !f)
+    throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+    throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/uuid.mjs
+var uuid42 = function() {
+  const { crypto: crypto2 } = globalThis;
+  if (crypto2?.randomUUID) {
+    uuid42 = crypto2.randomUUID.bind(crypto2);
+    return crypto2.randomUUID();
+  }
+  const u8 = new Uint8Array(1);
+  const randomByte = crypto2 ? () => crypto2.getRandomValues(u8)[0] : () => Math.random() * 255 & 255;
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (+c ^ randomByte() & 15 >> +c / 4).toString(16));
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/errors.mjs
+function isAbortError2(err) {
+  return typeof err === "object" && err !== null && // Spec-compliant fetch implementations
+  ("name" in err && err.name === "AbortError" || // Expo fetch
+  "message" in err && String(err.message).includes("FetchRequestCanceledException"));
+}
+var castToError2 = (err) => {
+  if (err instanceof Error)
+    return err;
+  if (typeof err === "object" && err !== null) {
+    try {
+      if (Object.prototype.toString.call(err) === "[object Error]") {
+        const error = new Error(err.message, err.cause ? { cause: err.cause } : {});
+        if (err.stack)
+          error.stack = err.stack;
+        if (err.cause && !error.cause)
+          error.cause = err.cause;
+        if (err.name)
+          error.name = err.name;
+        return error;
+      }
+    } catch {
+    }
+    try {
+      return new Error(JSON.stringify(err));
+    } catch {
+    }
+  }
+  return new Error(err);
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/core/error.mjs
+var AnthropicError = class extends Error {
+};
+var APIError2 = class _APIError extends AnthropicError {
+  constructor(status, error, message, headers, type) {
+    super(`${_APIError.makeMessage(status, error, message)}`);
+    this.status = status;
+    this.headers = headers;
+    this.requestID = headers?.get("request-id");
+    this.error = error;
+    this.type = type ?? null;
+  }
+  static makeMessage(status, error, message) {
+    const msg = error?.message ? typeof error.message === "string" ? error.message : JSON.stringify(error.message) : error ? JSON.stringify(error) : message;
+    if (status && msg) {
+      return `${status} ${msg}`;
+    }
+    if (status) {
+      return `${status} status code (no body)`;
+    }
+    if (msg) {
+      return msg;
+    }
+    return "(no status code or body)";
+  }
+  static generate(status, errorResponse, message, headers) {
+    if (!status || !headers) {
+      return new APIConnectionError2({ message, cause: castToError2(errorResponse) });
+    }
+    const error = errorResponse;
+    const type = error?.["error"]?.["type"];
+    if (status === 400) {
+      return new BadRequestError2(status, error, message, headers, type);
+    }
+    if (status === 401) {
+      return new AuthenticationError2(status, error, message, headers, type);
+    }
+    if (status === 403) {
+      return new PermissionDeniedError2(status, error, message, headers, type);
+    }
+    if (status === 404) {
+      return new NotFoundError2(status, error, message, headers, type);
+    }
+    if (status === 409) {
+      return new ConflictError2(status, error, message, headers, type);
+    }
+    if (status === 422) {
+      return new UnprocessableEntityError2(status, error, message, headers, type);
+    }
+    if (status === 429) {
+      return new RateLimitError2(status, error, message, headers, type);
+    }
+    if (status >= 500) {
+      return new InternalServerError2(status, error, message, headers, type);
+    }
+    return new _APIError(status, error, message, headers, type);
+  }
+};
+var APIUserAbortError2 = class extends APIError2 {
+  constructor({ message } = {}) {
+    super(void 0, void 0, message || "Request was aborted.", void 0);
+  }
+};
+var APIConnectionError2 = class extends APIError2 {
+  constructor({ message, cause }) {
+    super(void 0, void 0, message || "Connection error.", void 0);
+    if (cause)
+      this.cause = cause;
+  }
+};
+var APIConnectionTimeoutError2 = class extends APIConnectionError2 {
+  constructor({ message } = {}) {
+    super({ message: message ?? "Request timed out." });
+  }
+};
+var BadRequestError2 = class extends APIError2 {
+};
+var AuthenticationError2 = class extends APIError2 {
+};
+var PermissionDeniedError2 = class extends APIError2 {
+};
+var NotFoundError2 = class extends APIError2 {
+};
+var ConflictError2 = class extends APIError2 {
+};
+var UnprocessableEntityError2 = class extends APIError2 {
+};
+var RateLimitError2 = class extends APIError2 {
+};
+var InternalServerError2 = class extends APIError2 {
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/values.mjs
+var startsWithSchemeRegexp2 = /^[a-z][a-z0-9+.-]*:/i;
+var isAbsoluteURL2 = (url) => {
+  return startsWithSchemeRegexp2.test(url);
+};
+var isArray2 = (val) => (isArray2 = Array.isArray, isArray2(val));
+var isReadonlyArray2 = isArray2;
+function maybeObj2(x) {
+  if (typeof x !== "object") {
+    return {};
+  }
+  return x ?? {};
+}
+function isEmptyObj2(obj) {
+  if (!obj)
+    return true;
+  for (const _k in obj)
+    return false;
+  return true;
+}
+function hasOwn2(obj, key) {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
+var validatePositiveInteger2 = (name, n) => {
+  if (typeof n !== "number" || !Number.isInteger(n)) {
+    throw new AnthropicError(`${name} must be an integer`);
+  }
+  if (n < 0) {
+    throw new AnthropicError(`${name} must be a positive integer`);
+  }
+  return n;
+};
+var safeJSON2 = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    return void 0;
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/sleep.mjs
+var sleep2 = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/version.mjs
+var VERSION2 = "0.88.0";
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/detect-platform.mjs
+var isRunningInBrowser2 = () => {
+  return (
+    // @ts-ignore
+    typeof window !== "undefined" && // @ts-ignore
+    typeof window.document !== "undefined" && // @ts-ignore
+    typeof navigator !== "undefined"
+  );
+};
+function getDetectedPlatform2() {
+  if (typeof Deno !== "undefined" && Deno.build != null) {
+    return "deno";
+  }
+  if (typeof EdgeRuntime !== "undefined") {
+    return "edge";
+  }
+  if (Object.prototype.toString.call(typeof globalThis.process !== "undefined" ? globalThis.process : 0) === "[object process]") {
+    return "node";
+  }
+  return "unknown";
+}
+var getPlatformProperties2 = () => {
+  const detectedPlatform = getDetectedPlatform2();
+  if (detectedPlatform === "deno") {
+    return {
+      "X-Stainless-Lang": "js",
+      "X-Stainless-Package-Version": VERSION2,
+      "X-Stainless-OS": normalizePlatform2(Deno.build.os),
+      "X-Stainless-Arch": normalizeArch2(Deno.build.arch),
+      "X-Stainless-Runtime": "deno",
+      "X-Stainless-Runtime-Version": typeof Deno.version === "string" ? Deno.version : Deno.version?.deno ?? "unknown"
+    };
+  }
+  if (typeof EdgeRuntime !== "undefined") {
+    return {
+      "X-Stainless-Lang": "js",
+      "X-Stainless-Package-Version": VERSION2,
+      "X-Stainless-OS": "Unknown",
+      "X-Stainless-Arch": `other:${EdgeRuntime}`,
+      "X-Stainless-Runtime": "edge",
+      "X-Stainless-Runtime-Version": globalThis.process.version
+    };
+  }
+  if (detectedPlatform === "node") {
+    return {
+      "X-Stainless-Lang": "js",
+      "X-Stainless-Package-Version": VERSION2,
+      "X-Stainless-OS": normalizePlatform2(globalThis.process.platform ?? "unknown"),
+      "X-Stainless-Arch": normalizeArch2(globalThis.process.arch ?? "unknown"),
+      "X-Stainless-Runtime": "node",
+      "X-Stainless-Runtime-Version": globalThis.process.version ?? "unknown"
+    };
+  }
+  const browserInfo = getBrowserInfo2();
+  if (browserInfo) {
+    return {
+      "X-Stainless-Lang": "js",
+      "X-Stainless-Package-Version": VERSION2,
+      "X-Stainless-OS": "Unknown",
+      "X-Stainless-Arch": "unknown",
+      "X-Stainless-Runtime": `browser:${browserInfo.browser}`,
+      "X-Stainless-Runtime-Version": browserInfo.version
+    };
+  }
+  return {
+    "X-Stainless-Lang": "js",
+    "X-Stainless-Package-Version": VERSION2,
+    "X-Stainless-OS": "Unknown",
+    "X-Stainless-Arch": "unknown",
+    "X-Stainless-Runtime": "unknown",
+    "X-Stainless-Runtime-Version": "unknown"
+  };
+};
+function getBrowserInfo2() {
+  if (typeof navigator === "undefined" || !navigator) {
+    return null;
+  }
+  const browserPatterns = [
+    { key: "edge", pattern: /Edge(?:\W+(\d+)\.(\d+)(?:\.(\d+))?)?/ },
+    { key: "ie", pattern: /MSIE(?:\W+(\d+)\.(\d+)(?:\.(\d+))?)?/ },
+    { key: "ie", pattern: /Trident(?:.*rv\:(\d+)\.(\d+)(?:\.(\d+))?)?/ },
+    { key: "chrome", pattern: /Chrome(?:\W+(\d+)\.(\d+)(?:\.(\d+))?)?/ },
+    { key: "firefox", pattern: /Firefox(?:\W+(\d+)\.(\d+)(?:\.(\d+))?)?/ },
+    { key: "safari", pattern: /(?:Version\W+(\d+)\.(\d+)(?:\.(\d+))?)?(?:\W+Mobile\S*)?\W+Safari/ }
+  ];
+  for (const { key, pattern } of browserPatterns) {
+    const match = pattern.exec(navigator.userAgent);
+    if (match) {
+      const major = match[1] || 0;
+      const minor = match[2] || 0;
+      const patch = match[3] || 0;
+      return { browser: key, version: `${major}.${minor}.${patch}` };
+    }
+  }
+  return null;
+}
+var normalizeArch2 = (arch) => {
+  if (arch === "x32")
+    return "x32";
+  if (arch === "x86_64" || arch === "x64")
+    return "x64";
+  if (arch === "arm")
+    return "arm";
+  if (arch === "aarch64" || arch === "arm64")
+    return "arm64";
+  if (arch)
+    return `other:${arch}`;
+  return "unknown";
+};
+var normalizePlatform2 = (platform) => {
+  platform = platform.toLowerCase();
+  if (platform.includes("ios"))
+    return "iOS";
+  if (platform === "android")
+    return "Android";
+  if (platform === "darwin")
+    return "MacOS";
+  if (platform === "win32")
+    return "Windows";
+  if (platform === "freebsd")
+    return "FreeBSD";
+  if (platform === "openbsd")
+    return "OpenBSD";
+  if (platform === "linux")
+    return "Linux";
+  if (platform)
+    return `Other:${platform}`;
+  return "Unknown";
+};
+var _platformHeaders2;
+var getPlatformHeaders2 = () => {
+  return _platformHeaders2 ?? (_platformHeaders2 = getPlatformProperties2());
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/shims.mjs
+function getDefaultFetch2() {
+  if (typeof fetch !== "undefined") {
+    return fetch;
+  }
+  throw new Error("`fetch` is not defined as a global; Either pass `fetch` to the client, `new Anthropic({ fetch })` or polyfill the global, `globalThis.fetch = fetch`");
+}
+function makeReadableStream2(...args) {
+  const ReadableStream = globalThis.ReadableStream;
+  if (typeof ReadableStream === "undefined") {
+    throw new Error("`ReadableStream` is not defined as a global; You will need to polyfill it, `globalThis.ReadableStream = ReadableStream`");
+  }
+  return new ReadableStream(...args);
+}
+function ReadableStreamFrom2(iterable) {
+  let iter = Symbol.asyncIterator in iterable ? iterable[Symbol.asyncIterator]() : iterable[Symbol.iterator]();
+  return makeReadableStream2({
+    start() {
+    },
+    async pull(controller) {
+      const { done, value } = await iter.next();
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+    async cancel() {
+      await iter.return?.();
+    }
+  });
+}
+function ReadableStreamToAsyncIterable2(stream) {
+  if (stream[Symbol.asyncIterator])
+    return stream;
+  const reader = stream.getReader();
+  return {
+    async next() {
+      try {
+        const result = await reader.read();
+        if (result?.done)
+          reader.releaseLock();
+        return result;
+      } catch (e) {
+        reader.releaseLock();
+        throw e;
+      }
+    },
+    async return() {
+      const cancelPromise = reader.cancel();
+      reader.releaseLock();
+      await cancelPromise;
+      return { done: true, value: void 0 };
+    },
+    [Symbol.asyncIterator]() {
+      return this;
+    }
+  };
+}
+async function CancelReadableStream2(stream) {
+  if (stream === null || typeof stream !== "object")
+    return;
+  if (stream[Symbol.asyncIterator]) {
+    await stream[Symbol.asyncIterator]().return?.();
+    return;
+  }
+  const reader = stream.getReader();
+  const cancelPromise = reader.cancel();
+  reader.releaseLock();
+  await cancelPromise;
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/request-options.mjs
+var FallbackEncoder2 = ({ headers, body }) => {
+  return {
+    bodyHeaders: {
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/query.mjs
+function stringifyQuery2(query) {
+  return Object.entries(query).filter(([_, value]) => typeof value !== "undefined").map(([key, value]) => {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    }
+    if (value === null) {
+      return `${encodeURIComponent(key)}=`;
+    }
+    throw new AnthropicError(`Cannot stringify type ${typeof value}; Expected string, number, boolean, or null. If you need to pass nested query parameters, you can manually encode them, e.g. { query: { 'foo[key1]': value1, 'foo[key2]': value2 } }, and please open a GitHub issue requesting better support for your use case.`);
+  }).join("&");
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/bytes.mjs
+function concatBytes2(buffers) {
+  let length = 0;
+  for (const buffer of buffers) {
+    length += buffer.length;
+  }
+  const output = new Uint8Array(length);
+  let index = 0;
+  for (const buffer of buffers) {
+    output.set(buffer, index);
+    index += buffer.length;
+  }
+  return output;
+}
+var encodeUTF8_2;
+function encodeUTF82(str2) {
+  let encoder;
+  return (encodeUTF8_2 ?? (encoder = new globalThis.TextEncoder(), encodeUTF8_2 = encoder.encode.bind(encoder)))(str2);
+}
+var decodeUTF8_2;
+function decodeUTF82(bytes) {
+  let decoder;
+  return (decodeUTF8_2 ?? (decoder = new globalThis.TextDecoder(), decodeUTF8_2 = decoder.decode.bind(decoder)))(bytes);
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/decoders/line.mjs
+var _LineDecoder_buffer2;
+var _LineDecoder_carriageReturnIndex2;
+var LineDecoder2 = class {
+  constructor() {
+    _LineDecoder_buffer2.set(this, void 0);
+    _LineDecoder_carriageReturnIndex2.set(this, void 0);
+    __classPrivateFieldSet2(this, _LineDecoder_buffer2, new Uint8Array(), "f");
+    __classPrivateFieldSet2(this, _LineDecoder_carriageReturnIndex2, null, "f");
+  }
+  decode(chunk) {
+    if (chunk == null) {
+      return [];
+    }
+    const binaryChunk = chunk instanceof ArrayBuffer ? new Uint8Array(chunk) : typeof chunk === "string" ? encodeUTF82(chunk) : chunk;
+    __classPrivateFieldSet2(this, _LineDecoder_buffer2, concatBytes2([__classPrivateFieldGet2(this, _LineDecoder_buffer2, "f"), binaryChunk]), "f");
+    const lines = [];
+    let patternIndex;
+    while ((patternIndex = findNewlineIndex2(__classPrivateFieldGet2(this, _LineDecoder_buffer2, "f"), __classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f"))) != null) {
+      if (patternIndex.carriage && __classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f") == null) {
+        __classPrivateFieldSet2(this, _LineDecoder_carriageReturnIndex2, patternIndex.index, "f");
+        continue;
+      }
+      if (__classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f") != null && (patternIndex.index !== __classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f") + 1 || patternIndex.carriage)) {
+        lines.push(decodeUTF82(__classPrivateFieldGet2(this, _LineDecoder_buffer2, "f").subarray(0, __classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f") - 1)));
+        __classPrivateFieldSet2(this, _LineDecoder_buffer2, __classPrivateFieldGet2(this, _LineDecoder_buffer2, "f").subarray(__classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f")), "f");
+        __classPrivateFieldSet2(this, _LineDecoder_carriageReturnIndex2, null, "f");
+        continue;
+      }
+      const endIndex = __classPrivateFieldGet2(this, _LineDecoder_carriageReturnIndex2, "f") !== null ? patternIndex.preceding - 1 : patternIndex.preceding;
+      const line = decodeUTF82(__classPrivateFieldGet2(this, _LineDecoder_buffer2, "f").subarray(0, endIndex));
+      lines.push(line);
+      __classPrivateFieldSet2(this, _LineDecoder_buffer2, __classPrivateFieldGet2(this, _LineDecoder_buffer2, "f").subarray(patternIndex.index), "f");
+      __classPrivateFieldSet2(this, _LineDecoder_carriageReturnIndex2, null, "f");
+    }
+    return lines;
+  }
+  flush() {
+    if (!__classPrivateFieldGet2(this, _LineDecoder_buffer2, "f").length) {
+      return [];
+    }
+    return this.decode("\n");
+  }
+};
+_LineDecoder_buffer2 = /* @__PURE__ */ new WeakMap(), _LineDecoder_carriageReturnIndex2 = /* @__PURE__ */ new WeakMap();
+LineDecoder2.NEWLINE_CHARS = /* @__PURE__ */ new Set(["\n", "\r"]);
+LineDecoder2.NEWLINE_REGEXP = /\r\n|[\n\r]/g;
+function findNewlineIndex2(buffer, startIndex) {
+  const newline = 10;
+  const carriage = 13;
+  for (let i = startIndex ?? 0; i < buffer.length; i++) {
+    if (buffer[i] === newline) {
+      return { preceding: i, index: i + 1, carriage: false };
+    }
+    if (buffer[i] === carriage) {
+      return { preceding: i, index: i + 1, carriage: true };
+    }
+  }
+  return null;
+}
+function findDoubleNewlineIndex2(buffer) {
+  const newline = 10;
+  const carriage = 13;
+  for (let i = 0; i < buffer.length - 1; i++) {
+    if (buffer[i] === newline && buffer[i + 1] === newline) {
+      return i + 2;
+    }
+    if (buffer[i] === carriage && buffer[i + 1] === carriage) {
+      return i + 2;
+    }
+    if (buffer[i] === carriage && buffer[i + 1] === newline && i + 3 < buffer.length && buffer[i + 2] === carriage && buffer[i + 3] === newline) {
+      return i + 4;
+    }
+  }
+  return -1;
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/log.mjs
+var levelNumbers2 = {
+  off: 0,
+  error: 200,
+  warn: 300,
+  info: 400,
+  debug: 500
+};
+var parseLogLevel2 = (maybeLevel, sourceName, client) => {
+  if (!maybeLevel) {
+    return void 0;
+  }
+  if (hasOwn2(levelNumbers2, maybeLevel)) {
+    return maybeLevel;
+  }
+  loggerFor2(client).warn(`${sourceName} was set to ${JSON.stringify(maybeLevel)}, expected one of ${JSON.stringify(Object.keys(levelNumbers2))}`);
+  return void 0;
+};
+function noop2() {
+}
+function makeLogFn2(fnLevel, logger2, logLevel) {
+  if (!logger2 || levelNumbers2[fnLevel] > levelNumbers2[logLevel]) {
+    return noop2;
+  } else {
+    return logger2[fnLevel].bind(logger2);
+  }
+}
+var noopLogger2 = {
+  error: noop2,
+  warn: noop2,
+  info: noop2,
+  debug: noop2
+};
+var cachedLoggers2 = /* @__PURE__ */ new WeakMap();
+function loggerFor2(client) {
+  const logger2 = client.logger;
+  const logLevel = client.logLevel ?? "off";
+  if (!logger2) {
+    return noopLogger2;
+  }
+  const cachedLogger = cachedLoggers2.get(logger2);
+  if (cachedLogger && cachedLogger[0] === logLevel) {
+    return cachedLogger[1];
+  }
+  const levelLogger = {
+    error: makeLogFn2("error", logger2, logLevel),
+    warn: makeLogFn2("warn", logger2, logLevel),
+    info: makeLogFn2("info", logger2, logLevel),
+    debug: makeLogFn2("debug", logger2, logLevel)
+  };
+  cachedLoggers2.set(logger2, [logLevel, levelLogger]);
+  return levelLogger;
+}
+var formatRequestDetails2 = (details) => {
+  if (details.options) {
+    details.options = { ...details.options };
+    delete details.options["headers"];
+  }
+  if (details.headers) {
+    details.headers = Object.fromEntries((details.headers instanceof Headers ? [...details.headers] : Object.entries(details.headers)).map(([name, value]) => [
+      name,
+      name.toLowerCase() === "x-api-key" || name.toLowerCase() === "authorization" || name.toLowerCase() === "cookie" || name.toLowerCase() === "set-cookie" ? "***" : value
+    ]));
+  }
+  if ("retryOfRequestLogID" in details) {
+    if (details.retryOfRequestLogID) {
+      details.retryOf = details.retryOfRequestLogID;
+    }
+    delete details.retryOfRequestLogID;
+  }
+  return details;
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/core/streaming.mjs
+var _Stream_client2;
+var Stream2 = class _Stream {
+  constructor(iterator, controller, client) {
+    this.iterator = iterator;
+    _Stream_client2.set(this, void 0);
+    this.controller = controller;
+    __classPrivateFieldSet2(this, _Stream_client2, client, "f");
+  }
+  static fromSSEResponse(response, controller, client) {
+    let consumed = false;
+    const logger2 = client ? loggerFor2(client) : console;
+    async function* iterator() {
+      if (consumed) {
+        throw new AnthropicError("Cannot iterate over a consumed stream, use `.tee()` to split the stream.");
+      }
+      consumed = true;
+      let done = false;
+      try {
+        for await (const sse of _iterSSEMessages2(response, controller)) {
+          if (sse.event === "completion") {
+            try {
+              yield JSON.parse(sse.data);
+            } catch (e) {
+              logger2.error(`Could not parse message into JSON:`, sse.data);
+              logger2.error(`From chunk:`, sse.raw);
+              throw e;
+            }
+          }
+          if (sse.event === "message_start" || sse.event === "message_delta" || sse.event === "message_stop" || sse.event === "content_block_start" || sse.event === "content_block_delta" || sse.event === "content_block_stop" || sse.event === "message") {
+            try {
+              yield JSON.parse(sse.data);
+            } catch (e) {
+              logger2.error(`Could not parse message into JSON:`, sse.data);
+              logger2.error(`From chunk:`, sse.raw);
+              throw e;
+            }
+          }
+          if (sse.event === "ping") {
+            continue;
+          }
+          if (sse.event === "error") {
+            const body = safeJSON2(sse.data) ?? sse.data;
+            const type = body?.error?.type;
+            throw new APIError2(void 0, body, void 0, response.headers, type);
+          }
+        }
+        done = true;
+      } catch (e) {
+        if (isAbortError2(e))
+          return;
+        throw e;
+      } finally {
+        if (!done)
+          controller.abort();
+      }
+    }
+    return new _Stream(iterator, controller, client);
+  }
+  /**
+   * Generates a Stream from a newline-separated ReadableStream
+   * where each item is a JSON value.
+   */
+  static fromReadableStream(readableStream, controller, client) {
+    let consumed = false;
+    async function* iterLines() {
+      const lineDecoder = new LineDecoder2();
+      const iter = ReadableStreamToAsyncIterable2(readableStream);
+      for await (const chunk of iter) {
+        for (const line of lineDecoder.decode(chunk)) {
+          yield line;
+        }
+      }
+      for (const line of lineDecoder.flush()) {
+        yield line;
+      }
+    }
+    async function* iterator() {
+      if (consumed) {
+        throw new AnthropicError("Cannot iterate over a consumed stream, use `.tee()` to split the stream.");
+      }
+      consumed = true;
+      let done = false;
+      try {
+        for await (const line of iterLines()) {
+          if (done)
+            continue;
+          if (line)
+            yield JSON.parse(line);
+        }
+        done = true;
+      } catch (e) {
+        if (isAbortError2(e))
+          return;
+        throw e;
+      } finally {
+        if (!done)
+          controller.abort();
+      }
+    }
+    return new _Stream(iterator, controller, client);
+  }
+  [(_Stream_client2 = /* @__PURE__ */ new WeakMap(), Symbol.asyncIterator)]() {
+    return this.iterator();
+  }
+  /**
+   * Splits the stream into two streams which can be
+   * independently read from at different speeds.
+   */
+  tee() {
+    const left = [];
+    const right = [];
+    const iterator = this.iterator();
+    const teeIterator = (queue) => {
+      return {
+        next: () => {
+          if (queue.length === 0) {
+            const result = iterator.next();
+            left.push(result);
+            right.push(result);
+          }
+          return queue.shift();
+        }
+      };
+    };
+    return [
+      new _Stream(() => teeIterator(left), this.controller, __classPrivateFieldGet2(this, _Stream_client2, "f")),
+      new _Stream(() => teeIterator(right), this.controller, __classPrivateFieldGet2(this, _Stream_client2, "f"))
+    ];
+  }
+  /**
+   * Converts this stream to a newline-separated ReadableStream of
+   * JSON stringified values in the stream
+   * which can be turned back into a Stream with `Stream.fromReadableStream()`.
+   */
+  toReadableStream() {
+    const self = this;
+    let iter;
+    return makeReadableStream2({
+      async start() {
+        iter = self[Symbol.asyncIterator]();
+      },
+      async pull(ctrl) {
+        try {
+          const { value, done } = await iter.next();
+          if (done)
+            return ctrl.close();
+          const bytes = encodeUTF82(JSON.stringify(value) + "\n");
+          ctrl.enqueue(bytes);
+        } catch (err) {
+          ctrl.error(err);
+        }
+      },
+      async cancel() {
+        await iter.return?.();
+      }
+    });
+  }
+};
+async function* _iterSSEMessages2(response, controller) {
+  if (!response.body) {
+    controller.abort();
+    if (typeof globalThis.navigator !== "undefined" && globalThis.navigator.product === "ReactNative") {
+      throw new AnthropicError(`The default react-native fetch implementation does not support streaming. Please use expo/fetch: https://docs.expo.dev/versions/latest/sdk/expo/#expofetch-api`);
+    }
+    throw new AnthropicError(`Attempted to iterate over a response with no body`);
+  }
+  const sseDecoder = new SSEDecoder2();
+  const lineDecoder = new LineDecoder2();
+  const iter = ReadableStreamToAsyncIterable2(response.body);
+  for await (const sseChunk of iterSSEChunks2(iter)) {
+    for (const line of lineDecoder.decode(sseChunk)) {
+      const sse = sseDecoder.decode(line);
+      if (sse)
+        yield sse;
+    }
+  }
+  for (const line of lineDecoder.flush()) {
+    const sse = sseDecoder.decode(line);
+    if (sse)
+      yield sse;
+  }
+}
+async function* iterSSEChunks2(iterator) {
+  let data = new Uint8Array();
+  for await (const chunk of iterator) {
+    if (chunk == null) {
+      continue;
+    }
+    const binaryChunk = chunk instanceof ArrayBuffer ? new Uint8Array(chunk) : typeof chunk === "string" ? encodeUTF82(chunk) : chunk;
+    let newData = new Uint8Array(data.length + binaryChunk.length);
+    newData.set(data);
+    newData.set(binaryChunk, data.length);
+    data = newData;
+    let patternIndex;
+    while ((patternIndex = findDoubleNewlineIndex2(data)) !== -1) {
+      yield data.slice(0, patternIndex);
+      data = data.slice(patternIndex);
+    }
+  }
+  if (data.length > 0) {
+    yield data;
+  }
+}
+var SSEDecoder2 = class {
+  constructor() {
+    this.event = null;
+    this.data = [];
+    this.chunks = [];
+  }
+  decode(line) {
+    if (line.endsWith("\r")) {
+      line = line.substring(0, line.length - 1);
+    }
+    if (!line) {
+      if (!this.event && !this.data.length)
+        return null;
+      const sse = {
+        event: this.event,
+        data: this.data.join("\n"),
+        raw: this.chunks
+      };
+      this.event = null;
+      this.data = [];
+      this.chunks = [];
+      return sse;
+    }
+    this.chunks.push(line);
+    if (line.startsWith(":")) {
+      return null;
+    }
+    let [fieldname, _, value] = partition2(line, ":");
+    if (value.startsWith(" ")) {
+      value = value.substring(1);
+    }
+    if (fieldname === "event") {
+      this.event = value;
+    } else if (fieldname === "data") {
+      this.data.push(value);
+    }
+    return null;
+  }
+};
+function partition2(str2, delimiter) {
+  const index = str2.indexOf(delimiter);
+  if (index !== -1) {
+    return [str2.substring(0, index), delimiter, str2.substring(index + delimiter.length)];
+  }
+  return [str2, "", ""];
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/parse.mjs
+async function defaultParseResponse2(client, props) {
+  const { response, requestLogID, retryOfRequestLogID, startTime } = props;
+  const body = await (async () => {
+    if (props.options.stream) {
+      loggerFor2(client).debug("response", response.status, response.url, response.headers, response.body);
+      if (props.options.__streamClass) {
+        return props.options.__streamClass.fromSSEResponse(response, props.controller);
+      }
+      return Stream2.fromSSEResponse(response, props.controller);
+    }
+    if (response.status === 204) {
+      return null;
+    }
+    if (props.options.__binaryResponse) {
+      return response;
+    }
+    const contentType = response.headers.get("content-type");
+    const mediaType = contentType?.split(";")[0]?.trim();
+    const isJSON = mediaType?.includes("application/json") || mediaType?.endsWith("+json");
+    if (isJSON) {
+      const contentLength = response.headers.get("content-length");
+      if (contentLength === "0") {
+        return void 0;
+      }
+      const json = await response.json();
+      return addRequestID2(json, response);
+    }
+    const text = await response.text();
+    return text;
+  })();
+  loggerFor2(client).debug(`[${requestLogID}] response parsed`, formatRequestDetails2({
+    retryOfRequestLogID,
+    url: response.url,
+    status: response.status,
+    body,
+    durationMs: Date.now() - startTime
+  }));
+  return body;
+}
+function addRequestID2(value, response) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+  return Object.defineProperty(value, "_request_id", {
+    value: response.headers.get("request-id"),
+    enumerable: false
+  });
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/core/api-promise.mjs
+var _APIPromise_client2;
+var APIPromise2 = class _APIPromise extends Promise {
+  constructor(client, responsePromise, parseResponse2 = defaultParseResponse2) {
+    super((resolve) => {
+      resolve(null);
+    });
+    this.responsePromise = responsePromise;
+    this.parseResponse = parseResponse2;
+    _APIPromise_client2.set(this, void 0);
+    __classPrivateFieldSet2(this, _APIPromise_client2, client, "f");
+  }
+  _thenUnwrap(transform) {
+    return new _APIPromise(__classPrivateFieldGet2(this, _APIPromise_client2, "f"), this.responsePromise, async (client, props) => addRequestID2(transform(await this.parseResponse(client, props), props), props.response));
+  }
+  /**
+   * Gets the raw `Response` instance instead of parsing the response
+   * data.
+   *
+   * If you want to parse the response body but still get the `Response`
+   * instance, you can use {@link withResponse()}.
+   *
+   * 👋 Getting the wrong TypeScript type for `Response`?
+   * Try setting `"moduleResolution": "NodeNext"` or add `"lib": ["DOM"]`
+   * to your `tsconfig.json`.
+   */
+  asResponse() {
+    return this.responsePromise.then((p) => p.response);
+  }
+  /**
+   * Gets the parsed response data, the raw `Response` instance and the ID of the request,
+   * returned via the `request-id` header which is useful for debugging requests and resporting
+   * issues to Anthropic.
+   *
+   * If you just want to get the raw `Response` instance without parsing it,
+   * you can use {@link asResponse()}.
+   *
+   * 👋 Getting the wrong TypeScript type for `Response`?
+   * Try setting `"moduleResolution": "NodeNext"` or add `"lib": ["DOM"]`
+   * to your `tsconfig.json`.
+   */
+  async withResponse() {
+    const [data, response] = await Promise.all([this.parse(), this.asResponse()]);
+    return { data, response, request_id: response.headers.get("request-id") };
+  }
+  parse() {
+    if (!this.parsedPromise) {
+      this.parsedPromise = this.responsePromise.then((data) => this.parseResponse(__classPrivateFieldGet2(this, _APIPromise_client2, "f"), data));
+    }
+    return this.parsedPromise;
+  }
+  then(onfulfilled, onrejected) {
+    return this.parse().then(onfulfilled, onrejected);
+  }
+  catch(onrejected) {
+    return this.parse().catch(onrejected);
+  }
+  finally(onfinally) {
+    return this.parse().finally(onfinally);
+  }
+};
+_APIPromise_client2 = /* @__PURE__ */ new WeakMap();
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/core/pagination.mjs
+var _AbstractPage_client2;
+var AbstractPage2 = class {
+  constructor(client, response, body, options) {
+    _AbstractPage_client2.set(this, void 0);
+    __classPrivateFieldSet2(this, _AbstractPage_client2, client, "f");
+    this.options = options;
+    this.response = response;
+    this.body = body;
+  }
+  hasNextPage() {
+    const items = this.getPaginatedItems();
+    if (!items.length)
+      return false;
+    return this.nextPageRequestOptions() != null;
+  }
+  async getNextPage() {
+    const nextOptions = this.nextPageRequestOptions();
+    if (!nextOptions) {
+      throw new AnthropicError("No next page expected; please check `.hasNextPage()` before calling `.getNextPage()`.");
+    }
+    return await __classPrivateFieldGet2(this, _AbstractPage_client2, "f").requestAPIList(this.constructor, nextOptions);
+  }
+  async *iterPages() {
+    let page = this;
+    yield page;
+    while (page.hasNextPage()) {
+      page = await page.getNextPage();
+      yield page;
+    }
+  }
+  async *[(_AbstractPage_client2 = /* @__PURE__ */ new WeakMap(), Symbol.asyncIterator)]() {
+    for await (const page of this.iterPages()) {
+      for (const item of page.getPaginatedItems()) {
+        yield item;
+      }
+    }
+  }
+};
+var PagePromise2 = class extends APIPromise2 {
+  constructor(client, request, Page3) {
+    super(client, request, async (client2, props) => new Page3(client2, props.response, await defaultParseResponse2(client2, props), props.options));
+  }
+  /**
+   * Allow auto-paginating iteration on an unawaited list call, eg:
+   *
+   *    for await (const item of client.items.list()) {
+   *      console.log(item)
+   *    }
+   */
+  async *[Symbol.asyncIterator]() {
+    const page = await this;
+    for await (const item of page) {
+      yield item;
+    }
+  }
+};
+var Page2 = class extends AbstractPage2 {
+  constructor(client, response, body, options) {
+    super(client, response, body, options);
+    this.data = body.data || [];
+    this.has_more = body.has_more || false;
+    this.first_id = body.first_id || null;
+    this.last_id = body.last_id || null;
+  }
+  getPaginatedItems() {
+    return this.data ?? [];
+  }
+  hasNextPage() {
+    if (this.has_more === false) {
+      return false;
+    }
+    return super.hasNextPage();
+  }
+  nextPageRequestOptions() {
+    if (this.options.query?.["before_id"]) {
+      const first_id = this.first_id;
+      if (!first_id) {
+        return null;
+      }
+      return {
+        ...this.options,
+        query: {
+          ...maybeObj2(this.options.query),
+          before_id: first_id
+        }
+      };
+    }
+    const cursor = this.last_id;
+    if (!cursor) {
+      return null;
+    }
+    return {
+      ...this.options,
+      query: {
+        ...maybeObj2(this.options.query),
+        after_id: cursor
+      }
+    };
+  }
+};
+var PageCursor = class extends AbstractPage2 {
+  constructor(client, response, body, options) {
+    super(client, response, body, options);
+    this.data = body.data || [];
+    this.next_page = body.next_page || null;
+  }
+  getPaginatedItems() {
+    return this.data ?? [];
+  }
+  nextPageRequestOptions() {
+    const cursor = this.next_page;
+    if (!cursor) {
+      return null;
+    }
+    return {
+      ...this.options,
+      query: {
+        ...maybeObj2(this.options.query),
+        page: cursor
+      }
+    };
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/uploads.mjs
+var checkFileSupport2 = () => {
+  if (typeof File === "undefined") {
+    const { process: process2 } = globalThis;
+    const isOldNode = typeof process2?.versions?.node === "string" && parseInt(process2.versions.node.split(".")) < 20;
+    throw new Error("`File` is not defined as a global, which is required for file uploads." + (isOldNode ? " Update to Node 20 LTS or newer, or set `globalThis.File` to `import('node:buffer').File`." : ""));
+  }
+};
+function makeFile2(fileBits, fileName, options) {
+  checkFileSupport2();
+  return new File(fileBits, fileName ?? "unknown_file", options);
+}
+function getName2(value, stripPath) {
+  const val = typeof value === "object" && value !== null && ("name" in value && value.name && String(value.name) || "url" in value && value.url && String(value.url) || "filename" in value && value.filename && String(value.filename) || "path" in value && value.path && String(value.path)) || "";
+  return stripPath ? val.split(/[\\/]/).pop() || void 0 : val;
+}
+var isAsyncIterable2 = (value) => value != null && typeof value === "object" && typeof value[Symbol.asyncIterator] === "function";
+var multipartFormRequestOptions2 = async (opts, fetch2, stripFilenames = true) => {
+  return { ...opts, body: await createForm2(opts.body, fetch2, stripFilenames) };
+};
+var supportsFormDataMap2 = /* @__PURE__ */ new WeakMap();
+function supportsFormData2(fetchObject) {
+  const fetch2 = typeof fetchObject === "function" ? fetchObject : fetchObject.fetch;
+  const cached = supportsFormDataMap2.get(fetch2);
+  if (cached)
+    return cached;
+  const promise = (async () => {
+    try {
+      const FetchResponse = "Response" in fetch2 ? fetch2.Response : (await fetch2("data:,")).constructor;
+      const data = new FormData();
+      if (data.toString() === await new FetchResponse(data).text()) {
+        return false;
+      }
+      return true;
+    } catch {
+      return true;
+    }
+  })();
+  supportsFormDataMap2.set(fetch2, promise);
+  return promise;
+}
+var createForm2 = async (body, fetch2, stripFilenames = true) => {
+  if (!await supportsFormData2(fetch2)) {
+    throw new TypeError("The provided fetch function does not support file uploads with the current global FormData class.");
+  }
+  const form = new FormData();
+  await Promise.all(Object.entries(body || {}).map(([key, value]) => addFormValue2(form, key, value, stripFilenames)));
+  return form;
+};
+var isNamedBlob2 = (value) => value instanceof Blob && "name" in value;
+var addFormValue2 = async (form, key, value, stripFilenames) => {
+  if (value === void 0)
+    return;
+  if (value == null) {
+    throw new TypeError(`Received null for "${key}"; to pass null in FormData, you must use the string 'null'`);
+  }
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    form.append(key, String(value));
+  } else if (value instanceof Response) {
+    let options = {};
+    const contentType = value.headers.get("Content-Type");
+    if (contentType) {
+      options = { type: contentType };
+    }
+    form.append(key, makeFile2([await value.blob()], getName2(value, stripFilenames), options));
+  } else if (isAsyncIterable2(value)) {
+    form.append(key, makeFile2([await new Response(ReadableStreamFrom2(value)).blob()], getName2(value, stripFilenames)));
+  } else if (isNamedBlob2(value)) {
+    form.append(key, makeFile2([value], getName2(value, stripFilenames), { type: value.type }));
+  } else if (Array.isArray(value)) {
+    await Promise.all(value.map((entry) => addFormValue2(form, key + "[]", entry, stripFilenames)));
+  } else if (typeof value === "object") {
+    await Promise.all(Object.entries(value).map(([name, prop]) => addFormValue2(form, `${key}[${name}]`, prop, stripFilenames)));
+  } else {
+    throw new TypeError(`Invalid value given to form, expected a string, number, boolean, object, Array, File or Blob but got ${value} instead`);
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/to-file.mjs
+var isBlobLike2 = (value) => value != null && typeof value === "object" && typeof value.size === "number" && typeof value.type === "string" && typeof value.text === "function" && typeof value.slice === "function" && typeof value.arrayBuffer === "function";
+var isFileLike2 = (value) => value != null && typeof value === "object" && typeof value.name === "string" && typeof value.lastModified === "number" && isBlobLike2(value);
+var isResponseLike2 = (value) => value != null && typeof value === "object" && typeof value.url === "string" && typeof value.blob === "function";
+async function toFile2(value, name, options) {
+  checkFileSupport2();
+  value = await value;
+  name || (name = getName2(value, true));
+  if (isFileLike2(value)) {
+    if (value instanceof File && name == null && options == null) {
+      return value;
+    }
+    return makeFile2([await value.arrayBuffer()], name ?? value.name, {
+      type: value.type,
+      lastModified: value.lastModified,
+      ...options
+    });
+  }
+  if (isResponseLike2(value)) {
+    const blob = await value.blob();
+    name || (name = new URL(value.url).pathname.split(/[\\/]/).pop());
+    return makeFile2(await getBytes2(blob), name, options);
+  }
+  const parts = await getBytes2(value);
+  if (!options?.type) {
+    const type = parts.find((part) => typeof part === "object" && "type" in part && part.type);
+    if (typeof type === "string") {
+      options = { ...options, type };
+    }
+  }
+  return makeFile2(parts, name, options);
+}
+async function getBytes2(value) {
+  let parts = [];
+  if (typeof value === "string" || ArrayBuffer.isView(value) || // includes Uint8Array, Buffer, etc.
+  value instanceof ArrayBuffer) {
+    parts.push(value);
+  } else if (isBlobLike2(value)) {
+    parts.push(value instanceof Blob ? value : await value.arrayBuffer());
+  } else if (isAsyncIterable2(value)) {
+    for await (const chunk of value) {
+      parts.push(...await getBytes2(chunk));
+    }
+  } else {
+    const constructor = value?.constructor?.name;
+    throw new Error(`Unexpected data type: ${typeof value}${constructor ? `; constructor: ${constructor}` : ""}${propsForError2(value)}`);
+  }
+  return parts;
+}
+function propsForError2(value) {
+  if (typeof value !== "object" || value === null)
+    return "";
+  const props = Object.getOwnPropertyNames(value);
+  return `; props: [${props.map((p) => `"${p}"`).join(", ")}]`;
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/core/resource.mjs
+var APIResource2 = class {
+  constructor(client) {
+    this._client = client;
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/headers.mjs
+var brand_privateNullableHeaders2 = /* @__PURE__ */ Symbol.for("brand.privateNullableHeaders");
+function* iterateHeaders2(headers) {
+  if (!headers)
+    return;
+  if (brand_privateNullableHeaders2 in headers) {
+    const { values, nulls } = headers;
+    yield* values.entries();
+    for (const name of nulls) {
+      yield [name, null];
+    }
+    return;
+  }
+  let shouldClear = false;
+  let iter;
+  if (headers instanceof Headers) {
+    iter = headers.entries();
+  } else if (isReadonlyArray2(headers)) {
+    iter = headers;
+  } else {
+    shouldClear = true;
+    iter = Object.entries(headers ?? {});
+  }
+  for (let row of iter) {
+    const name = row[0];
+    if (typeof name !== "string")
+      throw new TypeError("expected header name to be a string");
+    const values = isReadonlyArray2(row[1]) ? row[1] : [row[1]];
+    let didClear = false;
+    for (const value of values) {
+      if (value === void 0)
+        continue;
+      if (shouldClear && !didClear) {
+        didClear = true;
+        yield [name, null];
+      }
+      yield [name, value];
+    }
+  }
+}
+var buildHeaders2 = (newHeaders) => {
+  const targetHeaders = new Headers();
+  const nullHeaders = /* @__PURE__ */ new Set();
+  for (const headers of newHeaders) {
+    const seenHeaders = /* @__PURE__ */ new Set();
+    for (const [name, value] of iterateHeaders2(headers)) {
+      const lowerName = name.toLowerCase();
+      if (!seenHeaders.has(lowerName)) {
+        targetHeaders.delete(name);
+        seenHeaders.add(lowerName);
+      }
+      if (value === null) {
+        targetHeaders.delete(name);
+        nullHeaders.add(lowerName);
+      } else {
+        targetHeaders.append(name, value);
+        nullHeaders.delete(lowerName);
+      }
+    }
+  }
+  return { [brand_privateNullableHeaders2]: true, values: targetHeaders, nulls: nullHeaders };
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/path.mjs
+function encodeURIPath2(str2) {
+  return str2.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]+/g, encodeURIComponent);
+}
+var EMPTY2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.create(null));
+var createPathTagFunction2 = (pathEncoder = encodeURIPath2) => function path3(statics, ...params) {
+  if (statics.length === 1)
+    return statics[0];
+  let postPath = false;
+  const invalidSegments = [];
+  const path4 = statics.reduce((previousValue, currentValue, index) => {
+    if (/[?#]/.test(currentValue)) {
+      postPath = true;
+    }
+    const value = params[index];
+    let encoded = (postPath ? encodeURIComponent : pathEncoder)("" + value);
+    if (index !== params.length && (value == null || typeof value === "object" && // handle values from other realms
+    value.toString === Object.getPrototypeOf(Object.getPrototypeOf(value.hasOwnProperty ?? EMPTY2) ?? EMPTY2)?.toString)) {
+      encoded = value + "";
+      invalidSegments.push({
+        start: previousValue.length + currentValue.length,
+        length: encoded.length,
+        error: `Value of type ${Object.prototype.toString.call(value).slice(8, -1)} is not a valid path parameter`
+      });
+    }
+    return previousValue + currentValue + (index === params.length ? "" : encoded);
+  }, "");
+  const pathOnly = path4.split(/[?#]/, 1)[0];
+  const invalidSegmentPattern = /(?<=^|\/)(?:\.|%2e){1,2}(?=\/|$)/gi;
+  let match;
+  while ((match = invalidSegmentPattern.exec(pathOnly)) !== null) {
+    invalidSegments.push({
+      start: match.index,
+      length: match[0].length,
+      error: `Value "${match[0]}" can't be safely passed as a path parameter`
+    });
+  }
+  invalidSegments.sort((a, b) => a.start - b.start);
+  if (invalidSegments.length > 0) {
+    let lastEnd = 0;
+    const underline = invalidSegments.reduce((acc, segment) => {
+      const spaces = " ".repeat(segment.start - lastEnd);
+      const arrows = "^".repeat(segment.length);
+      lastEnd = segment.start + segment.length;
+      return acc + spaces + arrows;
+    }, "");
+    throw new AnthropicError(`Path parameters result in path with invalid segments:
+${invalidSegments.map((e) => e.error).join("\n")}
+${path4}
+${underline}`);
+  }
+  return path4;
+};
+var path2 = /* @__PURE__ */ createPathTagFunction2(encodeURIPath2);
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/environments.mjs
+var Environments = class extends APIResource2 {
+  /**
+   * Create a new environment with the specified configuration.
+   *
+   * @example
+   * ```ts
+   * const betaEnvironment =
+   *   await client.beta.environments.create({
+   *     name: 'python-data-analysis',
+   *   });
+   * ```
+   */
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/environments?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Retrieve a specific environment by ID.
+   *
+   * @example
+   * ```ts
+   * const betaEnvironment =
+   *   await client.beta.environments.retrieve(
+   *     'env_011CZkZ9X2dpNyB7HsEFoRfW',
+   *   );
+   * ```
+   */
+  retrieve(environmentID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/environments/${environmentID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update an existing environment's configuration.
+   *
+   * @example
+   * ```ts
+   * const betaEnvironment =
+   *   await client.beta.environments.update(
+   *     'env_011CZkZ9X2dpNyB7HsEFoRfW',
+   *   );
+   * ```
+   */
+  update(environmentID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/environments/${environmentID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List environments with pagination support.
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaEnvironment of client.beta.environments.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/environments?beta=true", PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete an environment by ID. Returns a confirmation of the deletion.
+   *
+   * @example
+   * ```ts
+   * const betaEnvironmentDeleteResponse =
+   *   await client.beta.environments.delete(
+   *     'env_011CZkZ9X2dpNyB7HsEFoRfW',
+   *   );
+   * ```
+   */
+  delete(environmentID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/environments/${environmentID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Archive an environment by ID. Archived environments cannot be used to create new
+   * sessions.
+   *
+   * @example
+   * ```ts
+   * const betaEnvironment =
+   *   await client.beta.environments.archive(
+   *     'env_011CZkZ9X2dpNyB7HsEFoRfW',
+   *   );
+   * ```
+   */
+  archive(environmentID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.post(path2`/v1/environments/${environmentID}/archive?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/stainless-helper-header.mjs
+var SDK_HELPER_SYMBOL = /* @__PURE__ */ Symbol("anthropic.sdk.stainlessHelper");
+function wasCreatedByStainlessHelper(value) {
+  return typeof value === "object" && value !== null && SDK_HELPER_SYMBOL in value;
+}
+function collectStainlessHelpers(tools, messages) {
+  const helpers = /* @__PURE__ */ new Set();
+  if (tools) {
+    for (const tool of tools) {
+      if (wasCreatedByStainlessHelper(tool)) {
+        helpers.add(tool[SDK_HELPER_SYMBOL]);
+      }
+    }
+  }
+  if (messages) {
+    for (const message of messages) {
+      if (wasCreatedByStainlessHelper(message)) {
+        helpers.add(message[SDK_HELPER_SYMBOL]);
+      }
+      if (Array.isArray(message.content)) {
+        for (const block of message.content) {
+          if (wasCreatedByStainlessHelper(block)) {
+            helpers.add(block[SDK_HELPER_SYMBOL]);
+          }
+        }
+      }
+    }
+  }
+  return Array.from(helpers);
+}
+function stainlessHelperHeader(tools, messages) {
+  const helpers = collectStainlessHelpers(tools, messages);
+  if (helpers.length === 0)
+    return {};
+  return { "x-stainless-helper": helpers.join(", ") };
+}
+function stainlessHelperHeaderFromFile(file) {
+  if (wasCreatedByStainlessHelper(file)) {
+    return { "x-stainless-helper": file[SDK_HELPER_SYMBOL] };
+  }
+  return {};
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/files.mjs
+var Files4 = class extends APIResource2 {
+  /**
+   * List Files
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const fileMetadata of client.beta.files.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/files", Page2, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "files-api-2025-04-14"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete File
+   *
+   * @example
+   * ```ts
+   * const deletedFile = await client.beta.files.delete(
+   *   'file_id',
+   * );
+   * ```
+   */
+  delete(fileID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/files/${fileID}`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "files-api-2025-04-14"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Download File
+   *
+   * @example
+   * ```ts
+   * const response = await client.beta.files.download(
+   *   'file_id',
+   * );
+   *
+   * const content = await response.blob();
+   * console.log(content);
+   * ```
+   */
+  download(fileID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/files/${fileID}/content`, {
+      ...options,
+      headers: buildHeaders2([
+        {
+          "anthropic-beta": [...betas ?? [], "files-api-2025-04-14"].toString(),
+          Accept: "application/binary"
+        },
+        options?.headers
+      ]),
+      __binaryResponse: true
+    });
+  }
+  /**
+   * Get File Metadata
+   *
+   * @example
+   * ```ts
+   * const fileMetadata =
+   *   await client.beta.files.retrieveMetadata('file_id');
+   * ```
+   */
+  retrieveMetadata(fileID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/files/${fileID}`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "files-api-2025-04-14"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Upload File
+   *
+   * @example
+   * ```ts
+   * const fileMetadata = await client.beta.files.upload({
+   *   file: fs.createReadStream('path/to/file'),
+   * });
+   * ```
+   */
+  upload(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/files", multipartFormRequestOptions2({
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "files-api-2025-04-14"].toString() },
+        stainlessHelperHeaderFromFile(body.file),
+        options?.headers
+      ])
+    }, this._client));
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/models.mjs
+var Models2 = class extends APIResource2 {
+  /**
+   * Get a specific model.
+   *
+   * The Models API response can be used to determine information about a specific
+   * model or resolve a model alias to a model ID.
+   *
+   * @example
+   * ```ts
+   * const betaModelInfo = await client.beta.models.retrieve(
+   *   'model_id',
+   * );
+   * ```
+   */
+  retrieve(modelID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/models/${modelID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List available models.
+   *
+   * The Models API response can be used to determine which models are available for
+   * use in the API. More recently released models are listed first.
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaModelInfo of client.beta.models.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/models?beta=true", Page2, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/agents/versions.mjs
+var Versions2 = class extends APIResource2 {
+  /**
+   * List Agent Versions
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsAgent of client.beta.agents.versions.list(
+   *   'agent_011CZkYpogX7uDKUyvBTophP',
+   * )) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(agentID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList(path2`/v1/agents/${agentID}/versions?beta=true`, PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/agents/agents.mjs
+var Agents = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.versions = new Versions2(this._client);
+  }
+  /**
+   * Create Agent
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsAgent =
+   *   await client.beta.agents.create({
+   *     model: 'claude-sonnet-4-6',
+   *     name: 'My First Agent',
+   *   });
+   * ```
+   */
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/agents?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Get Agent
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsAgent =
+   *   await client.beta.agents.retrieve(
+   *     'agent_011CZkYpogX7uDKUyvBTophP',
+   *   );
+   * ```
+   */
+  retrieve(agentID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.get(path2`/v1/agents/${agentID}?beta=true`, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update Agent
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsAgent =
+   *   await client.beta.agents.update(
+   *     'agent_011CZkYpogX7uDKUyvBTophP',
+   *     { version: 1 },
+   *   );
+   * ```
+   */
+  update(agentID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/agents/${agentID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Agents
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsAgent of client.beta.agents.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/agents?beta=true", PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Archive Agent
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsAgent =
+   *   await client.beta.agents.archive(
+   *     'agent_011CZkYpogX7uDKUyvBTophP',
+   *   );
+   * ```
+   */
+  archive(agentID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.post(path2`/v1/agents/${agentID}/archive?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+Agents.Versions = Versions2;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/constants.mjs
+var MODEL_NONSTREAMING_TOKENS = {
+  "claude-opus-4-20250514": 8192,
+  "claude-opus-4-0": 8192,
+  "claude-4-opus-20250514": 8192,
+  "anthropic.claude-opus-4-20250514-v1:0": 8192,
+  "claude-opus-4@20250514": 8192,
+  "claude-opus-4-1-20250805": 8192,
+  "anthropic.claude-opus-4-1-20250805-v1:0": 8192,
+  "claude-opus-4-1@20250805": 8192
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/beta-parser.mjs
+function getOutputFormat(params) {
+  return params?.output_format ?? params?.output_config?.format;
+}
+function maybeParseBetaMessage(message, params, opts) {
+  const outputFormat = getOutputFormat(params);
+  if (!params || !("parse" in (outputFormat ?? {}))) {
+    return {
+      ...message,
+      content: message.content.map((block) => {
+        if (block.type === "text") {
+          const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
+            value: null,
+            enumerable: false
+          });
+          return Object.defineProperty(parsedBlock, "parsed", {
+            get() {
+              opts.logger.warn("The `parsed` property on `text` blocks is deprecated, please use `parsed_output` instead.");
+              return null;
+            },
+            enumerable: false
+          });
+        }
+        return block;
+      }),
+      parsed_output: null
+    };
+  }
+  return parseBetaMessage(message, params, opts);
+}
+function parseBetaMessage(message, params, opts) {
+  let firstParsedOutput = null;
+  const content = message.content.map((block) => {
+    if (block.type === "text") {
+      const parsedOutput = parseBetaOutputFormat(params, block.text);
+      if (firstParsedOutput === null) {
+        firstParsedOutput = parsedOutput;
+      }
+      const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
+        value: parsedOutput,
+        enumerable: false
+      });
+      return Object.defineProperty(parsedBlock, "parsed", {
+        get() {
+          opts.logger.warn("The `parsed` property on `text` blocks is deprecated, please use `parsed_output` instead.");
+          return parsedOutput;
+        },
+        enumerable: false
+      });
+    }
+    return block;
+  });
+  return {
+    ...message,
+    content,
+    parsed_output: firstParsedOutput
+  };
+}
+function parseBetaOutputFormat(params, content) {
+  const outputFormat = getOutputFormat(params);
+  if (outputFormat?.type !== "json_schema") {
+    return null;
+  }
+  try {
+    if ("parse" in outputFormat) {
+      return outputFormat.parse(content);
+    }
+    return JSON.parse(content);
+  } catch (error) {
+    throw new AnthropicError(`Failed to parse structured output: ${error}`);
+  }
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/_vendor/partial-json-parser/parser.mjs
+var tokenize = (input) => {
+  let current = 0;
+  let tokens = [];
+  while (current < input.length) {
+    let char = input[current];
+    if (char === "\\") {
+      current++;
+      continue;
+    }
+    if (char === "{") {
+      tokens.push({
+        type: "brace",
+        value: "{"
+      });
+      current++;
+      continue;
+    }
+    if (char === "}") {
+      tokens.push({
+        type: "brace",
+        value: "}"
+      });
+      current++;
+      continue;
+    }
+    if (char === "[") {
+      tokens.push({
+        type: "paren",
+        value: "["
+      });
+      current++;
+      continue;
+    }
+    if (char === "]") {
+      tokens.push({
+        type: "paren",
+        value: "]"
+      });
+      current++;
+      continue;
+    }
+    if (char === ":") {
+      tokens.push({
+        type: "separator",
+        value: ":"
+      });
+      current++;
+      continue;
+    }
+    if (char === ",") {
+      tokens.push({
+        type: "delimiter",
+        value: ","
+      });
+      current++;
+      continue;
+    }
+    if (char === '"') {
+      let value = "";
+      let danglingQuote = false;
+      char = input[++current];
+      while (char !== '"') {
+        if (current === input.length) {
+          danglingQuote = true;
+          break;
+        }
+        if (char === "\\") {
+          current++;
+          if (current === input.length) {
+            danglingQuote = true;
+            break;
+          }
+          value += char + input[current];
+          char = input[++current];
+        } else {
+          value += char;
+          char = input[++current];
+        }
+      }
+      char = input[++current];
+      if (!danglingQuote) {
+        tokens.push({
+          type: "string",
+          value
+        });
+      }
+      continue;
+    }
+    let WHITESPACE = /\s/;
+    if (char && WHITESPACE.test(char)) {
+      current++;
+      continue;
+    }
+    let NUMBERS = /[0-9]/;
+    if (char && NUMBERS.test(char) || char === "-" || char === ".") {
+      let value = "";
+      if (char === "-") {
+        value += char;
+        char = input[++current];
+      }
+      while (char && NUMBERS.test(char) || char === ".") {
+        value += char;
+        char = input[++current];
+      }
+      tokens.push({
+        type: "number",
+        value
+      });
+      continue;
+    }
+    let LETTERS = /[a-z]/i;
+    if (char && LETTERS.test(char)) {
+      let value = "";
+      while (char && LETTERS.test(char)) {
+        if (current === input.length) {
+          break;
+        }
+        value += char;
+        char = input[++current];
+      }
+      if (value == "true" || value == "false" || value === "null") {
+        tokens.push({
+          type: "name",
+          value
+        });
+      } else {
+        current++;
+        continue;
+      }
+      continue;
+    }
+    current++;
+  }
+  return tokens;
+};
+var strip = (tokens) => {
+  if (tokens.length === 0) {
+    return tokens;
+  }
+  let lastToken = tokens[tokens.length - 1];
+  switch (lastToken.type) {
+    case "separator":
+      tokens = tokens.slice(0, tokens.length - 1);
+      return strip(tokens);
+      break;
+    case "number":
+      let lastCharacterOfLastToken = lastToken.value[lastToken.value.length - 1];
+      if (lastCharacterOfLastToken === "." || lastCharacterOfLastToken === "-") {
+        tokens = tokens.slice(0, tokens.length - 1);
+        return strip(tokens);
+      }
+    case "string":
+      let tokenBeforeTheLastToken = tokens[tokens.length - 2];
+      if (tokenBeforeTheLastToken?.type === "delimiter") {
+        tokens = tokens.slice(0, tokens.length - 1);
+        return strip(tokens);
+      } else if (tokenBeforeTheLastToken?.type === "brace" && tokenBeforeTheLastToken.value === "{") {
+        tokens = tokens.slice(0, tokens.length - 1);
+        return strip(tokens);
+      }
+      break;
+    case "delimiter":
+      tokens = tokens.slice(0, tokens.length - 1);
+      return strip(tokens);
+      break;
+  }
+  return tokens;
+};
+var unstrip = (tokens) => {
+  let tail = [];
+  tokens.map((token) => {
+    if (token.type === "brace") {
+      if (token.value === "{") {
+        tail.push("}");
+      } else {
+        tail.splice(tail.lastIndexOf("}"), 1);
+      }
+    }
+    if (token.type === "paren") {
+      if (token.value === "[") {
+        tail.push("]");
+      } else {
+        tail.splice(tail.lastIndexOf("]"), 1);
+      }
+    }
+  });
+  if (tail.length > 0) {
+    tail.reverse().map((item) => {
+      if (item === "}") {
+        tokens.push({
+          type: "brace",
+          value: "}"
+        });
+      } else if (item === "]") {
+        tokens.push({
+          type: "paren",
+          value: "]"
+        });
+      }
+    });
+  }
+  return tokens;
+};
+var generate = (tokens) => {
+  let output = "";
+  tokens.map((token) => {
+    switch (token.type) {
+      case "string":
+        output += '"' + token.value + '"';
+        break;
+      default:
+        output += token.value;
+        break;
+    }
+  });
+  return output;
+};
+var partialParse2 = (input) => JSON.parse(generate(unstrip(strip(tokenize(input)))));
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/BetaMessageStream.mjs
+var _BetaMessageStream_instances;
+var _BetaMessageStream_currentMessageSnapshot;
+var _BetaMessageStream_params;
+var _BetaMessageStream_connectedPromise;
+var _BetaMessageStream_resolveConnectedPromise;
+var _BetaMessageStream_rejectConnectedPromise;
+var _BetaMessageStream_endPromise;
+var _BetaMessageStream_resolveEndPromise;
+var _BetaMessageStream_rejectEndPromise;
+var _BetaMessageStream_listeners;
+var _BetaMessageStream_ended;
+var _BetaMessageStream_errored;
+var _BetaMessageStream_aborted;
+var _BetaMessageStream_catchingPromiseCreated;
+var _BetaMessageStream_response;
+var _BetaMessageStream_request_id;
+var _BetaMessageStream_logger;
+var _BetaMessageStream_getFinalMessage;
+var _BetaMessageStream_getFinalText;
+var _BetaMessageStream_handleError;
+var _BetaMessageStream_beginRequest;
+var _BetaMessageStream_addStreamEvent;
+var _BetaMessageStream_endRequest;
+var _BetaMessageStream_accumulateMessage;
+var JSON_BUF_PROPERTY = "__json_buf";
+function tracksToolInput(content) {
+  return content.type === "tool_use" || content.type === "server_tool_use" || content.type === "mcp_tool_use";
+}
+var BetaMessageStream = class _BetaMessageStream {
+  constructor(params, opts) {
+    _BetaMessageStream_instances.add(this);
+    this.messages = [];
+    this.receivedMessages = [];
+    _BetaMessageStream_currentMessageSnapshot.set(this, void 0);
+    _BetaMessageStream_params.set(this, null);
+    this.controller = new AbortController();
+    _BetaMessageStream_connectedPromise.set(this, void 0);
+    _BetaMessageStream_resolveConnectedPromise.set(this, () => {
+    });
+    _BetaMessageStream_rejectConnectedPromise.set(this, () => {
+    });
+    _BetaMessageStream_endPromise.set(this, void 0);
+    _BetaMessageStream_resolveEndPromise.set(this, () => {
+    });
+    _BetaMessageStream_rejectEndPromise.set(this, () => {
+    });
+    _BetaMessageStream_listeners.set(this, {});
+    _BetaMessageStream_ended.set(this, false);
+    _BetaMessageStream_errored.set(this, false);
+    _BetaMessageStream_aborted.set(this, false);
+    _BetaMessageStream_catchingPromiseCreated.set(this, false);
+    _BetaMessageStream_response.set(this, void 0);
+    _BetaMessageStream_request_id.set(this, void 0);
+    _BetaMessageStream_logger.set(this, void 0);
+    _BetaMessageStream_handleError.set(this, (error) => {
+      __classPrivateFieldSet2(this, _BetaMessageStream_errored, true, "f");
+      if (isAbortError2(error)) {
+        error = new APIUserAbortError2();
+      }
+      if (error instanceof APIUserAbortError2) {
+        __classPrivateFieldSet2(this, _BetaMessageStream_aborted, true, "f");
+        return this._emit("abort", error);
+      }
+      if (error instanceof AnthropicError) {
+        return this._emit("error", error);
+      }
+      if (error instanceof Error) {
+        const anthropicError = new AnthropicError(error.message);
+        anthropicError.cause = error;
+        return this._emit("error", anthropicError);
+      }
+      return this._emit("error", new AnthropicError(String(error)));
+    });
+    __classPrivateFieldSet2(this, _BetaMessageStream_connectedPromise, new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _BetaMessageStream_resolveConnectedPromise, resolve, "f");
+      __classPrivateFieldSet2(this, _BetaMessageStream_rejectConnectedPromise, reject, "f");
+    }), "f");
+    __classPrivateFieldSet2(this, _BetaMessageStream_endPromise, new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _BetaMessageStream_resolveEndPromise, resolve, "f");
+      __classPrivateFieldSet2(this, _BetaMessageStream_rejectEndPromise, reject, "f");
+    }), "f");
+    __classPrivateFieldGet2(this, _BetaMessageStream_connectedPromise, "f").catch(() => {
+    });
+    __classPrivateFieldGet2(this, _BetaMessageStream_endPromise, "f").catch(() => {
+    });
+    __classPrivateFieldSet2(this, _BetaMessageStream_params, params, "f");
+    __classPrivateFieldSet2(this, _BetaMessageStream_logger, opts?.logger ?? console, "f");
+  }
+  get response() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_response, "f");
+  }
+  get request_id() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_request_id, "f");
+  }
+  /**
+   * Returns the `MessageStream` data, the raw `Response` instance and the ID of the request,
+   * returned vie the `request-id` header which is useful for debugging requests and resporting
+   * issues to Anthropic.
+   *
+   * This is the same as the `APIPromise.withResponse()` method.
+   *
+   * This method will raise an error if you created the stream using `MessageStream.fromReadableStream`
+   * as no `Response` is available.
+   */
+  async withResponse() {
+    __classPrivateFieldSet2(this, _BetaMessageStream_catchingPromiseCreated, true, "f");
+    const response = await __classPrivateFieldGet2(this, _BetaMessageStream_connectedPromise, "f");
+    if (!response) {
+      throw new Error("Could not resolve a `Response` object");
+    }
+    return {
+      data: this,
+      response,
+      request_id: response.headers.get("request-id")
+    };
+  }
+  /**
+   * Intended for use on the frontend, consuming a stream produced with
+   * `.toReadableStream()` on the backend.
+   *
+   * Note that messages sent to the model do not appear in `.on('message')`
+   * in this context.
+   */
+  static fromReadableStream(stream) {
+    const runner = new _BetaMessageStream(null);
+    runner._run(() => runner._fromReadableStream(stream));
+    return runner;
+  }
+  static createMessage(messages, params, options, { logger: logger2 } = {}) {
+    const runner = new _BetaMessageStream(params, { logger: logger2 });
+    for (const message of params.messages) {
+      runner._addMessageParam(message);
+    }
+    __classPrivateFieldSet2(runner, _BetaMessageStream_params, { ...params, stream: true }, "f");
+    runner._run(() => runner._createMessage(messages, { ...params, stream: true }, { ...options, headers: { ...options?.headers, "X-Stainless-Helper-Method": "stream" } }));
+    return runner;
+  }
+  _run(executor) {
+    executor().then(() => {
+      this._emitFinal();
+      this._emit("end");
+    }, __classPrivateFieldGet2(this, _BetaMessageStream_handleError, "f"));
+  }
+  _addMessageParam(message) {
+    this.messages.push(message);
+  }
+  _addMessage(message, emit = true) {
+    this.receivedMessages.push(message);
+    if (emit) {
+      this._emit("message", message);
+    }
+  }
+  async _createMessage(messages, params, options) {
+    const signal = options?.signal;
+    let abortHandler;
+    if (signal) {
+      if (signal.aborted)
+        this.controller.abort();
+      abortHandler = this.controller.abort.bind(this.controller);
+      signal.addEventListener("abort", abortHandler);
+    }
+    try {
+      __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_beginRequest).call(this);
+      const { response, data: stream } = await messages.create({ ...params, stream: true }, { ...options, signal: this.controller.signal }).withResponse();
+      this._connected(response);
+      for await (const event of stream) {
+        __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_addStreamEvent).call(this, event);
+      }
+      if (stream.controller.signal?.aborted) {
+        throw new APIUserAbortError2();
+      }
+      __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_endRequest).call(this);
+    } finally {
+      if (signal && abortHandler) {
+        signal.removeEventListener("abort", abortHandler);
+      }
+    }
+  }
+  _connected(response) {
+    if (this.ended)
+      return;
+    __classPrivateFieldSet2(this, _BetaMessageStream_response, response, "f");
+    __classPrivateFieldSet2(this, _BetaMessageStream_request_id, response?.headers.get("request-id"), "f");
+    __classPrivateFieldGet2(this, _BetaMessageStream_resolveConnectedPromise, "f").call(this, response);
+    this._emit("connect");
+  }
+  get ended() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_ended, "f");
+  }
+  get errored() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_errored, "f");
+  }
+  get aborted() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_aborted, "f");
+  }
+  abort() {
+    this.controller.abort();
+  }
+  /**
+   * Adds the listener function to the end of the listeners array for the event.
+   * No checks are made to see if the listener has already been added. Multiple calls passing
+   * the same combination of event and listener will result in the listener being added, and
+   * called, multiple times.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  on(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event] || (__classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event] = []);
+    listeners.push({ listener });
+    return this;
+  }
+  /**
+   * Removes the specified listener from the listener array for the event.
+   * off() will remove, at most, one instance of a listener from the listener array. If any single
+   * listener has been added multiple times to the listener array for the specified event, then
+   * off() must be called multiple times to remove each instance.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  off(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event];
+    if (!listeners)
+      return this;
+    const index = listeners.findIndex((l) => l.listener === listener);
+    if (index >= 0)
+      listeners.splice(index, 1);
+    return this;
+  }
+  /**
+   * Adds a one-time listener function for the event. The next time the event is triggered,
+   * this listener is removed and then invoked.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  once(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event] || (__classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event] = []);
+    listeners.push({ listener, once: true });
+    return this;
+  }
+  /**
+   * This is similar to `.once()`, but returns a Promise that resolves the next time
+   * the event is triggered, instead of calling a listener callback.
+   * @returns a Promise that resolves the next time given event is triggered,
+   * or rejects if an error is emitted.  (If you request the 'error' event,
+   * returns a promise that resolves with the error).
+   *
+   * Example:
+   *
+   *   const message = await stream.emitted('message') // rejects if the stream errors
+   */
+  emitted(event) {
+    return new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _BetaMessageStream_catchingPromiseCreated, true, "f");
+      if (event !== "error")
+        this.once("error", reject);
+      this.once(event, resolve);
+    });
+  }
+  async done() {
+    __classPrivateFieldSet2(this, _BetaMessageStream_catchingPromiseCreated, true, "f");
+    await __classPrivateFieldGet2(this, _BetaMessageStream_endPromise, "f");
+  }
+  get currentMessage() {
+    return __classPrivateFieldGet2(this, _BetaMessageStream_currentMessageSnapshot, "f");
+  }
+  /**
+   * @returns a promise that resolves with the the final assistant Message response,
+   * or rejects if an error occurred or the stream ended prematurely without producing a Message.
+   * If structured outputs were used, this will be a ParsedMessage with a `parsed` field.
+   */
+  async finalMessage() {
+    await this.done();
+    return __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_getFinalMessage).call(this);
+  }
+  /**
+   * @returns a promise that resolves with the the final assistant Message's text response, concatenated
+   * together if there are more than one text blocks.
+   * Rejects if an error occurred or the stream ended prematurely without producing a Message.
+   */
+  async finalText() {
+    await this.done();
+    return __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_getFinalText).call(this);
+  }
+  _emit(event, ...args) {
+    if (__classPrivateFieldGet2(this, _BetaMessageStream_ended, "f"))
+      return;
+    if (event === "end") {
+      __classPrivateFieldSet2(this, _BetaMessageStream_ended, true, "f");
+      __classPrivateFieldGet2(this, _BetaMessageStream_resolveEndPromise, "f").call(this);
+    }
+    const listeners = __classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event];
+    if (listeners) {
+      __classPrivateFieldGet2(this, _BetaMessageStream_listeners, "f")[event] = listeners.filter((l) => !l.once);
+      listeners.forEach(({ listener }) => listener(...args));
+    }
+    if (event === "abort") {
+      const error = args[0];
+      if (!__classPrivateFieldGet2(this, _BetaMessageStream_catchingPromiseCreated, "f") && !listeners?.length) {
+        Promise.reject(error);
+      }
+      __classPrivateFieldGet2(this, _BetaMessageStream_rejectConnectedPromise, "f").call(this, error);
+      __classPrivateFieldGet2(this, _BetaMessageStream_rejectEndPromise, "f").call(this, error);
+      this._emit("end");
+      return;
+    }
+    if (event === "error") {
+      const error = args[0];
+      if (!__classPrivateFieldGet2(this, _BetaMessageStream_catchingPromiseCreated, "f") && !listeners?.length) {
+        Promise.reject(error);
+      }
+      __classPrivateFieldGet2(this, _BetaMessageStream_rejectConnectedPromise, "f").call(this, error);
+      __classPrivateFieldGet2(this, _BetaMessageStream_rejectEndPromise, "f").call(this, error);
+      this._emit("end");
+    }
+  }
+  _emitFinal() {
+    const finalMessage = this.receivedMessages.at(-1);
+    if (finalMessage) {
+      this._emit("finalMessage", __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_getFinalMessage).call(this));
+    }
+  }
+  async _fromReadableStream(readableStream, options) {
+    const signal = options?.signal;
+    let abortHandler;
+    if (signal) {
+      if (signal.aborted)
+        this.controller.abort();
+      abortHandler = this.controller.abort.bind(this.controller);
+      signal.addEventListener("abort", abortHandler);
+    }
+    try {
+      __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_beginRequest).call(this);
+      this._connected(null);
+      const stream = Stream2.fromReadableStream(readableStream, this.controller);
+      for await (const event of stream) {
+        __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_addStreamEvent).call(this, event);
+      }
+      if (stream.controller.signal?.aborted) {
+        throw new APIUserAbortError2();
+      }
+      __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_endRequest).call(this);
+    } finally {
+      if (signal && abortHandler) {
+        signal.removeEventListener("abort", abortHandler);
+      }
+    }
+  }
+  [(_BetaMessageStream_currentMessageSnapshot = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_params = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_connectedPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_resolveConnectedPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_rejectConnectedPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_endPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_resolveEndPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_rejectEndPromise = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_listeners = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_ended = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_errored = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_aborted = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_catchingPromiseCreated = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_response = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_request_id = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_logger = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_handleError = /* @__PURE__ */ new WeakMap(), _BetaMessageStream_instances = /* @__PURE__ */ new WeakSet(), _BetaMessageStream_getFinalMessage = function _BetaMessageStream_getFinalMessage2() {
+    if (this.receivedMessages.length === 0) {
+      throw new AnthropicError("stream ended without producing a Message with role=assistant");
+    }
+    return this.receivedMessages.at(-1);
+  }, _BetaMessageStream_getFinalText = function _BetaMessageStream_getFinalText2() {
+    if (this.receivedMessages.length === 0) {
+      throw new AnthropicError("stream ended without producing a Message with role=assistant");
+    }
+    const textBlocks = this.receivedMessages.at(-1).content.filter((block) => block.type === "text").map((block) => block.text);
+    if (textBlocks.length === 0) {
+      throw new AnthropicError("stream ended without producing a content block with type=text");
+    }
+    return textBlocks.join(" ");
+  }, _BetaMessageStream_beginRequest = function _BetaMessageStream_beginRequest2() {
+    if (this.ended)
+      return;
+    __classPrivateFieldSet2(this, _BetaMessageStream_currentMessageSnapshot, void 0, "f");
+  }, _BetaMessageStream_addStreamEvent = function _BetaMessageStream_addStreamEvent2(event) {
+    if (this.ended)
+      return;
+    const messageSnapshot = __classPrivateFieldGet2(this, _BetaMessageStream_instances, "m", _BetaMessageStream_accumulateMessage).call(this, event);
+    this._emit("streamEvent", event, messageSnapshot);
+    switch (event.type) {
+      case "content_block_delta": {
+        const content = messageSnapshot.content.at(-1);
+        switch (event.delta.type) {
+          case "text_delta": {
+            if (content.type === "text") {
+              this._emit("text", event.delta.text, content.text || "");
+            }
+            break;
+          }
+          case "citations_delta": {
+            if (content.type === "text") {
+              this._emit("citation", event.delta.citation, content.citations ?? []);
+            }
+            break;
+          }
+          case "input_json_delta": {
+            if (tracksToolInput(content) && content.input) {
+              this._emit("inputJson", event.delta.partial_json, content.input);
+            }
+            break;
+          }
+          case "thinking_delta": {
+            if (content.type === "thinking") {
+              this._emit("thinking", event.delta.thinking, content.thinking);
+            }
+            break;
+          }
+          case "signature_delta": {
+            if (content.type === "thinking") {
+              this._emit("signature", content.signature);
+            }
+            break;
+          }
+          case "compaction_delta": {
+            if (content.type === "compaction" && content.content) {
+              this._emit("compaction", content.content);
+            }
+            break;
+          }
+          default:
+            checkNever(event.delta);
+        }
+        break;
+      }
+      case "message_stop": {
+        this._addMessageParam(messageSnapshot);
+        this._addMessage(maybeParseBetaMessage(messageSnapshot, __classPrivateFieldGet2(this, _BetaMessageStream_params, "f"), { logger: __classPrivateFieldGet2(this, _BetaMessageStream_logger, "f") }), true);
+        break;
+      }
+      case "content_block_stop": {
+        this._emit("contentBlock", messageSnapshot.content.at(-1));
+        break;
+      }
+      case "message_start": {
+        __classPrivateFieldSet2(this, _BetaMessageStream_currentMessageSnapshot, messageSnapshot, "f");
+        break;
+      }
+      case "content_block_start":
+      case "message_delta":
+        break;
+    }
+  }, _BetaMessageStream_endRequest = function _BetaMessageStream_endRequest2() {
+    if (this.ended) {
+      throw new AnthropicError(`stream has ended, this shouldn't happen`);
+    }
+    const snapshot = __classPrivateFieldGet2(this, _BetaMessageStream_currentMessageSnapshot, "f");
+    if (!snapshot) {
+      throw new AnthropicError(`request ended without sending any chunks`);
+    }
+    __classPrivateFieldSet2(this, _BetaMessageStream_currentMessageSnapshot, void 0, "f");
+    return maybeParseBetaMessage(snapshot, __classPrivateFieldGet2(this, _BetaMessageStream_params, "f"), { logger: __classPrivateFieldGet2(this, _BetaMessageStream_logger, "f") });
+  }, _BetaMessageStream_accumulateMessage = function _BetaMessageStream_accumulateMessage2(event) {
+    let snapshot = __classPrivateFieldGet2(this, _BetaMessageStream_currentMessageSnapshot, "f");
+    if (event.type === "message_start") {
+      if (snapshot) {
+        throw new AnthropicError(`Unexpected event order, got ${event.type} before receiving "message_stop"`);
+      }
+      return event.message;
+    }
+    if (!snapshot) {
+      throw new AnthropicError(`Unexpected event order, got ${event.type} before "message_start"`);
+    }
+    switch (event.type) {
+      case "message_stop":
+        return snapshot;
+      case "message_delta":
+        snapshot.container = event.delta.container;
+        snapshot.stop_reason = event.delta.stop_reason;
+        snapshot.stop_sequence = event.delta.stop_sequence;
+        snapshot.usage.output_tokens = event.usage.output_tokens;
+        snapshot.context_management = event.context_management;
+        if (event.usage.input_tokens != null) {
+          snapshot.usage.input_tokens = event.usage.input_tokens;
+        }
+        if (event.usage.cache_creation_input_tokens != null) {
+          snapshot.usage.cache_creation_input_tokens = event.usage.cache_creation_input_tokens;
+        }
+        if (event.usage.cache_read_input_tokens != null) {
+          snapshot.usage.cache_read_input_tokens = event.usage.cache_read_input_tokens;
+        }
+        if (event.usage.server_tool_use != null) {
+          snapshot.usage.server_tool_use = event.usage.server_tool_use;
+        }
+        if (event.usage.iterations != null) {
+          snapshot.usage.iterations = event.usage.iterations;
+        }
+        return snapshot;
+      case "content_block_start":
+        snapshot.content.push(event.content_block);
+        return snapshot;
+      case "content_block_delta": {
+        const snapshotContent = snapshot.content.at(event.index);
+        switch (event.delta.type) {
+          case "text_delta": {
+            if (snapshotContent?.type === "text") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                text: (snapshotContent.text || "") + event.delta.text
+              };
+            }
+            break;
+          }
+          case "citations_delta": {
+            if (snapshotContent?.type === "text") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                citations: [...snapshotContent.citations ?? [], event.delta.citation]
+              };
+            }
+            break;
+          }
+          case "input_json_delta": {
+            if (snapshotContent && tracksToolInput(snapshotContent)) {
+              let jsonBuf = snapshotContent[JSON_BUF_PROPERTY] || "";
+              jsonBuf += event.delta.partial_json;
+              const newContent = { ...snapshotContent };
+              Object.defineProperty(newContent, JSON_BUF_PROPERTY, {
+                value: jsonBuf,
+                enumerable: false,
+                writable: true
+              });
+              if (jsonBuf) {
+                try {
+                  newContent.input = partialParse2(jsonBuf);
+                } catch (err) {
+                  const error = new AnthropicError(`Unable to parse tool parameter JSON from model. Please retry your request or adjust your prompt. Error: ${err}. JSON: ${jsonBuf}`);
+                  __classPrivateFieldGet2(this, _BetaMessageStream_handleError, "f").call(this, error);
+                }
+              }
+              snapshot.content[event.index] = newContent;
+            }
+            break;
+          }
+          case "thinking_delta": {
+            if (snapshotContent?.type === "thinking") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                thinking: snapshotContent.thinking + event.delta.thinking
+              };
+            }
+            break;
+          }
+          case "signature_delta": {
+            if (snapshotContent?.type === "thinking") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                signature: event.delta.signature
+              };
+            }
+            break;
+          }
+          case "compaction_delta": {
+            if (snapshotContent?.type === "compaction") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                content: (snapshotContent.content || "") + event.delta.content
+              };
+            }
+            break;
+          }
+          default:
+            checkNever(event.delta);
+        }
+        return snapshot;
+      }
+      case "content_block_stop":
+        return snapshot;
+    }
+  }, Symbol.asyncIterator)]() {
+    const pushQueue = [];
+    const readQueue = [];
+    let done = false;
+    this.on("streamEvent", (event) => {
+      const reader = readQueue.shift();
+      if (reader) {
+        reader.resolve(event);
+      } else {
+        pushQueue.push(event);
+      }
+    });
+    this.on("end", () => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.resolve(void 0);
+      }
+      readQueue.length = 0;
+    });
+    this.on("abort", (err) => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.reject(err);
+      }
+      readQueue.length = 0;
+    });
+    this.on("error", (err) => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.reject(err);
+      }
+      readQueue.length = 0;
+    });
+    return {
+      next: async () => {
+        if (!pushQueue.length) {
+          if (done) {
+            return { value: void 0, done: true };
+          }
+          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk2) => chunk2 ? { value: chunk2, done: false } : { value: void 0, done: true });
+        }
+        const chunk = pushQueue.shift();
+        return { value: chunk, done: false };
+      },
+      return: async () => {
+        this.abort();
+        return { value: void 0, done: true };
+      }
+    };
+  }
+  toReadableStream() {
+    const stream = new Stream2(this[Symbol.asyncIterator].bind(this), this.controller);
+    return stream.toReadableStream();
+  }
+};
+function checkNever(x) {
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/tools/ToolError.mjs
+var ToolError = class extends Error {
+  constructor(content) {
+    const message = typeof content === "string" ? content : content.map((block) => {
+      if (block.type === "text")
+        return block.text;
+      return `[${block.type}]`;
+    }).join(" ");
+    super(message);
+    this.name = "ToolError";
+    this.content = content;
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/tools/CompactionControl.mjs
+var DEFAULT_TOKEN_THRESHOLD = 1e5;
+var DEFAULT_SUMMARY_PROMPT = `You have been working on the task described above but have not yet completed it. Write a continuation summary that will allow you (or another instance of yourself) to resume work efficiently in a future context window where the conversation history will be replaced with this summary. Your summary should be structured, concise, and actionable. Include:
+1. Task Overview
+The user's core request and success criteria
+Any clarifications or constraints they specified
+2. Current State
+What has been completed so far
+Files created, modified, or analyzed (with paths if relevant)
+Key outputs or artifacts produced
+3. Important Discoveries
+Technical constraints or requirements uncovered
+Decisions made and their rationale
+Errors encountered and how they were resolved
+What approaches were tried that didn't work (and why)
+4. Next Steps
+Specific actions needed to complete the task
+Any blockers or open questions to resolve
+Priority order if multiple steps remain
+5. Context to Preserve
+User preferences or style requirements
+Domain-specific details that aren't obvious
+Any promises made to the user
+Be concise but complete\u2014err on the side of including information that would prevent duplicate work or repeated mistakes. Write in a way that enables immediate resumption of the task.
+Wrap your summary in <summary></summary> tags.`;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/tools/BetaToolRunner.mjs
+var _BetaToolRunner_instances;
+var _BetaToolRunner_consumed;
+var _BetaToolRunner_mutated;
+var _BetaToolRunner_state;
+var _BetaToolRunner_options;
+var _BetaToolRunner_message;
+var _BetaToolRunner_toolResponse;
+var _BetaToolRunner_completion;
+var _BetaToolRunner_iterationCount;
+var _BetaToolRunner_checkAndCompact;
+var _BetaToolRunner_generateToolResponse;
+function promiseWithResolvers() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+var BetaToolRunner = class {
+  constructor(client, params, options) {
+    _BetaToolRunner_instances.add(this);
+    this.client = client;
+    _BetaToolRunner_consumed.set(this, false);
+    _BetaToolRunner_mutated.set(this, false);
+    _BetaToolRunner_state.set(this, void 0);
+    _BetaToolRunner_options.set(this, void 0);
+    _BetaToolRunner_message.set(this, void 0);
+    _BetaToolRunner_toolResponse.set(this, void 0);
+    _BetaToolRunner_completion.set(this, void 0);
+    _BetaToolRunner_iterationCount.set(this, 0);
+    __classPrivateFieldSet2(this, _BetaToolRunner_state, {
+      params: {
+        // You can't clone the entire params since there are functions as handlers.
+        // You also don't really need to clone params.messages, but it probably will prevent a foot gun
+        // somewhere.
+        ...params,
+        messages: structuredClone(params.messages)
+      }
+    }, "f");
+    const helpers = collectStainlessHelpers(params.tools, params.messages);
+    const helperValue = ["BetaToolRunner", ...helpers].join(", ");
+    __classPrivateFieldSet2(this, _BetaToolRunner_options, {
+      ...options,
+      headers: buildHeaders2([{ "x-stainless-helper": helperValue }, options?.headers])
+    }, "f");
+    __classPrivateFieldSet2(this, _BetaToolRunner_completion, promiseWithResolvers(), "f");
+    if (params.compactionControl?.enabled) {
+      console.warn('Anthropic: The `compactionControl` parameter is deprecated and will be removed in a future version. Use server-side compaction instead by passing `edits: [{ type: "compact_20260112" }]` in the params passed to `toolRunner()`. See https://platform.claude.com/docs/en/build-with-claude/compaction');
+    }
+  }
+  async *[(_BetaToolRunner_consumed = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_mutated = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_state = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_options = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_message = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_toolResponse = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_completion = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_iterationCount = /* @__PURE__ */ new WeakMap(), _BetaToolRunner_instances = /* @__PURE__ */ new WeakSet(), _BetaToolRunner_checkAndCompact = async function _BetaToolRunner_checkAndCompact2() {
+    const compactionControl = __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.compactionControl;
+    if (!compactionControl || !compactionControl.enabled) {
+      return false;
+    }
+    let tokensUsed = 0;
+    if (__classPrivateFieldGet2(this, _BetaToolRunner_message, "f") !== void 0) {
+      try {
+        const message = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
+        const totalInputTokens = message.usage.input_tokens + (message.usage.cache_creation_input_tokens ?? 0) + (message.usage.cache_read_input_tokens ?? 0);
+        tokensUsed = totalInputTokens + message.usage.output_tokens;
+      } catch {
+        return false;
+      }
+    }
+    const threshold = compactionControl.contextTokenThreshold ?? DEFAULT_TOKEN_THRESHOLD;
+    if (tokensUsed < threshold) {
+      return false;
+    }
+    const model = compactionControl.model ?? __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.model;
+    const summaryPrompt = compactionControl.summaryPrompt ?? DEFAULT_SUMMARY_PROMPT;
+    const messages = __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages;
+    if (messages[messages.length - 1].role === "assistant") {
+      const lastMessage = messages[messages.length - 1];
+      if (Array.isArray(lastMessage.content)) {
+        const nonToolBlocks = lastMessage.content.filter((block) => block.type !== "tool_use");
+        if (nonToolBlocks.length === 0) {
+          messages.pop();
+        } else {
+          lastMessage.content = nonToolBlocks;
+        }
+      }
+    }
+    const response = await this.client.beta.messages.create({
+      model,
+      messages: [
+        ...messages,
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: summaryPrompt
+            }
+          ]
+        }
+      ],
+      max_tokens: __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.max_tokens
+    }, {
+      signal: __classPrivateFieldGet2(this, _BetaToolRunner_options, "f").signal,
+      headers: buildHeaders2([__classPrivateFieldGet2(this, _BetaToolRunner_options, "f").headers, { "x-stainless-helper": "compaction" }])
+    });
+    if (response.content[0]?.type !== "text") {
+      throw new AnthropicError("Expected text response for compaction");
+    }
+    __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages = [
+      {
+        role: "user",
+        content: response.content
+      }
+    ];
+    return true;
+  }, Symbol.asyncIterator)]() {
+    var _a4;
+    if (__classPrivateFieldGet2(this, _BetaToolRunner_consumed, "f")) {
+      throw new AnthropicError("Cannot iterate over a consumed stream");
+    }
+    __classPrivateFieldSet2(this, _BetaToolRunner_consumed, true, "f");
+    __classPrivateFieldSet2(this, _BetaToolRunner_mutated, true, "f");
+    __classPrivateFieldSet2(this, _BetaToolRunner_toolResponse, void 0, "f");
+    try {
+      while (true) {
+        let stream;
+        try {
+          if (__classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.max_iterations && __classPrivateFieldGet2(this, _BetaToolRunner_iterationCount, "f") >= __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.max_iterations) {
+            break;
+          }
+          __classPrivateFieldSet2(this, _BetaToolRunner_mutated, false, "f");
+          __classPrivateFieldSet2(this, _BetaToolRunner_toolResponse, void 0, "f");
+          __classPrivateFieldSet2(this, _BetaToolRunner_iterationCount, (_a4 = __classPrivateFieldGet2(this, _BetaToolRunner_iterationCount, "f"), _a4++, _a4), "f");
+          __classPrivateFieldSet2(this, _BetaToolRunner_message, void 0, "f");
+          const { max_iterations, compactionControl, ...params } = __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params;
+          if (params.stream) {
+            stream = this.client.beta.messages.stream({ ...params }, __classPrivateFieldGet2(this, _BetaToolRunner_options, "f"));
+            __classPrivateFieldSet2(this, _BetaToolRunner_message, stream.finalMessage(), "f");
+            __classPrivateFieldGet2(this, _BetaToolRunner_message, "f").catch(() => {
+            });
+            yield stream;
+          } else {
+            __classPrivateFieldSet2(this, _BetaToolRunner_message, this.client.beta.messages.create({ ...params, stream: false }, __classPrivateFieldGet2(this, _BetaToolRunner_options, "f")), "f");
+            yield __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
+          }
+          const isCompacted = await __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_checkAndCompact).call(this);
+          if (!isCompacted) {
+            if (!__classPrivateFieldGet2(this, _BetaToolRunner_mutated, "f")) {
+              const { role, content } = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
+              __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages.push({ role, content });
+            }
+            const toolMessage = await __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_generateToolResponse).call(this, __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages.at(-1));
+            if (toolMessage) {
+              __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages.push(toolMessage);
+            } else if (!__classPrivateFieldGet2(this, _BetaToolRunner_mutated, "f")) {
+              break;
+            }
+          }
+        } finally {
+          if (stream) {
+            stream.abort();
+          }
+        }
+      }
+      if (!__classPrivateFieldGet2(this, _BetaToolRunner_message, "f")) {
+        throw new AnthropicError("ToolRunner concluded without a message from the server");
+      }
+      __classPrivateFieldGet2(this, _BetaToolRunner_completion, "f").resolve(await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f"));
+    } catch (error) {
+      __classPrivateFieldSet2(this, _BetaToolRunner_consumed, false, "f");
+      __classPrivateFieldGet2(this, _BetaToolRunner_completion, "f").promise.catch(() => {
+      });
+      __classPrivateFieldGet2(this, _BetaToolRunner_completion, "f").reject(error);
+      __classPrivateFieldSet2(this, _BetaToolRunner_completion, promiseWithResolvers(), "f");
+      throw error;
+    }
+  }
+  setMessagesParams(paramsOrMutator) {
+    if (typeof paramsOrMutator === "function") {
+      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params = paramsOrMutator(__classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params);
+    } else {
+      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params = paramsOrMutator;
+    }
+    __classPrivateFieldSet2(this, _BetaToolRunner_mutated, true, "f");
+    __classPrivateFieldSet2(this, _BetaToolRunner_toolResponse, void 0, "f");
+  }
+  setRequestOptions(optionsOrMutator) {
+    if (typeof optionsOrMutator === "function") {
+      __classPrivateFieldSet2(this, _BetaToolRunner_options, optionsOrMutator(__classPrivateFieldGet2(this, _BetaToolRunner_options, "f")), "f");
+    } else {
+      __classPrivateFieldSet2(this, _BetaToolRunner_options, { ...__classPrivateFieldGet2(this, _BetaToolRunner_options, "f"), ...optionsOrMutator }, "f");
+    }
+  }
+  /**
+   * Get the tool response for the last message from the assistant.
+   * Avoids redundant tool executions by caching results.
+   *
+   * @returns A promise that resolves to a BetaMessageParam containing tool results, or null if no tools need to be executed
+   *
+   * @example
+   * const toolResponse = await runner.generateToolResponse();
+   * if (toolResponse) {
+   *   console.log('Tool results:', toolResponse.content);
+   * }
+   */
+  async generateToolResponse(signal = __classPrivateFieldGet2(this, _BetaToolRunner_options, "f").signal) {
+    const message = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f") ?? this.params.messages.at(-1);
+    if (!message) {
+      return null;
+    }
+    return __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_generateToolResponse).call(this, message, signal);
+  }
+  /**
+   * Wait for the async iterator to complete. This works even if the async iterator hasn't yet started, and
+   * will wait for an instance to start and go to completion.
+   *
+   * @returns A promise that resolves to the final BetaMessage when the iterator completes
+   *
+   * @example
+   * // Start consuming the iterator
+   * for await (const message of runner) {
+   *   console.log('Message:', message.content);
+   * }
+   *
+   * // Meanwhile, wait for completion from another part of the code
+   * const finalMessage = await runner.done();
+   * console.log('Final response:', finalMessage.content);
+   */
+  done() {
+    return __classPrivateFieldGet2(this, _BetaToolRunner_completion, "f").promise;
+  }
+  /**
+   * Returns a promise indicating that the stream is done. Unlike .done(), this will eagerly read the stream:
+   * * If the iterator has not been consumed, consume the entire iterator and return the final message from the
+   * assistant.
+   * * If the iterator has been consumed, waits for it to complete and returns the final message.
+   *
+   * @returns A promise that resolves to the final BetaMessage from the conversation
+   * @throws {AnthropicError} If no messages were processed during the conversation
+   *
+   * @example
+   * const finalMessage = await runner.runUntilDone();
+   * console.log('Final response:', finalMessage.content);
+   */
+  async runUntilDone() {
+    if (!__classPrivateFieldGet2(this, _BetaToolRunner_consumed, "f")) {
+      for await (const _ of this) {
+      }
+    }
+    return this.done();
+  }
+  /**
+   * Get the current parameters being used by the ToolRunner.
+   *
+   * @returns A readonly view of the current ToolRunnerParams
+   *
+   * @example
+   * const currentParams = runner.params;
+   * console.log('Current model:', currentParams.model);
+   * console.log('Message count:', currentParams.messages.length);
+   */
+  get params() {
+    return __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params;
+  }
+  /**
+   * Add one or more messages to the conversation history.
+   *
+   * @param messages - One or more BetaMessageParam objects to add to the conversation
+   *
+   * @example
+   * runner.pushMessages(
+   *   { role: 'user', content: 'Also, what about the weather in NYC?' }
+   * );
+   *
+   * @example
+   * // Adding multiple messages
+   * runner.pushMessages(
+   *   { role: 'user', content: 'What about NYC?' },
+   *   { role: 'user', content: 'And Boston?' }
+   * );
+   */
+  pushMessages(...messages) {
+    this.setMessagesParams((params) => ({
+      ...params,
+      messages: [...params.messages, ...messages]
+    }));
+  }
+  /**
+   * Makes the ToolRunner directly awaitable, equivalent to calling .runUntilDone()
+   * This allows using `await runner` instead of `await runner.runUntilDone()`
+   */
+  then(onfulfilled, onrejected) {
+    return this.runUntilDone().then(onfulfilled, onrejected);
+  }
+};
+_BetaToolRunner_generateToolResponse = async function _BetaToolRunner_generateToolResponse2(lastMessage, signal = __classPrivateFieldGet2(this, _BetaToolRunner_options, "f").signal) {
+  if (__classPrivateFieldGet2(this, _BetaToolRunner_toolResponse, "f") !== void 0) {
+    return __classPrivateFieldGet2(this, _BetaToolRunner_toolResponse, "f");
+  }
+  __classPrivateFieldSet2(this, _BetaToolRunner_toolResponse, generateToolResponse(__classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params, lastMessage, {
+    ...__classPrivateFieldGet2(this, _BetaToolRunner_options, "f"),
+    signal
+  }), "f");
+  return __classPrivateFieldGet2(this, _BetaToolRunner_toolResponse, "f");
+};
+async function generateToolResponse(params, lastMessage = params.messages.at(-1), requestOptions) {
+  if (!lastMessage || lastMessage.role !== "assistant" || !lastMessage.content || typeof lastMessage.content === "string") {
+    return null;
+  }
+  const toolUseBlocks = lastMessage.content.filter((content) => content.type === "tool_use");
+  if (toolUseBlocks.length === 0) {
+    return null;
+  }
+  const toolResults = await Promise.all(toolUseBlocks.map(async (toolUse) => {
+    const tool = params.tools.find((t) => ("name" in t ? t.name : t.mcp_server_name) === toolUse.name);
+    if (!tool || !("run" in tool)) {
+      return {
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: `Error: Tool '${toolUse.name}' not found`,
+        is_error: true
+      };
+    }
+    try {
+      let input = toolUse.input;
+      if ("parse" in tool && tool.parse) {
+        input = tool.parse(input);
+      }
+      const result = await tool.run(input, {
+        toolUseBlock: toolUse,
+        signal: requestOptions?.signal
+      });
+      return {
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: result
+      };
+    } catch (error) {
+      return {
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: error instanceof ToolError ? error.content : `Error: ${error instanceof Error ? error.message : String(error)}`,
+        is_error: true
+      };
+    }
+  }));
+  return {
+    role: "user",
+    content: toolResults
+  };
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/decoders/jsonl.mjs
+var JSONLDecoder = class _JSONLDecoder {
+  constructor(iterator, controller) {
+    this.iterator = iterator;
+    this.controller = controller;
+  }
+  async *decoder() {
+    const lineDecoder = new LineDecoder2();
+    for await (const chunk of this.iterator) {
+      for (const line of lineDecoder.decode(chunk)) {
+        yield JSON.parse(line);
+      }
+    }
+    for (const line of lineDecoder.flush()) {
+      yield JSON.parse(line);
+    }
+  }
+  [Symbol.asyncIterator]() {
+    return this.decoder();
+  }
+  static fromResponse(response, controller) {
+    if (!response.body) {
+      controller.abort();
+      if (typeof globalThis.navigator !== "undefined" && globalThis.navigator.product === "ReactNative") {
+        throw new AnthropicError(`The default react-native fetch implementation does not support streaming. Please use expo/fetch: https://docs.expo.dev/versions/latest/sdk/expo/#expofetch-api`);
+      }
+      throw new AnthropicError(`Attempted to iterate over a response with no body`);
+    }
+    return new _JSONLDecoder(ReadableStreamToAsyncIterable2(response.body), controller);
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/messages/batches.mjs
+var Batches2 = class extends APIResource2 {
+  /**
+   * Send a batch of Message creation requests.
+   *
+   * The Message Batches API can be used to process multiple Messages API requests at
+   * once. Once a Message Batch is created, it begins processing immediately. Batches
+   * can take up to 24 hours to complete.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const betaMessageBatch =
+   *   await client.beta.messages.batches.create({
+   *     requests: [
+   *       {
+   *         custom_id: 'my-custom-id-1',
+   *         params: {
+   *           max_tokens: 1024,
+   *           messages: [
+   *             { content: 'Hello, world', role: 'user' },
+   *           ],
+   *           model: 'claude-opus-4-6',
+   *         },
+   *       },
+   *     ],
+   *   });
+   * ```
+   */
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/messages/batches?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * This endpoint is idempotent and can be used to poll for Message Batch
+   * completion. To access the results of a Message Batch, make a request to the
+   * `results_url` field in the response.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const betaMessageBatch =
+   *   await client.beta.messages.batches.retrieve(
+   *     'message_batch_id',
+   *   );
+   * ```
+   */
+  retrieve(messageBatchID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/messages/batches/${messageBatchID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List all Message Batches within a Workspace. Most recently created batches are
+   * returned first.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaMessageBatch of client.beta.messages.batches.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/messages/batches?beta=true", Page2, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete a Message Batch.
+   *
+   * Message Batches can only be deleted once they've finished processing. If you'd
+   * like to delete an in-progress batch, you must first cancel it.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const betaDeletedMessageBatch =
+   *   await client.beta.messages.batches.delete(
+   *     'message_batch_id',
+   *   );
+   * ```
+   */
+  delete(messageBatchID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/messages/batches/${messageBatchID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Batches may be canceled any time before processing ends. Once cancellation is
+   * initiated, the batch enters a `canceling` state, at which time the system may
+   * complete any in-progress, non-interruptible requests before finalizing
+   * cancellation.
+   *
+   * The number of canceled requests is specified in `request_counts`. To determine
+   * which requests were canceled, check the individual results within the batch.
+   * Note that cancellation may not result in any canceled requests if they were
+   * non-interruptible.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const betaMessageBatch =
+   *   await client.beta.messages.batches.cancel(
+   *     'message_batch_id',
+   *   );
+   * ```
+   */
+  cancel(messageBatchID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.post(path2`/v1/messages/batches/${messageBatchID}/cancel?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Streams the results of a Message Batch as a `.jsonl` file.
+   *
+   * Each line in the file is a JSON object containing the result of a single request
+   * in the Message Batch. Results are not guaranteed to be in the same order as
+   * requests. Use the `custom_id` field to match results to requests.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const betaMessageBatchIndividualResponse =
+   *   await client.beta.messages.batches.results(
+   *     'message_batch_id',
+   *   );
+   * ```
+   */
+  async results(messageBatchID, params = {}, options) {
+    const batch = await this.retrieve(messageBatchID);
+    if (!batch.results_url) {
+      throw new AnthropicError(`No batch \`results_url\`; Has it finished processing? ${batch.processing_status} - ${batch.id}`);
+    }
+    const { betas } = params ?? {};
+    return this._client.get(batch.results_url, {
+      ...options,
+      headers: buildHeaders2([
+        {
+          "anthropic-beta": [...betas ?? [], "message-batches-2024-09-24"].toString(),
+          Accept: "application/binary"
+        },
+        options?.headers
+      ]),
+      stream: true,
+      __binaryResponse: true
+    })._thenUnwrap((_, props) => JSONLDecoder.fromResponse(props.response, props.controller));
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/messages/messages.mjs
+var DEPRECATED_MODELS = {
+  "claude-1.3": "November 6th, 2024",
+  "claude-1.3-100k": "November 6th, 2024",
+  "claude-instant-1.1": "November 6th, 2024",
+  "claude-instant-1.1-100k": "November 6th, 2024",
+  "claude-instant-1.2": "November 6th, 2024",
+  "claude-3-sonnet-20240229": "July 21st, 2025",
+  "claude-3-opus-20240229": "January 5th, 2026",
+  "claude-2.1": "July 21st, 2025",
+  "claude-2.0": "July 21st, 2025",
+  "claude-3-7-sonnet-latest": "February 19th, 2026",
+  "claude-3-7-sonnet-20250219": "February 19th, 2026"
+};
+var MODELS_TO_WARN_WITH_THINKING_ENABLED = ["claude-opus-4-6"];
+var Messages3 = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.batches = new Batches2(this._client);
+  }
+  create(params, options) {
+    const modifiedParams = transformOutputFormat(params);
+    const { betas, ...body } = modifiedParams;
+    if (body.model in DEPRECATED_MODELS) {
+      console.warn(`The model '${body.model}' is deprecated and will reach end-of-life on ${DEPRECATED_MODELS[body.model]}
+Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resources/model-deprecations for more information.`);
+    }
+    if (body.model in MODELS_TO_WARN_WITH_THINKING_ENABLED && body.thinking && body.thinking.type === "enabled") {
+      console.warn(`Using Claude with ${body.model} and 'thinking.type=enabled' is deprecated. Use 'thinking.type=adaptive' instead which results in better model performance in our testing: https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking`);
+    }
+    let timeout = this._client._options.timeout;
+    if (!body.stream && timeout == null) {
+      const maxNonstreamingTokens = MODEL_NONSTREAMING_TOKENS[body.model] ?? void 0;
+      timeout = this._client.calculateNonstreamingTimeout(body.max_tokens, maxNonstreamingTokens);
+    }
+    const helperHeader = stainlessHelperHeader(body.tools, body.messages);
+    return this._client.post("/v1/messages?beta=true", {
+      body,
+      timeout: timeout ?? 6e5,
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        helperHeader,
+        options?.headers
+      ]),
+      stream: modifiedParams.stream ?? false
+    });
+  }
+  /**
+   * Send a structured list of input messages with text and/or image content, along with an expected `output_format` and
+   * the response will be automatically parsed and available in the `parsed_output` property of the message.
+   *
+   * @example
+   * ```ts
+   * const message = await client.beta.messages.parse({
+   *   model: 'claude-3-5-sonnet-20241022',
+   *   max_tokens: 1024,
+   *   messages: [{ role: 'user', content: 'What is 2+2?' }],
+   *   output_format: zodOutputFormat(z.object({ answer: z.number() }), 'math'),
+   * });
+   *
+   * console.log(message.parsed_output?.answer); // 4
+   * ```
+   */
+  parse(params, options) {
+    options = {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...params.betas ?? [], "structured-outputs-2025-12-15"].toString() },
+        options?.headers
+      ])
+    };
+    return this.create(params, options).then((message) => parseBetaMessage(message, params, { logger: this._client.logger ?? console }));
+  }
+  /**
+   * Create a Message stream
+   */
+  stream(body, options) {
+    return BetaMessageStream.createMessage(this, body, options);
+  }
+  /**
+   * Count the number of tokens in a Message.
+   *
+   * The Token Count API can be used to count the number of tokens in a Message,
+   * including tools, images, and documents, without creating it.
+   *
+   * Learn more about token counting in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/token-counting)
+   *
+   * @example
+   * ```ts
+   * const betaMessageTokensCount =
+   *   await client.beta.messages.countTokens({
+   *     messages: [{ content: 'Hello, world', role: 'user' }],
+   *     model: 'claude-opus-4-6',
+   *   });
+   * ```
+   */
+  countTokens(params, options) {
+    const modifiedParams = transformOutputFormat(params);
+    const { betas, ...body } = modifiedParams;
+    return this._client.post("/v1/messages/count_tokens?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "token-counting-2024-11-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  toolRunner(body, options) {
+    return new BetaToolRunner(this._client, body, options);
+  }
+};
+function transformOutputFormat(params) {
+  if (!params.output_format) {
+    return params;
+  }
+  if (params.output_config?.format) {
+    throw new AnthropicError("Both output_format and output_config.format were provided. Please use only output_config.format (output_format is deprecated).");
+  }
+  const { output_format, ...rest } = params;
+  return {
+    ...rest,
+    output_config: {
+      ...params.output_config,
+      format: output_format
+    }
+  };
+}
+Messages3.Batches = Batches2;
+Messages3.BetaToolRunner = BetaToolRunner;
+Messages3.ToolError = ToolError;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/sessions/events.mjs
+var Events = class extends APIResource2 {
+  /**
+   * List Events
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsSessionEvent of client.beta.sessions.events.list(
+   *   'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   * )) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(sessionID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList(path2`/v1/sessions/${sessionID}/events?beta=true`, PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Send Events
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsSendSessionEvents =
+   *   await client.beta.sessions.events.send(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *     {
+   *       events: [
+   *         {
+   *           content: [
+   *             {
+   *               text: 'Where is my order #1234?',
+   *               type: 'text',
+   *             },
+   *           ],
+   *           type: 'user.message',
+   *         },
+   *       ],
+   *     },
+   *   );
+   * ```
+   */
+  send(sessionID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/sessions/${sessionID}/events?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Stream Events
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsStreamSessionEvents =
+   *   await client.beta.sessions.events.stream(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *   );
+   * ```
+   */
+  stream(sessionID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/sessions/${sessionID}/events/stream?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ]),
+      stream: true
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/sessions/resources.mjs
+var Resources = class extends APIResource2 {
+  /**
+   * Get Session Resource
+   *
+   * @example
+   * ```ts
+   * const resource =
+   *   await client.beta.sessions.resources.retrieve(
+   *     'sesrsc_011CZkZBJq5dWxk9fVLNcPht',
+   *     { session_id: 'sesn_011CZkZAtmR3yMPDzynEDxu7' },
+   *   );
+   * ```
+   */
+  retrieve(resourceID, params, options) {
+    const { session_id, betas } = params;
+    return this._client.get(path2`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update Session Resource
+   *
+   * @example
+   * ```ts
+   * const resource =
+   *   await client.beta.sessions.resources.update(
+   *     'sesrsc_011CZkZBJq5dWxk9fVLNcPht',
+   *     {
+   *       session_id: 'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *       authorization_token: 'ghp_exampletoken',
+   *     },
+   *   );
+   * ```
+   */
+  update(resourceID, params, options) {
+    const { session_id, betas, ...body } = params;
+    return this._client.post(path2`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Session Resources
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsSessionResource of client.beta.sessions.resources.list(
+   *   'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   * )) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(sessionID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList(path2`/v1/sessions/${sessionID}/resources?beta=true`, PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Session Resource
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsDeleteSessionResource =
+   *   await client.beta.sessions.resources.delete(
+   *     'sesrsc_011CZkZBJq5dWxk9fVLNcPht',
+   *     { session_id: 'sesn_011CZkZAtmR3yMPDzynEDxu7' },
+   *   );
+   * ```
+   */
+  delete(resourceID, params, options) {
+    const { session_id, betas } = params;
+    return this._client.delete(path2`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Add Session Resource
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsFileResource =
+   *   await client.beta.sessions.resources.add(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *     {
+   *       file_id: 'file_011CNha8iCJcU1wXNR6q4V8w',
+   *       type: 'file',
+   *     },
+   *   );
+   * ```
+   */
+  add(sessionID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/sessions/${sessionID}/resources?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/sessions/sessions.mjs
+var Sessions3 = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.events = new Events(this._client);
+    this.resources = new Resources(this._client);
+  }
+  /**
+   * Create Session
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsSession =
+   *   await client.beta.sessions.create({
+   *     agent: 'agent_011CZkYpogX7uDKUyvBTophP',
+   *     environment_id: 'env_011CZkZ9X2dpNyB7HsEFoRfW',
+   *   });
+   * ```
+   */
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/sessions?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Get Session
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsSession =
+   *   await client.beta.sessions.retrieve(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *   );
+   * ```
+   */
+  retrieve(sessionID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/sessions/${sessionID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update Session
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsSession =
+   *   await client.beta.sessions.update(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *   );
+   * ```
+   */
+  update(sessionID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/sessions/${sessionID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Sessions
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsSession of client.beta.sessions.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/sessions?beta=true", PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Session
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsDeletedSession =
+   *   await client.beta.sessions.delete(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *   );
+   * ```
+   */
+  delete(sessionID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/sessions/${sessionID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Archive Session
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsSession =
+   *   await client.beta.sessions.archive(
+   *     'sesn_011CZkZAtmR3yMPDzynEDxu7',
+   *   );
+   * ```
+   */
+  archive(sessionID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.post(path2`/v1/sessions/${sessionID}/archive?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+Sessions3.Events = Events;
+Sessions3.Resources = Resources;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/skills/versions.mjs
+var Versions3 = class extends APIResource2 {
+  /**
+   * Create Skill Version
+   *
+   * @example
+   * ```ts
+   * const version = await client.beta.skills.versions.create(
+   *   'skill_id',
+   * );
+   * ```
+   */
+  create(skillID, params = {}, options) {
+    const { betas, ...body } = params ?? {};
+    return this._client.post(path2`/v1/skills/${skillID}/versions?beta=true`, multipartFormRequestOptions2({
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    }, this._client));
+  }
+  /**
+   * Get Skill Version
+   *
+   * @example
+   * ```ts
+   * const version = await client.beta.skills.versions.retrieve(
+   *   'version',
+   *   { skill_id: 'skill_id' },
+   * );
+   * ```
+   */
+  retrieve(version, params, options) {
+    const { skill_id, betas } = params;
+    return this._client.get(path2`/v1/skills/${skill_id}/versions/${version}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Skill Versions
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const versionListResponse of client.beta.skills.versions.list(
+   *   'skill_id',
+   * )) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(skillID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList(path2`/v1/skills/${skillID}/versions?beta=true`, PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Skill Version
+   *
+   * @example
+   * ```ts
+   * const version = await client.beta.skills.versions.delete(
+   *   'version',
+   *   { skill_id: 'skill_id' },
+   * );
+   * ```
+   */
+  delete(version, params, options) {
+    const { skill_id, betas } = params;
+    return this._client.delete(path2`/v1/skills/${skill_id}/versions/${version}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/skills/skills.mjs
+var Skills2 = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.versions = new Versions3(this._client);
+  }
+  /**
+   * Create Skill
+   *
+   * @example
+   * ```ts
+   * const skill = await client.beta.skills.create();
+   * ```
+   */
+  create(params = {}, options) {
+    const { betas, ...body } = params ?? {};
+    return this._client.post("/v1/skills?beta=true", multipartFormRequestOptions2({
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    }, this._client, false));
+  }
+  /**
+   * Get Skill
+   *
+   * @example
+   * ```ts
+   * const skill = await client.beta.skills.retrieve('skill_id');
+   * ```
+   */
+  retrieve(skillID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/skills/${skillID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Skills
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const skillListResponse of client.beta.skills.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/skills?beta=true", PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Skill
+   *
+   * @example
+   * ```ts
+   * const skill = await client.beta.skills.delete('skill_id');
+   * ```
+   */
+  delete(skillID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/skills/${skillID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "skills-2025-10-02"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+Skills2.Versions = Versions3;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/vaults/credentials.mjs
+var Credentials = class extends APIResource2 {
+  /**
+   * Create Credential
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsCredential =
+   *   await client.beta.vaults.credentials.create(
+   *     'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   *     {
+   *       auth: {
+   *         token: 'bearer_exampletoken',
+   *         mcp_server_url:
+   *           'https://example-server.modelcontextprotocol.io/sse',
+   *         type: 'static_bearer',
+   *       },
+   *     },
+   *   );
+   * ```
+   */
+  create(vaultID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/vaults/${vaultID}/credentials?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Get Credential
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsCredential =
+   *   await client.beta.vaults.credentials.retrieve(
+   *     'vcrd_011CZkZEMt8gZan2iYOQfSkw',
+   *     { vault_id: 'vlt_011CZkZDLs7fYzm1hXNPeRjv' },
+   *   );
+   * ```
+   */
+  retrieve(credentialID, params, options) {
+    const { vault_id, betas } = params;
+    return this._client.get(path2`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update Credential
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsCredential =
+   *   await client.beta.vaults.credentials.update(
+   *     'vcrd_011CZkZEMt8gZan2iYOQfSkw',
+   *     { vault_id: 'vlt_011CZkZDLs7fYzm1hXNPeRjv' },
+   *   );
+   * ```
+   */
+  update(credentialID, params, options) {
+    const { vault_id, betas, ...body } = params;
+    return this._client.post(path2`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Credentials
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsCredential of client.beta.vaults.credentials.list(
+   *   'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   * )) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(vaultID, params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList(path2`/v1/vaults/${vaultID}/credentials?beta=true`, PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Credential
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsDeletedCredential =
+   *   await client.beta.vaults.credentials.delete(
+   *     'vcrd_011CZkZEMt8gZan2iYOQfSkw',
+   *     { vault_id: 'vlt_011CZkZDLs7fYzm1hXNPeRjv' },
+   *   );
+   * ```
+   */
+  delete(credentialID, params, options) {
+    const { vault_id, betas } = params;
+    return this._client.delete(path2`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Archive Credential
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsCredential =
+   *   await client.beta.vaults.credentials.archive(
+   *     'vcrd_011CZkZEMt8gZan2iYOQfSkw',
+   *     { vault_id: 'vlt_011CZkZDLs7fYzm1hXNPeRjv' },
+   *   );
+   * ```
+   */
+  archive(credentialID, params, options) {
+    const { vault_id, betas } = params;
+    return this._client.post(path2`/v1/vaults/${vault_id}/credentials/${credentialID}/archive?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/vaults/vaults.mjs
+var Vaults = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.credentials = new Credentials(this._client);
+  }
+  /**
+   * Create Vault
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsVault =
+   *   await client.beta.vaults.create({
+   *     display_name: 'Example vault',
+   *   });
+   * ```
+   */
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/vaults?beta=true", {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Get Vault
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsVault =
+   *   await client.beta.vaults.retrieve(
+   *     'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   *   );
+   * ```
+   */
+  retrieve(vaultID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/vaults/${vaultID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Update Vault
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsVault =
+   *   await client.beta.vaults.update(
+   *     'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   *   );
+   * ```
+   */
+  update(vaultID, params, options) {
+    const { betas, ...body } = params;
+    return this._client.post(path2`/v1/vaults/${vaultID}?beta=true`, {
+      body,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List Vaults
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const betaManagedAgentsVault of client.beta.vaults.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/vaults?beta=true", PageCursor, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Delete Vault
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsDeletedVault =
+   *   await client.beta.vaults.delete(
+   *     'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   *   );
+   * ```
+   */
+  delete(vaultID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.delete(path2`/v1/vaults/${vaultID}?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * Archive Vault
+   *
+   * @example
+   * ```ts
+   * const betaManagedAgentsVault =
+   *   await client.beta.vaults.archive(
+   *     'vlt_011CZkZDLs7fYzm1hXNPeRjv',
+   *   );
+   * ```
+   */
+  archive(vaultID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.post(path2`/v1/vaults/${vaultID}/archive?beta=true`, {
+      ...options,
+      headers: buildHeaders2([
+        { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
+        options?.headers
+      ])
+    });
+  }
+};
+Vaults.Credentials = Credentials;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/beta/beta.mjs
+var Beta2 = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.models = new Models2(this._client);
+    this.messages = new Messages3(this._client);
+    this.agents = new Agents(this._client);
+    this.environments = new Environments(this._client);
+    this.sessions = new Sessions3(this._client);
+    this.vaults = new Vaults(this._client);
+    this.files = new Files4(this._client);
+    this.skills = new Skills2(this._client);
+  }
+};
+Beta2.Models = Models2;
+Beta2.Messages = Messages3;
+Beta2.Agents = Agents;
+Beta2.Environments = Environments;
+Beta2.Sessions = Sessions3;
+Beta2.Vaults = Vaults;
+Beta2.Files = Files4;
+Beta2.Skills = Skills2;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/completions.mjs
+var Completions3 = class extends APIResource2 {
+  create(params, options) {
+    const { betas, ...body } = params;
+    return this._client.post("/v1/complete", {
+      body,
+      timeout: this._client._options.timeout ?? 6e5,
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        options?.headers
+      ]),
+      stream: params.stream ?? false
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/parser.mjs
+function getOutputFormat2(params) {
+  return params?.output_config?.format;
+}
+function maybeParseMessage(message, params, opts) {
+  const outputFormat = getOutputFormat2(params);
+  if (!params || !("parse" in (outputFormat ?? {}))) {
+    return {
+      ...message,
+      content: message.content.map((block) => {
+        if (block.type === "text") {
+          const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
+            value: null,
+            enumerable: false
+          });
+          return parsedBlock;
+        }
+        return block;
+      }),
+      parsed_output: null
+    };
+  }
+  return parseMessage(message, params, opts);
+}
+function parseMessage(message, params, opts) {
+  let firstParsedOutput = null;
+  const content = message.content.map((block) => {
+    if (block.type === "text") {
+      const parsedOutput = parseOutputFormat(params, block.text);
+      if (firstParsedOutput === null) {
+        firstParsedOutput = parsedOutput;
+      }
+      const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
+        value: parsedOutput,
+        enumerable: false
+      });
+      return parsedBlock;
+    }
+    return block;
+  });
+  return {
+    ...message,
+    content,
+    parsed_output: firstParsedOutput
+  };
+}
+function parseOutputFormat(params, content) {
+  const outputFormat = getOutputFormat2(params);
+  if (outputFormat?.type !== "json_schema") {
+    return null;
+  }
+  try {
+    if ("parse" in outputFormat) {
+      return outputFormat.parse(content);
+    }
+    return JSON.parse(content);
+  } catch (error) {
+    throw new AnthropicError(`Failed to parse structured output: ${error}`);
+  }
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/lib/MessageStream.mjs
+var _MessageStream_instances;
+var _MessageStream_currentMessageSnapshot;
+var _MessageStream_params;
+var _MessageStream_connectedPromise;
+var _MessageStream_resolveConnectedPromise;
+var _MessageStream_rejectConnectedPromise;
+var _MessageStream_endPromise;
+var _MessageStream_resolveEndPromise;
+var _MessageStream_rejectEndPromise;
+var _MessageStream_listeners;
+var _MessageStream_ended;
+var _MessageStream_errored;
+var _MessageStream_aborted;
+var _MessageStream_catchingPromiseCreated;
+var _MessageStream_response;
+var _MessageStream_request_id;
+var _MessageStream_logger;
+var _MessageStream_getFinalMessage;
+var _MessageStream_getFinalText;
+var _MessageStream_handleError;
+var _MessageStream_beginRequest;
+var _MessageStream_addStreamEvent;
+var _MessageStream_endRequest;
+var _MessageStream_accumulateMessage;
+var JSON_BUF_PROPERTY2 = "__json_buf";
+function tracksToolInput2(content) {
+  return content.type === "tool_use" || content.type === "server_tool_use";
+}
+var MessageStream = class _MessageStream {
+  constructor(params, opts) {
+    _MessageStream_instances.add(this);
+    this.messages = [];
+    this.receivedMessages = [];
+    _MessageStream_currentMessageSnapshot.set(this, void 0);
+    _MessageStream_params.set(this, null);
+    this.controller = new AbortController();
+    _MessageStream_connectedPromise.set(this, void 0);
+    _MessageStream_resolveConnectedPromise.set(this, () => {
+    });
+    _MessageStream_rejectConnectedPromise.set(this, () => {
+    });
+    _MessageStream_endPromise.set(this, void 0);
+    _MessageStream_resolveEndPromise.set(this, () => {
+    });
+    _MessageStream_rejectEndPromise.set(this, () => {
+    });
+    _MessageStream_listeners.set(this, {});
+    _MessageStream_ended.set(this, false);
+    _MessageStream_errored.set(this, false);
+    _MessageStream_aborted.set(this, false);
+    _MessageStream_catchingPromiseCreated.set(this, false);
+    _MessageStream_response.set(this, void 0);
+    _MessageStream_request_id.set(this, void 0);
+    _MessageStream_logger.set(this, void 0);
+    _MessageStream_handleError.set(this, (error) => {
+      __classPrivateFieldSet2(this, _MessageStream_errored, true, "f");
+      if (isAbortError2(error)) {
+        error = new APIUserAbortError2();
+      }
+      if (error instanceof APIUserAbortError2) {
+        __classPrivateFieldSet2(this, _MessageStream_aborted, true, "f");
+        return this._emit("abort", error);
+      }
+      if (error instanceof AnthropicError) {
+        return this._emit("error", error);
+      }
+      if (error instanceof Error) {
+        const anthropicError = new AnthropicError(error.message);
+        anthropicError.cause = error;
+        return this._emit("error", anthropicError);
+      }
+      return this._emit("error", new AnthropicError(String(error)));
+    });
+    __classPrivateFieldSet2(this, _MessageStream_connectedPromise, new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _MessageStream_resolveConnectedPromise, resolve, "f");
+      __classPrivateFieldSet2(this, _MessageStream_rejectConnectedPromise, reject, "f");
+    }), "f");
+    __classPrivateFieldSet2(this, _MessageStream_endPromise, new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _MessageStream_resolveEndPromise, resolve, "f");
+      __classPrivateFieldSet2(this, _MessageStream_rejectEndPromise, reject, "f");
+    }), "f");
+    __classPrivateFieldGet2(this, _MessageStream_connectedPromise, "f").catch(() => {
+    });
+    __classPrivateFieldGet2(this, _MessageStream_endPromise, "f").catch(() => {
+    });
+    __classPrivateFieldSet2(this, _MessageStream_params, params, "f");
+    __classPrivateFieldSet2(this, _MessageStream_logger, opts?.logger ?? console, "f");
+  }
+  get response() {
+    return __classPrivateFieldGet2(this, _MessageStream_response, "f");
+  }
+  get request_id() {
+    return __classPrivateFieldGet2(this, _MessageStream_request_id, "f");
+  }
+  /**
+   * Returns the `MessageStream` data, the raw `Response` instance and the ID of the request,
+   * returned vie the `request-id` header which is useful for debugging requests and resporting
+   * issues to Anthropic.
+   *
+   * This is the same as the `APIPromise.withResponse()` method.
+   *
+   * This method will raise an error if you created the stream using `MessageStream.fromReadableStream`
+   * as no `Response` is available.
+   */
+  async withResponse() {
+    __classPrivateFieldSet2(this, _MessageStream_catchingPromiseCreated, true, "f");
+    const response = await __classPrivateFieldGet2(this, _MessageStream_connectedPromise, "f");
+    if (!response) {
+      throw new Error("Could not resolve a `Response` object");
+    }
+    return {
+      data: this,
+      response,
+      request_id: response.headers.get("request-id")
+    };
+  }
+  /**
+   * Intended for use on the frontend, consuming a stream produced with
+   * `.toReadableStream()` on the backend.
+   *
+   * Note that messages sent to the model do not appear in `.on('message')`
+   * in this context.
+   */
+  static fromReadableStream(stream) {
+    const runner = new _MessageStream(null);
+    runner._run(() => runner._fromReadableStream(stream));
+    return runner;
+  }
+  static createMessage(messages, params, options, { logger: logger2 } = {}) {
+    const runner = new _MessageStream(params, { logger: logger2 });
+    for (const message of params.messages) {
+      runner._addMessageParam(message);
+    }
+    __classPrivateFieldSet2(runner, _MessageStream_params, { ...params, stream: true }, "f");
+    runner._run(() => runner._createMessage(messages, { ...params, stream: true }, { ...options, headers: { ...options?.headers, "X-Stainless-Helper-Method": "stream" } }));
+    return runner;
+  }
+  _run(executor) {
+    executor().then(() => {
+      this._emitFinal();
+      this._emit("end");
+    }, __classPrivateFieldGet2(this, _MessageStream_handleError, "f"));
+  }
+  _addMessageParam(message) {
+    this.messages.push(message);
+  }
+  _addMessage(message, emit = true) {
+    this.receivedMessages.push(message);
+    if (emit) {
+      this._emit("message", message);
+    }
+  }
+  async _createMessage(messages, params, options) {
+    const signal = options?.signal;
+    let abortHandler;
+    if (signal) {
+      if (signal.aborted)
+        this.controller.abort();
+      abortHandler = this.controller.abort.bind(this.controller);
+      signal.addEventListener("abort", abortHandler);
+    }
+    try {
+      __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_beginRequest).call(this);
+      const { response, data: stream } = await messages.create({ ...params, stream: true }, { ...options, signal: this.controller.signal }).withResponse();
+      this._connected(response);
+      for await (const event of stream) {
+        __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_addStreamEvent).call(this, event);
+      }
+      if (stream.controller.signal?.aborted) {
+        throw new APIUserAbortError2();
+      }
+      __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_endRequest).call(this);
+    } finally {
+      if (signal && abortHandler) {
+        signal.removeEventListener("abort", abortHandler);
+      }
+    }
+  }
+  _connected(response) {
+    if (this.ended)
+      return;
+    __classPrivateFieldSet2(this, _MessageStream_response, response, "f");
+    __classPrivateFieldSet2(this, _MessageStream_request_id, response?.headers.get("request-id"), "f");
+    __classPrivateFieldGet2(this, _MessageStream_resolveConnectedPromise, "f").call(this, response);
+    this._emit("connect");
+  }
+  get ended() {
+    return __classPrivateFieldGet2(this, _MessageStream_ended, "f");
+  }
+  get errored() {
+    return __classPrivateFieldGet2(this, _MessageStream_errored, "f");
+  }
+  get aborted() {
+    return __classPrivateFieldGet2(this, _MessageStream_aborted, "f");
+  }
+  abort() {
+    this.controller.abort();
+  }
+  /**
+   * Adds the listener function to the end of the listeners array for the event.
+   * No checks are made to see if the listener has already been added. Multiple calls passing
+   * the same combination of event and listener will result in the listener being added, and
+   * called, multiple times.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  on(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event] || (__classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event] = []);
+    listeners.push({ listener });
+    return this;
+  }
+  /**
+   * Removes the specified listener from the listener array for the event.
+   * off() will remove, at most, one instance of a listener from the listener array. If any single
+   * listener has been added multiple times to the listener array for the specified event, then
+   * off() must be called multiple times to remove each instance.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  off(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event];
+    if (!listeners)
+      return this;
+    const index = listeners.findIndex((l) => l.listener === listener);
+    if (index >= 0)
+      listeners.splice(index, 1);
+    return this;
+  }
+  /**
+   * Adds a one-time listener function for the event. The next time the event is triggered,
+   * this listener is removed and then invoked.
+   * @returns this MessageStream, so that calls can be chained
+   */
+  once(event, listener) {
+    const listeners = __classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event] || (__classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event] = []);
+    listeners.push({ listener, once: true });
+    return this;
+  }
+  /**
+   * This is similar to `.once()`, but returns a Promise that resolves the next time
+   * the event is triggered, instead of calling a listener callback.
+   * @returns a Promise that resolves the next time given event is triggered,
+   * or rejects if an error is emitted.  (If you request the 'error' event,
+   * returns a promise that resolves with the error).
+   *
+   * Example:
+   *
+   *   const message = await stream.emitted('message') // rejects if the stream errors
+   */
+  emitted(event) {
+    return new Promise((resolve, reject) => {
+      __classPrivateFieldSet2(this, _MessageStream_catchingPromiseCreated, true, "f");
+      if (event !== "error")
+        this.once("error", reject);
+      this.once(event, resolve);
+    });
+  }
+  async done() {
+    __classPrivateFieldSet2(this, _MessageStream_catchingPromiseCreated, true, "f");
+    await __classPrivateFieldGet2(this, _MessageStream_endPromise, "f");
+  }
+  get currentMessage() {
+    return __classPrivateFieldGet2(this, _MessageStream_currentMessageSnapshot, "f");
+  }
+  /**
+   * @returns a promise that resolves with the the final assistant Message response,
+   * or rejects if an error occurred or the stream ended prematurely without producing a Message.
+   * If structured outputs were used, this will be a ParsedMessage with a `parsed_output` field.
+   */
+  async finalMessage() {
+    await this.done();
+    return __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_getFinalMessage).call(this);
+  }
+  /**
+   * @returns a promise that resolves with the the final assistant Message's text response, concatenated
+   * together if there are more than one text blocks.
+   * Rejects if an error occurred or the stream ended prematurely without producing a Message.
+   */
+  async finalText() {
+    await this.done();
+    return __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_getFinalText).call(this);
+  }
+  _emit(event, ...args) {
+    if (__classPrivateFieldGet2(this, _MessageStream_ended, "f"))
+      return;
+    if (event === "end") {
+      __classPrivateFieldSet2(this, _MessageStream_ended, true, "f");
+      __classPrivateFieldGet2(this, _MessageStream_resolveEndPromise, "f").call(this);
+    }
+    const listeners = __classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event];
+    if (listeners) {
+      __classPrivateFieldGet2(this, _MessageStream_listeners, "f")[event] = listeners.filter((l) => !l.once);
+      listeners.forEach(({ listener }) => listener(...args));
+    }
+    if (event === "abort") {
+      const error = args[0];
+      if (!__classPrivateFieldGet2(this, _MessageStream_catchingPromiseCreated, "f") && !listeners?.length) {
+        Promise.reject(error);
+      }
+      __classPrivateFieldGet2(this, _MessageStream_rejectConnectedPromise, "f").call(this, error);
+      __classPrivateFieldGet2(this, _MessageStream_rejectEndPromise, "f").call(this, error);
+      this._emit("end");
+      return;
+    }
+    if (event === "error") {
+      const error = args[0];
+      if (!__classPrivateFieldGet2(this, _MessageStream_catchingPromiseCreated, "f") && !listeners?.length) {
+        Promise.reject(error);
+      }
+      __classPrivateFieldGet2(this, _MessageStream_rejectConnectedPromise, "f").call(this, error);
+      __classPrivateFieldGet2(this, _MessageStream_rejectEndPromise, "f").call(this, error);
+      this._emit("end");
+    }
+  }
+  _emitFinal() {
+    const finalMessage = this.receivedMessages.at(-1);
+    if (finalMessage) {
+      this._emit("finalMessage", __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_getFinalMessage).call(this));
+    }
+  }
+  async _fromReadableStream(readableStream, options) {
+    const signal = options?.signal;
+    let abortHandler;
+    if (signal) {
+      if (signal.aborted)
+        this.controller.abort();
+      abortHandler = this.controller.abort.bind(this.controller);
+      signal.addEventListener("abort", abortHandler);
+    }
+    try {
+      __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_beginRequest).call(this);
+      this._connected(null);
+      const stream = Stream2.fromReadableStream(readableStream, this.controller);
+      for await (const event of stream) {
+        __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_addStreamEvent).call(this, event);
+      }
+      if (stream.controller.signal?.aborted) {
+        throw new APIUserAbortError2();
+      }
+      __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_endRequest).call(this);
+    } finally {
+      if (signal && abortHandler) {
+        signal.removeEventListener("abort", abortHandler);
+      }
+    }
+  }
+  [(_MessageStream_currentMessageSnapshot = /* @__PURE__ */ new WeakMap(), _MessageStream_params = /* @__PURE__ */ new WeakMap(), _MessageStream_connectedPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_resolveConnectedPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_rejectConnectedPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_endPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_resolveEndPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_rejectEndPromise = /* @__PURE__ */ new WeakMap(), _MessageStream_listeners = /* @__PURE__ */ new WeakMap(), _MessageStream_ended = /* @__PURE__ */ new WeakMap(), _MessageStream_errored = /* @__PURE__ */ new WeakMap(), _MessageStream_aborted = /* @__PURE__ */ new WeakMap(), _MessageStream_catchingPromiseCreated = /* @__PURE__ */ new WeakMap(), _MessageStream_response = /* @__PURE__ */ new WeakMap(), _MessageStream_request_id = /* @__PURE__ */ new WeakMap(), _MessageStream_logger = /* @__PURE__ */ new WeakMap(), _MessageStream_handleError = /* @__PURE__ */ new WeakMap(), _MessageStream_instances = /* @__PURE__ */ new WeakSet(), _MessageStream_getFinalMessage = function _MessageStream_getFinalMessage2() {
+    if (this.receivedMessages.length === 0) {
+      throw new AnthropicError("stream ended without producing a Message with role=assistant");
+    }
+    return this.receivedMessages.at(-1);
+  }, _MessageStream_getFinalText = function _MessageStream_getFinalText2() {
+    if (this.receivedMessages.length === 0) {
+      throw new AnthropicError("stream ended without producing a Message with role=assistant");
+    }
+    const textBlocks = this.receivedMessages.at(-1).content.filter((block) => block.type === "text").map((block) => block.text);
+    if (textBlocks.length === 0) {
+      throw new AnthropicError("stream ended without producing a content block with type=text");
+    }
+    return textBlocks.join(" ");
+  }, _MessageStream_beginRequest = function _MessageStream_beginRequest2() {
+    if (this.ended)
+      return;
+    __classPrivateFieldSet2(this, _MessageStream_currentMessageSnapshot, void 0, "f");
+  }, _MessageStream_addStreamEvent = function _MessageStream_addStreamEvent2(event) {
+    if (this.ended)
+      return;
+    const messageSnapshot = __classPrivateFieldGet2(this, _MessageStream_instances, "m", _MessageStream_accumulateMessage).call(this, event);
+    this._emit("streamEvent", event, messageSnapshot);
+    switch (event.type) {
+      case "content_block_delta": {
+        const content = messageSnapshot.content.at(-1);
+        switch (event.delta.type) {
+          case "text_delta": {
+            if (content.type === "text") {
+              this._emit("text", event.delta.text, content.text || "");
+            }
+            break;
+          }
+          case "citations_delta": {
+            if (content.type === "text") {
+              this._emit("citation", event.delta.citation, content.citations ?? []);
+            }
+            break;
+          }
+          case "input_json_delta": {
+            if (tracksToolInput2(content) && content.input) {
+              this._emit("inputJson", event.delta.partial_json, content.input);
+            }
+            break;
+          }
+          case "thinking_delta": {
+            if (content.type === "thinking") {
+              this._emit("thinking", event.delta.thinking, content.thinking);
+            }
+            break;
+          }
+          case "signature_delta": {
+            if (content.type === "thinking") {
+              this._emit("signature", content.signature);
+            }
+            break;
+          }
+          default:
+            checkNever2(event.delta);
+        }
+        break;
+      }
+      case "message_stop": {
+        this._addMessageParam(messageSnapshot);
+        this._addMessage(maybeParseMessage(messageSnapshot, __classPrivateFieldGet2(this, _MessageStream_params, "f"), { logger: __classPrivateFieldGet2(this, _MessageStream_logger, "f") }), true);
+        break;
+      }
+      case "content_block_stop": {
+        this._emit("contentBlock", messageSnapshot.content.at(-1));
+        break;
+      }
+      case "message_start": {
+        __classPrivateFieldSet2(this, _MessageStream_currentMessageSnapshot, messageSnapshot, "f");
+        break;
+      }
+      case "content_block_start":
+      case "message_delta":
+        break;
+    }
+  }, _MessageStream_endRequest = function _MessageStream_endRequest2() {
+    if (this.ended) {
+      throw new AnthropicError(`stream has ended, this shouldn't happen`);
+    }
+    const snapshot = __classPrivateFieldGet2(this, _MessageStream_currentMessageSnapshot, "f");
+    if (!snapshot) {
+      throw new AnthropicError(`request ended without sending any chunks`);
+    }
+    __classPrivateFieldSet2(this, _MessageStream_currentMessageSnapshot, void 0, "f");
+    return maybeParseMessage(snapshot, __classPrivateFieldGet2(this, _MessageStream_params, "f"), { logger: __classPrivateFieldGet2(this, _MessageStream_logger, "f") });
+  }, _MessageStream_accumulateMessage = function _MessageStream_accumulateMessage2(event) {
+    let snapshot = __classPrivateFieldGet2(this, _MessageStream_currentMessageSnapshot, "f");
+    if (event.type === "message_start") {
+      if (snapshot) {
+        throw new AnthropicError(`Unexpected event order, got ${event.type} before receiving "message_stop"`);
+      }
+      return event.message;
+    }
+    if (!snapshot) {
+      throw new AnthropicError(`Unexpected event order, got ${event.type} before "message_start"`);
+    }
+    switch (event.type) {
+      case "message_stop":
+        return snapshot;
+      case "message_delta":
+        snapshot.stop_reason = event.delta.stop_reason;
+        snapshot.stop_sequence = event.delta.stop_sequence;
+        snapshot.usage.output_tokens = event.usage.output_tokens;
+        if (event.usage.input_tokens != null) {
+          snapshot.usage.input_tokens = event.usage.input_tokens;
+        }
+        if (event.usage.cache_creation_input_tokens != null) {
+          snapshot.usage.cache_creation_input_tokens = event.usage.cache_creation_input_tokens;
+        }
+        if (event.usage.cache_read_input_tokens != null) {
+          snapshot.usage.cache_read_input_tokens = event.usage.cache_read_input_tokens;
+        }
+        if (event.usage.server_tool_use != null) {
+          snapshot.usage.server_tool_use = event.usage.server_tool_use;
+        }
+        return snapshot;
+      case "content_block_start":
+        snapshot.content.push({ ...event.content_block });
+        return snapshot;
+      case "content_block_delta": {
+        const snapshotContent = snapshot.content.at(event.index);
+        switch (event.delta.type) {
+          case "text_delta": {
+            if (snapshotContent?.type === "text") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                text: (snapshotContent.text || "") + event.delta.text
+              };
+            }
+            break;
+          }
+          case "citations_delta": {
+            if (snapshotContent?.type === "text") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                citations: [...snapshotContent.citations ?? [], event.delta.citation]
+              };
+            }
+            break;
+          }
+          case "input_json_delta": {
+            if (snapshotContent && tracksToolInput2(snapshotContent)) {
+              let jsonBuf = snapshotContent[JSON_BUF_PROPERTY2] || "";
+              jsonBuf += event.delta.partial_json;
+              const newContent = { ...snapshotContent };
+              Object.defineProperty(newContent, JSON_BUF_PROPERTY2, {
+                value: jsonBuf,
+                enumerable: false,
+                writable: true
+              });
+              if (jsonBuf) {
+                newContent.input = partialParse2(jsonBuf);
+              }
+              snapshot.content[event.index] = newContent;
+            }
+            break;
+          }
+          case "thinking_delta": {
+            if (snapshotContent?.type === "thinking") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                thinking: snapshotContent.thinking + event.delta.thinking
+              };
+            }
+            break;
+          }
+          case "signature_delta": {
+            if (snapshotContent?.type === "thinking") {
+              snapshot.content[event.index] = {
+                ...snapshotContent,
+                signature: event.delta.signature
+              };
+            }
+            break;
+          }
+          default:
+            checkNever2(event.delta);
+        }
+        return snapshot;
+      }
+      case "content_block_stop":
+        return snapshot;
+    }
+  }, Symbol.asyncIterator)]() {
+    const pushQueue = [];
+    const readQueue = [];
+    let done = false;
+    this.on("streamEvent", (event) => {
+      const reader = readQueue.shift();
+      if (reader) {
+        reader.resolve(event);
+      } else {
+        pushQueue.push(event);
+      }
+    });
+    this.on("end", () => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.resolve(void 0);
+      }
+      readQueue.length = 0;
+    });
+    this.on("abort", (err) => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.reject(err);
+      }
+      readQueue.length = 0;
+    });
+    this.on("error", (err) => {
+      done = true;
+      for (const reader of readQueue) {
+        reader.reject(err);
+      }
+      readQueue.length = 0;
+    });
+    return {
+      next: async () => {
+        if (!pushQueue.length) {
+          if (done) {
+            return { value: void 0, done: true };
+          }
+          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk2) => chunk2 ? { value: chunk2, done: false } : { value: void 0, done: true });
+        }
+        const chunk = pushQueue.shift();
+        return { value: chunk, done: false };
+      },
+      return: async () => {
+        this.abort();
+        return { value: void 0, done: true };
+      }
+    };
+  }
+  toReadableStream() {
+    const stream = new Stream2(this[Symbol.asyncIterator].bind(this), this.controller);
+    return stream.toReadableStream();
+  }
+};
+function checkNever2(x) {
+}
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/messages/batches.mjs
+var Batches3 = class extends APIResource2 {
+  /**
+   * Send a batch of Message creation requests.
+   *
+   * The Message Batches API can be used to process multiple Messages API requests at
+   * once. Once a Message Batch is created, it begins processing immediately. Batches
+   * can take up to 24 hours to complete.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const messageBatch = await client.messages.batches.create({
+   *   requests: [
+   *     {
+   *       custom_id: 'my-custom-id-1',
+   *       params: {
+   *         max_tokens: 1024,
+   *         messages: [
+   *           { content: 'Hello, world', role: 'user' },
+   *         ],
+   *         model: 'claude-opus-4-6',
+   *       },
+   *     },
+   *   ],
+   * });
+   * ```
+   */
+  create(body, options) {
+    return this._client.post("/v1/messages/batches", { body, ...options });
+  }
+  /**
+   * This endpoint is idempotent and can be used to poll for Message Batch
+   * completion. To access the results of a Message Batch, make a request to the
+   * `results_url` field in the response.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const messageBatch = await client.messages.batches.retrieve(
+   *   'message_batch_id',
+   * );
+   * ```
+   */
+  retrieve(messageBatchID, options) {
+    return this._client.get(path2`/v1/messages/batches/${messageBatchID}`, options);
+  }
+  /**
+   * List all Message Batches within a Workspace. Most recently created batches are
+   * returned first.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * // Automatically fetches more pages as needed.
+   * for await (const messageBatch of client.messages.batches.list()) {
+   *   // ...
+   * }
+   * ```
+   */
+  list(query = {}, options) {
+    return this._client.getAPIList("/v1/messages/batches", Page2, { query, ...options });
+  }
+  /**
+   * Delete a Message Batch.
+   *
+   * Message Batches can only be deleted once they've finished processing. If you'd
+   * like to delete an in-progress batch, you must first cancel it.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const deletedMessageBatch =
+   *   await client.messages.batches.delete('message_batch_id');
+   * ```
+   */
+  delete(messageBatchID, options) {
+    return this._client.delete(path2`/v1/messages/batches/${messageBatchID}`, options);
+  }
+  /**
+   * Batches may be canceled any time before processing ends. Once cancellation is
+   * initiated, the batch enters a `canceling` state, at which time the system may
+   * complete any in-progress, non-interruptible requests before finalizing
+   * cancellation.
+   *
+   * The number of canceled requests is specified in `request_counts`. To determine
+   * which requests were canceled, check the individual results within the batch.
+   * Note that cancellation may not result in any canceled requests if they were
+   * non-interruptible.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const messageBatch = await client.messages.batches.cancel(
+   *   'message_batch_id',
+   * );
+   * ```
+   */
+  cancel(messageBatchID, options) {
+    return this._client.post(path2`/v1/messages/batches/${messageBatchID}/cancel`, options);
+  }
+  /**
+   * Streams the results of a Message Batch as a `.jsonl` file.
+   *
+   * Each line in the file is a JSON object containing the result of a single request
+   * in the Message Batch. Results are not guaranteed to be in the same order as
+   * requests. Use the `custom_id` field to match results to requests.
+   *
+   * Learn more about the Message Batches API in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/batch-processing)
+   *
+   * @example
+   * ```ts
+   * const messageBatchIndividualResponse =
+   *   await client.messages.batches.results('message_batch_id');
+   * ```
+   */
+  async results(messageBatchID, options) {
+    const batch = await this.retrieve(messageBatchID);
+    if (!batch.results_url) {
+      throw new AnthropicError(`No batch \`results_url\`; Has it finished processing? ${batch.processing_status} - ${batch.id}`);
+    }
+    return this._client.get(batch.results_url, {
+      ...options,
+      headers: buildHeaders2([{ Accept: "application/binary" }, options?.headers]),
+      stream: true,
+      __binaryResponse: true
+    })._thenUnwrap((_, props) => JSONLDecoder.fromResponse(props.response, props.controller));
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/messages/messages.mjs
+var Messages4 = class extends APIResource2 {
+  constructor() {
+    super(...arguments);
+    this.batches = new Batches3(this._client);
+  }
+  create(body, options) {
+    if (body.model in DEPRECATED_MODELS2) {
+      console.warn(`The model '${body.model}' is deprecated and will reach end-of-life on ${DEPRECATED_MODELS2[body.model]}
+Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resources/model-deprecations for more information.`);
+    }
+    if (body.model in MODELS_TO_WARN_WITH_THINKING_ENABLED2 && body.thinking && body.thinking.type === "enabled") {
+      console.warn(`Using Claude with ${body.model} and 'thinking.type=enabled' is deprecated. Use 'thinking.type=adaptive' instead which results in better model performance in our testing: https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking`);
+    }
+    let timeout = this._client._options.timeout;
+    if (!body.stream && timeout == null) {
+      const maxNonstreamingTokens = MODEL_NONSTREAMING_TOKENS[body.model] ?? void 0;
+      timeout = this._client.calculateNonstreamingTimeout(body.max_tokens, maxNonstreamingTokens);
+    }
+    const helperHeader = stainlessHelperHeader(body.tools, body.messages);
+    return this._client.post("/v1/messages", {
+      body,
+      timeout: timeout ?? 6e5,
+      ...options,
+      headers: buildHeaders2([helperHeader, options?.headers]),
+      stream: body.stream ?? false
+    });
+  }
+  /**
+   * Send a structured list of input messages with text and/or image content, along with an expected `output_config.format` and
+   * the response will be automatically parsed and available in the `parsed_output` property of the message.
+   *
+   * @example
+   * ```ts
+   * const message = await client.messages.parse({
+   *   model: 'claude-sonnet-4-5-20250929',
+   *   max_tokens: 1024,
+   *   messages: [{ role: 'user', content: 'What is 2+2?' }],
+   *   output_config: {
+   *     format: zodOutputFormat(z.object({ answer: z.number() })),
+   *   },
+   * });
+   *
+   * console.log(message.parsed_output?.answer); // 4
+   * ```
+   */
+  parse(params, options) {
+    return this.create(params, options).then((message) => parseMessage(message, params, { logger: this._client.logger ?? console }));
+  }
+  /**
+   * Create a Message stream.
+   *
+   * If `output_config.format` is provided with a parseable format (like `zodOutputFormat()`),
+   * the final message will include a `parsed_output` property with the parsed content.
+   *
+   * @example
+   * ```ts
+   * const stream = client.messages.stream({
+   *   model: 'claude-sonnet-4-5-20250929',
+   *   max_tokens: 1024,
+   *   messages: [{ role: 'user', content: 'What is 2+2?' }],
+   *   output_config: {
+   *     format: zodOutputFormat(z.object({ answer: z.number() })),
+   *   },
+   * });
+   *
+   * const message = await stream.finalMessage();
+   * console.log(message.parsed_output?.answer); // 4
+   * ```
+   */
+  stream(body, options) {
+    return MessageStream.createMessage(this, body, options, { logger: this._client.logger ?? console });
+  }
+  /**
+   * Count the number of tokens in a Message.
+   *
+   * The Token Count API can be used to count the number of tokens in a Message,
+   * including tools, images, and documents, without creating it.
+   *
+   * Learn more about token counting in our
+   * [user guide](https://docs.claude.com/en/docs/build-with-claude/token-counting)
+   *
+   * @example
+   * ```ts
+   * const messageTokensCount =
+   *   await client.messages.countTokens({
+   *     messages: [{ content: 'Hello, world', role: 'user' }],
+   *     model: 'claude-opus-4-6',
+   *   });
+   * ```
+   */
+  countTokens(body, options) {
+    return this._client.post("/v1/messages/count_tokens", { body, ...options });
+  }
+};
+var DEPRECATED_MODELS2 = {
+  "claude-1.3": "November 6th, 2024",
+  "claude-1.3-100k": "November 6th, 2024",
+  "claude-instant-1.1": "November 6th, 2024",
+  "claude-instant-1.1-100k": "November 6th, 2024",
+  "claude-instant-1.2": "November 6th, 2024",
+  "claude-3-sonnet-20240229": "July 21st, 2025",
+  "claude-3-opus-20240229": "January 5th, 2026",
+  "claude-2.1": "July 21st, 2025",
+  "claude-2.0": "July 21st, 2025",
+  "claude-3-7-sonnet-latest": "February 19th, 2026",
+  "claude-3-7-sonnet-20250219": "February 19th, 2026",
+  "claude-3-5-haiku-latest": "February 19th, 2026",
+  "claude-3-5-haiku-20241022": "February 19th, 2026"
+};
+var MODELS_TO_WARN_WITH_THINKING_ENABLED2 = ["claude-opus-4-6"];
+Messages4.Batches = Batches3;
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/resources/models.mjs
+var Models3 = class extends APIResource2 {
+  /**
+   * Get a specific model.
+   *
+   * The Models API response can be used to determine information about a specific
+   * model or resolve a model alias to a model ID.
+   */
+  retrieve(modelID, params = {}, options) {
+    const { betas } = params ?? {};
+    return this._client.get(path2`/v1/models/${modelID}`, {
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        options?.headers
+      ])
+    });
+  }
+  /**
+   * List available models.
+   *
+   * The Models API response can be used to determine which models are available for
+   * use in the API. More recently released models are listed first.
+   */
+  list(params = {}, options) {
+    const { betas, ...query } = params ?? {};
+    return this._client.getAPIList("/v1/models", Page2, {
+      query,
+      ...options,
+      headers: buildHeaders2([
+        { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
+        options?.headers
+      ])
+    });
+  }
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/internal/utils/env.mjs
+var readEnv2 = (env) => {
+  if (typeof globalThis.process !== "undefined") {
+    return globalThis.process.env?.[env]?.trim() || void 0;
+  }
+  if (typeof globalThis.Deno !== "undefined") {
+    return globalThis.Deno.env?.get?.(env)?.trim() || void 0;
+  }
+  return void 0;
+};
+
+// ../../node_modules/.pnpm/@anthropic-ai+sdk@0.88.0_zod@3.25.76/node_modules/@anthropic-ai/sdk/client.mjs
+var _BaseAnthropic_instances;
+var _a3;
+var _BaseAnthropic_encoder;
+var _BaseAnthropic_baseURLOverridden;
+var HUMAN_PROMPT = "\\n\\nHuman:";
+var AI_PROMPT = "\\n\\nAssistant:";
+var BaseAnthropic = class {
+  /**
+   * API Client for interfacing with the Anthropic API.
+   *
+   * @param {string | null | undefined} [opts.apiKey=process.env['ANTHROPIC_API_KEY'] ?? null]
+   * @param {string | null | undefined} [opts.authToken=process.env['ANTHROPIC_AUTH_TOKEN'] ?? null]
+   * @param {string} [opts.baseURL=process.env['ANTHROPIC_BASE_URL'] ?? https://api.anthropic.com] - Override the default base URL for the API.
+   * @param {number} [opts.timeout=10 minutes] - The maximum amount of time (in milliseconds) the client will wait for a response before timing out.
+   * @param {MergedRequestInit} [opts.fetchOptions] - Additional `RequestInit` options to be passed to `fetch` calls.
+   * @param {Fetch} [opts.fetch] - Specify a custom `fetch` function implementation.
+   * @param {number} [opts.maxRetries=2] - The maximum number of times the client will retry a request.
+   * @param {HeadersLike} opts.defaultHeaders - Default headers to include with every request to the API.
+   * @param {Record<string, string | undefined>} opts.defaultQuery - Default query parameters to include with every request to the API.
+   * @param {boolean} [opts.dangerouslyAllowBrowser=false] - By default, client-side use of this library is not allowed, as it risks exposing your secret API credentials to attackers.
+   */
+  constructor({ baseURL = readEnv2("ANTHROPIC_BASE_URL"), apiKey = readEnv2("ANTHROPIC_API_KEY") ?? null, authToken = readEnv2("ANTHROPIC_AUTH_TOKEN") ?? null, ...opts } = {}) {
+    _BaseAnthropic_instances.add(this);
+    _BaseAnthropic_encoder.set(this, void 0);
+    const options = {
+      apiKey,
+      authToken,
+      ...opts,
+      baseURL: baseURL || `https://api.anthropic.com`
+    };
+    if (!options.dangerouslyAllowBrowser && isRunningInBrowser2()) {
+      throw new AnthropicError("It looks like you're running in a browser-like environment.\n\nThis is disabled by default, as it risks exposing your secret API credentials to attackers.\nIf you understand the risks and have appropriate mitigations in place,\nyou can set the `dangerouslyAllowBrowser` option to `true`, e.g.,\n\nnew Anthropic({ apiKey, dangerouslyAllowBrowser: true });\n");
+    }
+    this.baseURL = options.baseURL;
+    this.timeout = options.timeout ?? _a3.DEFAULT_TIMEOUT;
+    this.logger = options.logger ?? console;
+    const defaultLogLevel = "warn";
+    this.logLevel = defaultLogLevel;
+    this.logLevel = parseLogLevel2(options.logLevel, "ClientOptions.logLevel", this) ?? parseLogLevel2(readEnv2("ANTHROPIC_LOG"), "process.env['ANTHROPIC_LOG']", this) ?? defaultLogLevel;
+    this.fetchOptions = options.fetchOptions;
+    this.maxRetries = options.maxRetries ?? 2;
+    this.fetch = options.fetch ?? getDefaultFetch2();
+    __classPrivateFieldSet2(this, _BaseAnthropic_encoder, FallbackEncoder2, "f");
+    this._options = options;
+    this.apiKey = typeof apiKey === "string" ? apiKey : null;
+    this.authToken = authToken;
+  }
+  /**
+   * Create a new client instance re-using the same options given to the current client with optional overriding.
+   */
+  withOptions(options) {
+    const client = new this.constructor({
+      ...this._options,
+      baseURL: this.baseURL,
+      maxRetries: this.maxRetries,
+      timeout: this.timeout,
+      logger: this.logger,
+      logLevel: this.logLevel,
+      fetch: this.fetch,
+      fetchOptions: this.fetchOptions,
+      apiKey: this.apiKey,
+      authToken: this.authToken,
+      ...options
+    });
+    return client;
+  }
+  defaultQuery() {
+    return this._options.defaultQuery;
+  }
+  validateHeaders({ values, nulls }) {
+    if (values.get("x-api-key") || values.get("authorization")) {
+      return;
+    }
+    if (this.apiKey && values.get("x-api-key")) {
+      return;
+    }
+    if (nulls.has("x-api-key")) {
+      return;
+    }
+    if (this.authToken && values.get("authorization")) {
+      return;
+    }
+    if (nulls.has("authorization")) {
+      return;
+    }
+    throw new Error('Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted');
+  }
+  async authHeaders(opts) {
+    return buildHeaders2([await this.apiKeyAuth(opts), await this.bearerAuth(opts)]);
+  }
+  async apiKeyAuth(opts) {
+    if (this.apiKey == null) {
+      return void 0;
+    }
+    return buildHeaders2([{ "X-Api-Key": this.apiKey }]);
+  }
+  async bearerAuth(opts) {
+    if (this.authToken == null) {
+      return void 0;
+    }
+    return buildHeaders2([{ Authorization: `Bearer ${this.authToken}` }]);
+  }
+  /**
+   * Basic re-implementation of `qs.stringify` for primitive types.
+   */
+  stringifyQuery(query) {
+    return stringifyQuery2(query);
+  }
+  getUserAgent() {
+    return `${this.constructor.name}/JS ${VERSION2}`;
+  }
+  defaultIdempotencyKey() {
+    return `stainless-node-retry-${uuid42()}`;
+  }
+  makeStatusError(status, error, message, headers) {
+    return APIError2.generate(status, error, message, headers);
+  }
+  buildURL(path3, query, defaultBaseURL) {
+    const baseURL = !__classPrivateFieldGet2(this, _BaseAnthropic_instances, "m", _BaseAnthropic_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
+    const url = isAbsoluteURL2(path3) ? new URL(path3) : new URL(baseURL + (baseURL.endsWith("/") && path3.startsWith("/") ? path3.slice(1) : path3));
+    const defaultQuery = this.defaultQuery();
+    const pathQuery = Object.fromEntries(url.searchParams);
+    if (!isEmptyObj2(defaultQuery) || !isEmptyObj2(pathQuery)) {
+      query = { ...pathQuery, ...defaultQuery, ...query };
+    }
+    if (typeof query === "object" && query && !Array.isArray(query)) {
+      url.search = this.stringifyQuery(query);
+    }
+    return url.toString();
+  }
+  _calculateNonstreamingTimeout(maxTokens) {
+    const defaultTimeout = 10 * 60;
+    const expectedTimeout = 60 * 60 * maxTokens / 128e3;
+    if (expectedTimeout > defaultTimeout) {
+      throw new AnthropicError("Streaming is required for operations that may take longer than 10 minutes. See https://github.com/anthropics/anthropic-sdk-typescript#streaming-responses for more details");
+    }
+    return defaultTimeout * 1e3;
+  }
+  /**
+   * Used as a callback for mutating the given `FinalRequestOptions` object.
+   */
+  async prepareOptions(options) {
+  }
+  /**
+   * Used as a callback for mutating the given `RequestInit` object.
+   *
+   * This is useful for cases where you want to add certain headers based off of
+   * the request properties, e.g. `method` or `url`.
+   */
+  async prepareRequest(request, { url, options }) {
+  }
+  get(path3, opts) {
+    return this.methodRequest("get", path3, opts);
+  }
+  post(path3, opts) {
+    return this.methodRequest("post", path3, opts);
+  }
+  patch(path3, opts) {
+    return this.methodRequest("patch", path3, opts);
+  }
+  put(path3, opts) {
+    return this.methodRequest("put", path3, opts);
+  }
+  delete(path3, opts) {
+    return this.methodRequest("delete", path3, opts);
+  }
+  methodRequest(method, path3, opts) {
+    return this.request(Promise.resolve(opts).then((opts2) => {
+      return { method, path: path3, ...opts2 };
+    }));
+  }
+  request(options, remainingRetries = null) {
+    return new APIPromise2(this, this.makeRequest(options, remainingRetries, void 0));
+  }
+  async makeRequest(optionsInput, retriesRemaining, retryOfRequestLogID) {
+    const options = await optionsInput;
+    const maxRetries = options.maxRetries ?? this.maxRetries;
+    if (retriesRemaining == null) {
+      retriesRemaining = maxRetries;
+    }
+    await this.prepareOptions(options);
+    const { req, url, timeout } = await this.buildRequest(options, {
+      retryCount: maxRetries - retriesRemaining
+    });
+    await this.prepareRequest(req, { url, options });
+    const requestLogID = "log_" + (Math.random() * (1 << 24) | 0).toString(16).padStart(6, "0");
+    const retryLogStr = retryOfRequestLogID === void 0 ? "" : `, retryOf: ${retryOfRequestLogID}`;
+    const startTime = Date.now();
+    loggerFor2(this).debug(`[${requestLogID}] sending request`, formatRequestDetails2({
+      retryOfRequestLogID,
+      method: options.method,
+      url,
+      options,
+      headers: req.headers
+    }));
+    if (options.signal?.aborted) {
+      throw new APIUserAbortError2();
+    }
+    const controller = new AbortController();
+    const response = await this.fetchWithTimeout(url, req, timeout, controller).catch(castToError2);
+    const headersTime = Date.now();
+    if (response instanceof globalThis.Error) {
+      const retryMessage = `retrying, ${retriesRemaining} attempts remaining`;
+      if (options.signal?.aborted) {
+        throw new APIUserAbortError2();
+      }
+      const isTimeout = isAbortError2(response) || /timed? ?out/i.test(String(response) + ("cause" in response ? String(response.cause) : ""));
+      if (retriesRemaining) {
+        loggerFor2(this).info(`[${requestLogID}] connection ${isTimeout ? "timed out" : "failed"} - ${retryMessage}`);
+        loggerFor2(this).debug(`[${requestLogID}] connection ${isTimeout ? "timed out" : "failed"} (${retryMessage})`, formatRequestDetails2({
+          retryOfRequestLogID,
+          url,
+          durationMs: headersTime - startTime,
+          message: response.message
+        }));
+        return this.retryRequest(options, retriesRemaining, retryOfRequestLogID ?? requestLogID);
+      }
+      loggerFor2(this).info(`[${requestLogID}] connection ${isTimeout ? "timed out" : "failed"} - error; no more retries left`);
+      loggerFor2(this).debug(`[${requestLogID}] connection ${isTimeout ? "timed out" : "failed"} (error; no more retries left)`, formatRequestDetails2({
+        retryOfRequestLogID,
+        url,
+        durationMs: headersTime - startTime,
+        message: response.message
+      }));
+      if (isTimeout) {
+        throw new APIConnectionTimeoutError2();
+      }
+      throw new APIConnectionError2({ cause: response });
+    }
+    const specialHeaders = [...response.headers.entries()].filter(([name]) => name === "request-id").map(([name, value]) => ", " + name + ": " + JSON.stringify(value)).join("");
+    const responseInfo = `[${requestLogID}${retryLogStr}${specialHeaders}] ${req.method} ${url} ${response.ok ? "succeeded" : "failed"} with status ${response.status} in ${headersTime - startTime}ms`;
+    if (!response.ok) {
+      const shouldRetry = await this.shouldRetry(response);
+      if (retriesRemaining && shouldRetry) {
+        const retryMessage2 = `retrying, ${retriesRemaining} attempts remaining`;
+        await CancelReadableStream2(response.body);
+        loggerFor2(this).info(`${responseInfo} - ${retryMessage2}`);
+        loggerFor2(this).debug(`[${requestLogID}] response error (${retryMessage2})`, formatRequestDetails2({
+          retryOfRequestLogID,
+          url: response.url,
+          status: response.status,
+          headers: response.headers,
+          durationMs: headersTime - startTime
+        }));
+        return this.retryRequest(options, retriesRemaining, retryOfRequestLogID ?? requestLogID, response.headers);
+      }
+      const retryMessage = shouldRetry ? `error; no more retries left` : `error; not retryable`;
+      loggerFor2(this).info(`${responseInfo} - ${retryMessage}`);
+      const errText = await response.text().catch((err2) => castToError2(err2).message);
+      const errJSON = safeJSON2(errText);
+      const errMessage = errJSON ? void 0 : errText;
+      loggerFor2(this).debug(`[${requestLogID}] response error (${retryMessage})`, formatRequestDetails2({
+        retryOfRequestLogID,
+        url: response.url,
+        status: response.status,
+        headers: response.headers,
+        message: errMessage,
+        durationMs: Date.now() - startTime
+      }));
+      const err = this.makeStatusError(response.status, errJSON, errMessage, response.headers);
+      throw err;
+    }
+    loggerFor2(this).info(responseInfo);
+    loggerFor2(this).debug(`[${requestLogID}] response start`, formatRequestDetails2({
+      retryOfRequestLogID,
+      url: response.url,
+      status: response.status,
+      headers: response.headers,
+      durationMs: headersTime - startTime
+    }));
+    return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
+  }
+  getAPIList(path3, Page3, opts) {
+    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path3, ...opts2 })) : { method: "get", path: path3, ...opts });
+  }
+  requestAPIList(Page3, options) {
+    const request = this.makeRequest(options, null, void 0);
+    return new PagePromise2(this, request, Page3);
+  }
+  async fetchWithTimeout(url, init, ms, controller) {
+    const { signal, method, ...options } = init || {};
+    const abort = this._makeAbort(controller);
+    if (signal)
+      signal.addEventListener("abort", abort, { once: true });
+    const timeout = setTimeout(abort, ms);
+    const isReadableBody = globalThis.ReadableStream && options.body instanceof globalThis.ReadableStream || typeof options.body === "object" && options.body !== null && Symbol.asyncIterator in options.body;
+    const fetchOptions = {
+      signal: controller.signal,
+      ...isReadableBody ? { duplex: "half" } : {},
+      method: "GET",
+      ...options
+    };
+    if (method) {
+      fetchOptions.method = method.toUpperCase();
+    }
+    try {
+      return await this.fetch.call(void 0, url, fetchOptions);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  async shouldRetry(response) {
+    const shouldRetryHeader = response.headers.get("x-should-retry");
+    if (shouldRetryHeader === "true")
+      return true;
+    if (shouldRetryHeader === "false")
+      return false;
+    if (response.status === 408)
+      return true;
+    if (response.status === 409)
+      return true;
+    if (response.status === 429)
+      return true;
+    if (response.status >= 500)
+      return true;
+    return false;
+  }
+  async retryRequest(options, retriesRemaining, requestLogID, responseHeaders) {
+    let timeoutMillis;
+    const retryAfterMillisHeader = responseHeaders?.get("retry-after-ms");
+    if (retryAfterMillisHeader) {
+      const timeoutMs = parseFloat(retryAfterMillisHeader);
+      if (!Number.isNaN(timeoutMs)) {
+        timeoutMillis = timeoutMs;
+      }
+    }
+    const retryAfterHeader = responseHeaders?.get("retry-after");
+    if (retryAfterHeader && !timeoutMillis) {
+      const timeoutSeconds = parseFloat(retryAfterHeader);
+      if (!Number.isNaN(timeoutSeconds)) {
+        timeoutMillis = timeoutSeconds * 1e3;
+      } else {
+        timeoutMillis = Date.parse(retryAfterHeader) - Date.now();
+      }
+    }
+    if (timeoutMillis === void 0) {
+      const maxRetries = options.maxRetries ?? this.maxRetries;
+      timeoutMillis = this.calculateDefaultRetryTimeoutMillis(retriesRemaining, maxRetries);
+    }
+    await sleep2(timeoutMillis);
+    return this.makeRequest(options, retriesRemaining - 1, requestLogID);
+  }
+  calculateDefaultRetryTimeoutMillis(retriesRemaining, maxRetries) {
+    const initialRetryDelay = 0.5;
+    const maxRetryDelay = 8;
+    const numRetries = maxRetries - retriesRemaining;
+    const sleepSeconds = Math.min(initialRetryDelay * Math.pow(2, numRetries), maxRetryDelay);
+    const jitter = 1 - Math.random() * 0.25;
+    return sleepSeconds * jitter * 1e3;
+  }
+  calculateNonstreamingTimeout(maxTokens, maxNonstreamingTokens) {
+    const maxTime = 60 * 60 * 1e3;
+    const defaultTime = 60 * 10 * 1e3;
+    const expectedTime = maxTime * maxTokens / 128e3;
+    if (expectedTime > defaultTime || maxNonstreamingTokens != null && maxTokens > maxNonstreamingTokens) {
+      throw new AnthropicError("Streaming is required for operations that may take longer than 10 minutes. See https://github.com/anthropics/anthropic-sdk-typescript#long-requests for more details");
+    }
+    return defaultTime;
+  }
+  async buildRequest(inputOptions, { retryCount = 0 } = {}) {
+    const options = { ...inputOptions };
+    const { method, path: path3, query, defaultBaseURL } = options;
+    const url = this.buildURL(path3, query, defaultBaseURL);
+    if ("timeout" in options)
+      validatePositiveInteger2("timeout", options.timeout);
+    options.timeout = options.timeout ?? this.timeout;
+    const { bodyHeaders, body } = this.buildBody({ options });
+    const reqHeaders = await this.buildHeaders({ options: inputOptions, method, bodyHeaders, retryCount });
+    const req = {
+      method,
+      headers: reqHeaders,
+      ...options.signal && { signal: options.signal },
+      ...globalThis.ReadableStream && body instanceof globalThis.ReadableStream && { duplex: "half" },
+      ...body && { body },
+      ...this.fetchOptions ?? {},
+      ...options.fetchOptions ?? {}
+    };
+    return { req, url, timeout: options.timeout };
+  }
+  async buildHeaders({ options, method, bodyHeaders, retryCount }) {
+    let idempotencyHeaders = {};
+    if (this.idempotencyHeader && method !== "get") {
+      if (!options.idempotencyKey)
+        options.idempotencyKey = this.defaultIdempotencyKey();
+      idempotencyHeaders[this.idempotencyHeader] = options.idempotencyKey;
+    }
+    const headers = buildHeaders2([
+      idempotencyHeaders,
+      {
+        Accept: "application/json",
+        "User-Agent": this.getUserAgent(),
+        "X-Stainless-Retry-Count": String(retryCount),
+        ...options.timeout ? { "X-Stainless-Timeout": String(Math.trunc(options.timeout / 1e3)) } : {},
+        ...getPlatformHeaders2(),
+        ...this._options.dangerouslyAllowBrowser ? { "anthropic-dangerous-direct-browser-access": "true" } : void 0,
+        "anthropic-version": "2023-06-01"
+      },
+      await this.authHeaders(options),
+      this._options.defaultHeaders,
+      bodyHeaders,
+      options.headers
+    ]);
+    this.validateHeaders(headers);
+    return headers.values;
+  }
+  _makeAbort(controller) {
+    return () => controller.abort();
+  }
+  buildBody({ options: { body, headers: rawHeaders } }) {
+    if (!body) {
+      return { bodyHeaders: void 0, body: void 0 };
+    }
+    const headers = buildHeaders2([rawHeaders]);
+    if (
+      // Pass raw type verbatim
+      ArrayBuffer.isView(body) || body instanceof ArrayBuffer || body instanceof DataView || typeof body === "string" && // Preserve legacy string encoding behavior for now
+      headers.values.has("content-type") || // `Blob` is superset of `File`
+      globalThis.Blob && body instanceof globalThis.Blob || // `FormData` -> `multipart/form-data`
+      body instanceof FormData || // `URLSearchParams` -> `application/x-www-form-urlencoded`
+      body instanceof URLSearchParams || // Send chunked stream (each chunk has own `length`)
+      globalThis.ReadableStream && body instanceof globalThis.ReadableStream
+    ) {
+      return { bodyHeaders: void 0, body };
+    } else if (typeof body === "object" && (Symbol.asyncIterator in body || Symbol.iterator in body && "next" in body && typeof body.next === "function")) {
+      return { bodyHeaders: void 0, body: ReadableStreamFrom2(body) };
+    } else if (typeof body === "object" && headers.values.get("content-type") === "application/x-www-form-urlencoded") {
+      return {
+        bodyHeaders: { "content-type": "application/x-www-form-urlencoded" },
+        body: this.stringifyQuery(body)
+      };
+    } else {
+      return __classPrivateFieldGet2(this, _BaseAnthropic_encoder, "f").call(this, { body, headers });
+    }
+  }
+};
+_a3 = BaseAnthropic, _BaseAnthropic_encoder = /* @__PURE__ */ new WeakMap(), _BaseAnthropic_instances = /* @__PURE__ */ new WeakSet(), _BaseAnthropic_baseURLOverridden = function _BaseAnthropic_baseURLOverridden2() {
+  return this.baseURL !== "https://api.anthropic.com";
+};
+BaseAnthropic.Anthropic = _a3;
+BaseAnthropic.HUMAN_PROMPT = HUMAN_PROMPT;
+BaseAnthropic.AI_PROMPT = AI_PROMPT;
+BaseAnthropic.DEFAULT_TIMEOUT = 6e5;
+BaseAnthropic.AnthropicError = AnthropicError;
+BaseAnthropic.APIError = APIError2;
+BaseAnthropic.APIConnectionError = APIConnectionError2;
+BaseAnthropic.APIConnectionTimeoutError = APIConnectionTimeoutError2;
+BaseAnthropic.APIUserAbortError = APIUserAbortError2;
+BaseAnthropic.NotFoundError = NotFoundError2;
+BaseAnthropic.ConflictError = ConflictError2;
+BaseAnthropic.RateLimitError = RateLimitError2;
+BaseAnthropic.BadRequestError = BadRequestError2;
+BaseAnthropic.AuthenticationError = AuthenticationError2;
+BaseAnthropic.InternalServerError = InternalServerError2;
+BaseAnthropic.PermissionDeniedError = PermissionDeniedError2;
+BaseAnthropic.UnprocessableEntityError = UnprocessableEntityError2;
+BaseAnthropic.toFile = toFile2;
+var Anthropic = class extends BaseAnthropic {
+  constructor() {
+    super(...arguments);
+    this.completions = new Completions3(this);
+    this.messages = new Messages4(this);
+    this.models = new Models3(this);
+    this.beta = new Beta2(this);
+  }
+};
+Anthropic.Completions = Completions3;
+Anthropic.Messages = Messages4;
+Anthropic.Models = Models3;
+Anthropic.Beta = Beta2;
+
+// src/lib/anthropic-client.ts
+var CLAUDE_MODEL = "claude-sonnet-4-6";
+var claudeClientInstance = null;
+function getClaudeClient() {
+  if (!claudeClientInstance) {
+    const apiKey = process.env.AI_INTEGRATIONS_ANTHROPIC_API_KEY;
+    const baseURL = process.env.AI_INTEGRATIONS_ANTHROPIC_BASE_URL;
+    if (!apiKey) {
+      throw new Error(
+        "AI_INTEGRATIONS_ANTHROPIC_API_KEY manquant \u2014 int\xE9gration Anthropic Replit non activ\xE9e."
+      );
+    }
+    claudeClientInstance = new Anthropic({
+      apiKey,
+      ...baseURL ? { baseURL } : {}
+    });
+  }
+  return claudeClientInstance;
+}
+
+// src/lib/openai-review-client.ts
+var GPT_MODEL = "gpt-5.2";
+var gptReviewClientInstance = null;
+function getGptReviewClient() {
+  if (!gptReviewClientInstance) {
+    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+    if (!apiKey) {
+      throw new Error(
+        "AI_INTEGRATIONS_OPENAI_API_KEY manquant \u2014 int\xE9gration OpenAI Replit non activ\xE9e."
+      );
+    }
+    gptReviewClientInstance = new OpenAI({
+      apiKey,
+      ...baseURL ? { baseURL } : {}
+    });
+  }
+  return gptReviewClientInstance;
+}
+
 // src/lib/gemini-client.ts
 var GEMINI_MODEL_PRO = "gemini-2.5-pro-exp-03-25";
 var GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
@@ -39720,39 +45548,63 @@ Tu ne dois JAMAIS inventer ni supposer:
 \u2022 Toute information factuelle absente du brief client
 Si une donn\xE9e n'est pas explicitement fournie dans le brief, OMETS-LA totalement. N'invente rien, n'assume rien. Utilise uniquement ce qui est dans le brief.`;
 }
-async function reviewPromptQuality(content, brief, sectionKey) {
-  const reviewPrompt = `Tu es un expert QA senior pour des prompts cr\xE9atifs IA destin\xE9s \xE0 RoboNeo.com.
-Tu analyses des prompts g\xE9n\xE9r\xE9s par un premier mod\xE8le et tu les am\xE9liores avec une exigence maximale.
+function buildReviewPrompt(content, brief, sectionKey, agentRole) {
+  const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
+  const competitorsStr = brief.competitors ? `
+Concurrents \xE0 diff\xE9rencier : ${brief.competitors}` : "";
+  const forbiddenStr = brief.forbidden_keywords ? `
+Mots/concepts INTERDITS : ${brief.forbidden_keywords}` : "";
+  const colorsStr = brief.colors ? `
+Couleurs de la marque : ${brief.colors}` : "";
+  const targetStr = brief.target_demographic || brief.target_audience ? `
+Cible : ${brief.target_demographic || brief.target_audience}` : "";
+  return `Tu es ${agentRole} pour RoboNeo.com \u2014 plateforme de g\xE9n\xE9ration de prompts IA pour des marques professionnelles.
 
-\xC9value ce prompt (section: ${sectionKey}) pour la marque "${brief.brand_name}" (secteur: ${brief.sector}, ton: ${brief.tone}):
+\u2550\u2550\u2550 BRIEF DE LA MARQUE \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+Marque        : ${brief.brand_name}
+Secteur       : ${brief.sector}
+Ton / Voix    : ${brief.tone}
+Valeurs       : ${valuesStr}${targetStr}${competitorsStr}${colorsStr}${forbiddenStr}
+Module \xE9valu\xE9 : ${sectionKey}
+\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
+PROMPT \xC0 \xC9VALUER :
 """
 ${content}
 """
 
-CRIT\xC8RES D'\xC9VALUATION (note /10 chacun \u2014 sois strict et exigeant):
-1. Sp\xE9cificit\xE9 \xE0 la marque (nom "${brief.brand_name}" mentionn\xE9, secteur "${brief.sector}" refl\xE9t\xE9 dans chaque d\xE9tail)
-2. Pr\xE9cision technique (codes HEX exacts, dimensions px, param\xE8tres IA comme f/stop, ISO, BPM, etc.)
-3. Utilisabilit\xE9 directe dans RoboNeo (0 modification n\xE9cessaire par l'utilisateur)
-4. Richesse des d\xE9tails visuels/cr\xE9atifs (chaque \xE9l\xE9ment est d\xE9crit avec pr\xE9cision chirurgicale)
-5. Coh\xE9rence avec le ton "${brief.tone}" et la voix de marque (aucun glissement de registre)
+CRIT\xC8RES D'\xC9VALUATION (note /10 \u2014 sois STRICT, exige 9-10/10 pour valider) :
+1. Ancrage marque   \u2014 "${brief.brand_name}" est nomm\xE9, le secteur "${brief.sector}" transpara\xEEt dans chaque d\xE9tail
+2. Pr\xE9cision tech   \u2014 codes HEX, dimensions px, f/stop, ISO, BPM, ms : toutes les valeurs sont exactes
+3. Pr\xEAt \xE0 l'emploi \u2014 0 modification n\xE9cessaire, prompt directement utilisable dans RoboNeo
+4. Richesse cr\xE9ative \u2014 chaque \xE9l\xE9ment visuel/sonore/copy est d\xE9crit avec pr\xE9cision chirurgicale
+5. Voix de marque  \u2014 ton "${brief.tone}" tenu du d\xE9but \xE0 la fin, aucun mot interdit${forbiddenStr ? ` (${brief.forbidden_keywords})` : ""}
 
-R\xC8GLES D'AM\xC9LIORATION:
-\u2022 Si score < 9: proposer une version raffin\xE9e qui atteint 9-10/10
-\u2022 Ajouter les codes HEX manquants, pr\xE9ciser les valeurs vagues
-\u2022 \xC9liminer toute donn\xE9e invent\xE9e non pr\xE9sente dans le brief (dates, stats, certifications)
-\u2022 Maintenir la longueur et la structure \u2014 am\xE9liorer la pr\xE9cision, pas r\xE9duire
+R\xC8GLES D'AM\xC9LIORATION :
+\u2022 Score < 9 \u2192 g\xE9n\xE9rer une version am\xE9lior\xE9e qui atteint 9-10/10
+\u2022 Ajouter les HEX manquants, remplacer toute valeur vague par une valeur exacte
+\u2022 Ne JAMAIS inventer de donn\xE9es absentes du brief (dates, certifications, stats)
+\u2022 Maintenir la structure \u2014 am\xE9liorer la pr\xE9cision et la richesse, ne pas raccourcir
 
-R\xE9ponds en JSON valide uniquement (sans markdown):
+R\xE9ponds en JSON strictement valide (sans bloc markdown) :
 {
-  "score": <moyenne sur 10, nombre d\xE9cimal>,
-  "improvements": ["am\xE9lioration pr\xE9cise 1", "am\xE9lioration pr\xE9cise 2", "am\xE9lioration pr\xE9cise 3"],
-  "refined_prompt": "<version ultra-am\xE9lior\xE9e si score < 9, sinon copie l'original>"
+  "score": <note moyenne sur 10, 1 d\xE9cimale>,
+  "improvements": ["point pr\xE9cis 1", "point pr\xE9cis 2", "point pr\xE9cis 3"],
+  "refined_prompt": "<version am\xE9lior\xE9e compl\xE8te si score < 9, sinon copie exacte de l'original>"
 }`;
+}
+async function reviewWithGPT(content, brief, sectionKey) {
   try {
-    const response = await geminiAI.chat.completions.create({
-      model: GEMINI_MODEL_PRO,
-      messages: [{ role: "user", content: reviewPrompt }],
+    const gpt = getGptReviewClient();
+    const prompt = buildReviewPrompt(
+      content,
+      brief,
+      sectionKey,
+      "un expert en pr\xE9cision technique et coh\xE9rence IA (Agent GPT \u2014 Challenger)"
+    );
+    const response = await gpt.chat.completions.create({
+      model: GPT_MODEL,
+      messages: [{ role: "user", content: prompt }],
       max_tokens: 4096
     });
     const text = response.choices[0]?.message?.content ?? "{}";
@@ -39766,6 +45618,67 @@ R\xE9ponds en JSON valide uniquement (sans markdown):
   } catch {
     return { score: 7, refined: content, improvements: [] };
   }
+}
+async function reviewWithClaude(content, brief, sectionKey) {
+  try {
+    const claude = getClaudeClient();
+    const prompt = buildReviewPrompt(
+      content,
+      brief,
+      sectionKey,
+      "un expert en voix de marque, nuance cr\xE9ative et coh\xE9rence strat\xE9gique (Agent Claude \u2014 Critique)"
+    );
+    const message = await claude.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4096,
+      messages: [{ role: "user", content: prompt }]
+    });
+    const block = message.content[0];
+    const text = block.type === "text" ? block.text : "{}";
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const parsed = JSON.parse(clean);
+    return {
+      score: parsed.score ?? 7,
+      refined: parsed.refined_prompt ?? content,
+      improvements: parsed.improvements ?? []
+    };
+  } catch {
+    return { score: 7, refined: content, improvements: [] };
+  }
+}
+async function reviewPromptQuality(content, brief, sectionKey) {
+  const [gptResult, claudeResult] = await Promise.all([
+    reviewWithGPT(content, brief, sectionKey),
+    reviewWithClaude(content, brief, sectionKey)
+  ]);
+  console.log(
+    `[Review] ${sectionKey} \u2192 GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`
+  );
+  let winner;
+  let winnerResult;
+  if (gptResult.score < claudeResult.score) {
+    winner = "gpt";
+    winnerResult = gptResult;
+  } else if (claudeResult.score < gptResult.score) {
+    winner = "claude";
+    winnerResult = claudeResult;
+  } else {
+    winner = "tie";
+    winnerResult = claudeResult;
+  }
+  const allImprovements = [
+    ...gptResult.improvements.map((i) => `[GPT] ${i}`),
+    ...claudeResult.improvements.map((i) => `[Claude] ${i}`)
+  ].slice(0, 6);
+  const avgScore = Math.round((gptResult.score + claudeResult.score) / 2 * 10) / 10;
+  return {
+    score: avgScore,
+    refined: winnerResult.refined,
+    improvements: allImprovements,
+    gpt_score: gptResult.score,
+    claude_score: claudeResult.score,
+    winner
+  };
 }
 async function generatePersonaVariants(basePrompt, brief) {
   const response = await geminiAI.chat.completions.create({

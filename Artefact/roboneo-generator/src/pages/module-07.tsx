@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Download, Check, Brain,
   Rocket, Globe, BookOpen, CalendarDays,
-  Sparkles, ChevronDown, ChevronUp, Zap,
+  Sparkles, ExternalLink, Zap, ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,23 +13,46 @@ import BriefSummaryBanner from "@/components/brief-summary-banner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface ReviewResult {
+  refined: string;
+  score: number;
+  gpt_score: number;
+  claude_score: number;
+  winner: "gpt" | "claude" | "tie";
+  improvements: string[];
+}
+
 interface SectionResult {
   key: string;
   label: string;
   agent: string;
   data: Record<string, unknown>;
   rawContent: string;
+  reviewResult?: ReviewResult;
+}
+
+interface SectionState {
+  label: string;
+  agent: string;
+  buffer: string;
+  data: Record<string, unknown>;
+  done: boolean;
+  reviewing: boolean;
+  reviewResult?: ReviewResult;
+  reviewError?: string;
 }
 
 interface StreamState {
-  sections: Record<string, {
-    label: string;
-    agent: string;
-    buffer: string;
-    data: Record<string, unknown>;
-    done: boolean;
-  }>;
+  sections: Record<string, SectionState>;
   activeSection: string | null;
+}
+
+interface RecommendedModel {
+  name: string;
+  icon: string;
+  why: string;
+  url: string;
+  badge?: string;
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -49,37 +72,45 @@ const SECTION_COLORS: Record<string, string> = {
 };
 
 const SECTION_LABELS: Record<string, string> = {
-  landing_page: "Landing Page — Prompt IA + Cahier des Charges",
+  landing_page: "Landing Page — Prompt IA + Cahier des Charges GOD-TIER",
   user_guide: "Guide d'Utilisation",
   calendar: "Calendrier 30 Jours",
 };
 
-// ─── Rendu spécialisé par section ────────────────────────────────────────────
+// ─── Landing Page View ────────────────────────────────────────────────────────
 
-function LandingPageView({ data, streamBuffer, streaming, isActive, brief }: {
+function LandingPageView({
+  data,
+  streamBuffer,
+  streaming,
+  isActive,
+  reviewing,
+  reviewResult,
+  reviewError,
+  brief,
+}: {
   data: Record<string, unknown>;
   streamBuffer: string;
   streaming: boolean;
   isActive: boolean;
+  reviewing: boolean;
+  reviewResult?: ReviewResult;
+  reviewError?: string;
   brief: Record<string, unknown>;
 }) {
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
-  const [copiedCdc, setCopiedCdc] = useState(false);
-  const [expandedCdc, setExpandedCdc] = useState(false);
-  const [isImproving, setIsImproving] = useState(false);
-  const [improvedData, setImprovedData] = useState<{
-    refined: string;
-    score: number;
-    winner: "gpt" | "claude" | "tie";
-    improvements: string[];
-  } | null>(null);
+  const [copiedDoc, setCopiedDoc] = useState(false);
+  const [copiedFinal, setCopiedFinal] = useState(false);
   const { toast } = useToast();
 
-  const aiPrompt = (data.ai_prompt as string) ?? "";
-  const cahier = data.cahier_des_charges as Record<string, unknown> | undefined;
+  const combinedDocument = (data.combined_document as string) ?? "";
+  const recommendedModels = (data.recommended_models as RecommendedModel[]) ?? [];
   const meta = data.meta as Record<string, unknown> | undefined;
 
-  if (streaming && isActive && !aiPrompt) {
+  // Active content: if review done, use refined; otherwise use Cerebras output
+  const activeDocument = reviewResult?.refined ?? combinedDocument;
+
+  // ── Loading state ──
+  if (streaming && isActive && !combinedDocument) {
     return (
       <div className="bg-black/30 rounded-md p-4 h-44 overflow-y-auto font-mono text-xs text-foreground/80 leading-relaxed border border-white/5 whitespace-pre-wrap">
         {streamBuffer}
@@ -88,7 +119,7 @@ function LandingPageView({ data, streamBuffer, streaming, isActive, brief }: {
     );
   }
 
-  if (!aiPrompt && !cahier) {
+  if (!combinedDocument) {
     return (
       <div className="bg-black/30 rounded-md p-4 h-32 flex items-center justify-center border border-white/5">
         <span className="text-muted-foreground/40 italic text-sm">En attente de génération...</span>
@@ -96,79 +127,177 @@ function LandingPageView({ data, streamBuffer, streaming, isActive, brief }: {
     );
   }
 
-  const activePrompt = improvedData?.refined ?? aiPrompt;
-
-  const handleCopyPrompt = async () => {
-    await navigator.clipboard.writeText(activePrompt);
-    setCopiedPrompt(true);
-    toast({ title: "Prompt IA copié !" });
-    setTimeout(() => setCopiedPrompt(false), 2000);
+  const handleCopyDoc = async () => {
+    await navigator.clipboard.writeText(combinedDocument);
+    setCopiedDoc(true);
+    toast({ title: "Document Cerebras copié !" });
+    setTimeout(() => setCopiedDoc(false), 2000);
   };
 
-  const handleCopyCdc = async () => {
-    const txt = cahier ? JSON.stringify(cahier, null, 2) : "";
-    await navigator.clipboard.writeText(txt);
-    setCopiedCdc(true);
-    toast({ title: "Cahier des charges copié !" });
-    setTimeout(() => setCopiedCdc(false), 2000);
+  const handleCopyFinal = async () => {
+    await navigator.clipboard.writeText(activeDocument);
+    setCopiedFinal(true);
+    toast({ title: "✨ Document GOD-TIER copié !" });
+    setTimeout(() => setCopiedFinal(false), 2000);
   };
 
   const handleDownload = () => {
-    const content = `# LANDING PAGE — PROMPT IA + CAHIER DES CHARGES\n# ${brief.brand_name ?? ""} — ${brief.product_name ?? ""}\n\n${"=".repeat(70)}\n## PROMPT IA (coller dans v0.dev / Cursor / Claude Artifacts)\n${"=".repeat(70)}\n\n${activePrompt}\n\n${"=".repeat(70)}\n## CAHIER DES CHARGES COMPLET\n${"=".repeat(70)}\n\n${cahier ? JSON.stringify(cahier, null, 2) : ""}`;
+    const header = `# LANDING PAGE — PROMPT IA + CAHIER DES CHARGES GOD-TIER\n# ${brief.brand_name ?? ""} — ${brief.product_name ?? ""}\n# Généré par Neo Branding Studio\n${"=".repeat(70)}\n\n`;
+    const reviewSection = reviewResult
+      ? `${"=".repeat(70)}\n# REVUE GPT + CLAUDE — Score: ${reviewResult.score}/10 — Gagnant: ${reviewResult.winner.toUpperCase()}\n# GPT: ${reviewResult.gpt_score}/10 | Claude: ${reviewResult.claude_score}/10\n${"=".repeat(70)}\n\nAméliorations appliquées:\n${reviewResult.improvements.map((i) => `• ${i}`).join("\n")}\n\n`
+      : "";
+    const content = header + reviewSection + activeDocument;
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(content);
-    a.download = `landing_page_cahier_charges_${String(brief.brand_name ?? "brand").toLowerCase().replace(/\s+/g, "_")}.txt`;
+    a.download = `landing_page_god_tier_${String(brief.brand_name ?? "brand").toLowerCase().replace(/\s+/g, "_")}.txt`;
     a.click();
   };
 
-  const handleImprove = async () => {
-    if (!aiPrompt) return;
-    setIsImproving(true);
-    try {
-      const res = await fetch(`${import.meta.env.BASE_URL}api/openai/review-prompt`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: activePrompt,
-          section_key: "landing_page_cahier_des_charges",
-          brand_name: brief.brand_name,
-          sector: brief.sector,
-          tone: brief.tone,
-          values: brief.values,
-          target_demographic: brief.target_demographic,
-          competitors: brief.competitors,
-          forbidden_keywords: brief.forbidden_keywords,
-          colors: brief.primary_color,
-        }),
-      });
-      if (!res.ok) throw new Error("Erreur API amélioration");
-      const result = await res.json() as {
-        refined: string;
-        score: number;
-        winner: "gpt" | "claude" | "tie";
-        improvements: string[];
-      };
-      setImprovedData(result);
-      toast({
-        title: `✨ Amélioré par ${result.winner === "gpt" ? "GPT" : result.winner === "claude" ? "Claude" : "GPT + Claude"} — Score ${result.score}/10`,
-        description: `${result.improvements.length} améliorations appliquées`,
-      });
-    } catch {
-      toast({ title: "Erreur amélioration", description: "GPT et Claude n'ont pas pu améliorer le prompt.", variant: "destructive" });
-    } finally {
-      setIsImproving(false);
-    }
-  };
+  const winnerBadgeStyle =
+    reviewResult?.winner === "gpt"
+      ? "text-green-400 border-green-500/30 bg-green-500/10"
+      : reviewResult?.winner === "claude"
+      ? "text-purple-400 border-purple-500/30 bg-purple-500/10"
+      : "text-blue-400 border-blue-500/30 bg-blue-500/10";
 
-  const winnerColor = improvedData?.winner === "gpt"
-    ? "text-green-400 border-green-500/30 bg-green-500/10"
-    : improvedData?.winner === "claude"
-    ? "text-purple-400 border-purple-500/30 bg-purple-500/10"
-    : "text-blue-400 border-blue-500/30 bg-blue-500/10";
+  const winnerLabel =
+    reviewResult?.winner === "gpt"
+      ? "🤖 GPT Challenger"
+      : reviewResult?.winner === "claude"
+      ? "🟣 Claude Critique"
+      : "🤖 GPT + 🟣 Claude";
 
   return (
     <div className="space-y-4">
-      {/* Meta SEO */}
+
+      {/* ── Modèles IA recommandés ─────────────────────────────────────────── */}
+      {recommendedModels.length > 0 && (
+        <div>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Zap className="w-3 h-3 text-blue-400" />
+            Modèles IA idéaux pour ce document
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {recommendedModels.map((model) => (
+              <a
+                key={model.name}
+                href={model.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col gap-1 bg-black/30 hover:bg-blue-500/10 border border-white/5 hover:border-blue-500/30 rounded-lg p-3 transition-all cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base leading-none">{model.icon}</span>
+                    <span className="text-sm font-semibold text-foreground group-hover:text-blue-300 transition-colors">
+                      {model.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {model.badge && (
+                      <span className="text-[9px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                        {model.badge}
+                      </span>
+                    )}
+                    <ExternalLink className="w-3 h-3 text-muted-foreground/40 group-hover:text-blue-400 transition-colors" />
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground/70 leading-snug">{model.why}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Review en cours ────────────────────────────────────────────────── */}
+      {reviewing && (
+        <motion.div
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-purple-500/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10"
+        >
+          <Brain className="w-4 h-4 text-purple-400 animate-pulse flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-foreground">GPT Challenger + Claude Critique en débat...</p>
+            <p className="text-xs text-muted-foreground">Analyse et réécriture vers le niveau 10/10 — GOD TIER</p>
+          </div>
+          <div className="ml-auto flex gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Badge winner après review ──────────────────────────────────────── */}
+      {reviewResult && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="space-y-2"
+        >
+          <div className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border text-sm font-semibold ${winnerBadgeStyle}`}>
+            <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+            <span>
+              GOD TIER — Amélioré par {winnerLabel} — Score final {reviewResult.score}/10
+              <span className="ml-2 text-[11px] font-normal opacity-70">
+                (GPT: {reviewResult.gpt_score}/10 · Claude: {reviewResult.claude_score}/10)
+              </span>
+            </span>
+          </div>
+
+          {reviewResult.improvements.length > 0 && (
+            <div className="bg-black/20 rounded-lg p-3 border border-white/5 space-y-1">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Améliorations appliquées</p>
+              {reviewResult.improvements.map((imp, i) => (
+                <p key={i} className="text-xs text-foreground/70 flex gap-2">
+                  <span className="text-green-400 flex-shrink-0">✓</span>
+                  <span>{imp}</span>
+                </p>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* ── Review error ───────────────────────────────────────────────────── */}
+      {reviewError && !reviewResult && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-yellow-500/20 bg-yellow-500/5 text-xs text-yellow-400">
+          <span>⚠</span>
+          <span>{reviewError} — Document original conservé.</span>
+        </div>
+      )}
+
+      {/* ── Document principal ─────────────────────────────────────────────── */}
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            {reviewResult ? "Document GOD-TIER — Prêt à exécuter" : "Document Cerebras — Génération en cours"}
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={reviewResult ? handleCopyFinal : handleCopyDoc}
+            className="h-7 text-xs text-muted-foreground hover:text-blue-400"
+          >
+            {(reviewResult ? copiedFinal : copiedDoc) ? (
+              <Check className="w-3.5 h-3.5 mr-1 text-green-500" />
+            ) : (
+              <Copy className="w-3.5 h-3.5 mr-1" />
+            )}
+            {reviewResult ? "Copier GOD-TIER" : "Copier document"}
+          </Button>
+        </div>
+        <div className="bg-black/40 rounded-lg p-4 h-64 overflow-y-auto text-sm text-foreground/80 leading-relaxed border border-blue-500/10 whitespace-pre-wrap font-mono">
+          {activeDocument}
+          {reviewing && !reviewResult && (
+            <span className="inline-block w-2 h-4 bg-purple-400/60 animate-pulse ml-0.5 align-middle" />
+          )}
+        </div>
+      </div>
+
+      {/* ── Meta SEO ───────────────────────────────────────────────────────── */}
       {meta && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {meta.title && (
@@ -186,183 +315,23 @@ function LandingPageView({ data, streamBuffer, streaming, isActive, brief }: {
         </div>
       )}
 
-      {/* Outils recommandés */}
-      {(meta?.recommended_tools as string[] | undefined) && (
-        <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Outils IA :</span>
-          {(meta!.recommended_tools as string[]).map((tool) => (
-            <span key={tool} className="text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-medium">
-              {tool}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Badge winner si amélioré */}
-      {improvedData && (
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium ${winnerColor}`}>
-          <Sparkles className="w-4 h-4" />
-          <span>
-            GOD TIER — Amélioré par {improvedData.winner === "gpt" ? "🤖 GPT Challenger" : improvedData.winner === "claude" ? "🟣 Claude Critique" : "🤖 GPT + 🟣 Claude"} — Score {improvedData.score}/10
-          </span>
-        </div>
-      )}
-
-      {/* Améliorations appliquées */}
-      {improvedData && improvedData.improvements.length > 0 && (
-        <div className="bg-black/20 rounded-lg p-3 border border-white/5 space-y-1">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Améliorations appliquées</p>
-          {improvedData.improvements.map((imp, i) => (
-            <p key={i} className="text-xs text-foreground/70 flex gap-2">
-              <span className="text-green-400 flex-shrink-0">✓</span>
-              <span>{imp}</span>
-            </p>
-          ))}
-        </div>
-      )}
-
-      {/* Prompt IA */}
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5" /> Prompt IA — Prêt à coller
-          </p>
-          <Button variant="ghost" size="sm" onClick={handleCopyPrompt} className="h-7 text-xs text-muted-foreground hover:text-blue-400">
-            {copiedPrompt ? <Check className="w-3.5 h-3.5 mr-1 text-green-500" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
-            Copier prompt
-          </Button>
-        </div>
-        <div className="bg-black/40 rounded-lg p-4 h-40 overflow-y-auto text-sm text-foreground/80 leading-relaxed border border-blue-500/10 whitespace-pre-wrap font-mono">
-          {activePrompt}
-        </div>
-      </div>
-
-      {/* Cahier des charges */}
-      {cahier && (
-        <div>
-          <button
-            onClick={() => setExpandedCdc(!expandedCdc)}
-            className="w-full flex items-center justify-between text-xs font-semibold text-foreground/70 uppercase tracking-wider hover:text-foreground transition-colors py-1.5"
-          >
-            <span className="flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-              Cahier des charges complet
-            </span>
-            {expandedCdc ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-
-          {expandedCdc && (
-            <div className="mt-2 space-y-3">
-              {/* Objectif stratégique */}
-              {cahier.objectif_strategique && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-1">🎯 Objectif stratégique</p>
-                  <p className="text-sm text-foreground/80">{cahier.objectif_strategique as string}</p>
-                </div>
-              )}
-
-              {/* Architecture */}
-              {cahier.architecture_page && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-2">🏗 Architecture de la page</p>
-                  {(cahier.architecture_page as Record<string, unknown>).above_fold && (
-                    <div className="mb-2">
-                      <p className="text-[10px] text-muted-foreground mb-0.5">Above the fold</p>
-                      <p className="text-xs text-foreground/70">{(cahier.architecture_page as any).above_fold}</p>
-                    </div>
-                  )}
-                  {Array.isArray((cahier.architecture_page as any).sections_ordonnees) && (
-                    <div className="space-y-0.5 mt-2">
-                      {((cahier.architecture_page as any).sections_ordonnees as string[]).map((s, i) => (
-                        <p key={i} className="text-xs text-foreground/70 border-l-2 border-blue-500/30 pl-2">{s}</p>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Copywriting */}
-              {cahier.copywriting_exact && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-2">✍️ Copywriting exact</p>
-                  {Object.entries(cahier.copywriting_exact as Record<string, string>).map(([k, v]) => (
-                    <div key={k} className="mb-1.5">
-                      <p className="text-[10px] text-muted-foreground capitalize">{k.replace(/_/g, " ")}</p>
-                      <p className="text-xs text-foreground/80 font-medium">"{v}"</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Design system */}
-              {cahier.design_system && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-2">🎨 Design System</p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {Object.entries(cahier.design_system as Record<string, string>).map(([k, v]) => (
-                      <div key={k}>
-                        <p className="text-[10px] text-muted-foreground capitalize">{k.replace(/_/g, " ")}</p>
-                        <p className="text-xs text-foreground/70 font-mono">{v}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Éléments de conversion */}
-              {cahier.elements_conversion && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-2">🔥 Éléments de conversion</p>
-                  {Object.entries(cahier.elements_conversion as Record<string, string>).map(([k, v]) => (
-                    <div key={k} className="mb-1.5">
-                      <p className="text-[10px] text-muted-foreground capitalize">{k.replace(/_/g, " ")}</p>
-                      <p className="text-xs text-foreground/70">{v}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Checklist lancement */}
-              {Array.isArray(cahier.checklist_lancement) && (
-                <div className="bg-black/20 rounded-lg p-3 border border-white/5">
-                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-2">✅ Checklist de lancement</p>
-                  <div className="space-y-0.5">
-                    {(cahier.checklist_lancement as string[]).map((item, i) => (
-                      <p key={i} className="text-xs text-foreground/70">{item}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Actions */}
+      {/* ── Actions ────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-2 pt-1">
         <Button
-          onClick={handleImprove}
-          disabled={isImproving || !aiPrompt}
+          variant="outline"
           size="sm"
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white border-0 font-semibold"
+          onClick={handleDownload}
+          disabled={!activeDocument}
+          className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
         >
-          {isImproving ? (
-            <><Brain className="w-3.5 h-3.5 mr-1.5 animate-pulse" /> GPT + Claude améliorent...</>
-          ) : (
-            <><Sparkles className="w-3.5 h-3.5 mr-1.5" /> Améliorer — GOD TIER</>
-          )}
-        </Button>
-        <Button variant="outline" size="sm" onClick={handleCopyCdc} className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
-          {copiedCdc ? <Check className="w-3.5 h-3.5 mr-1.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 mr-1.5" />}
-          Copier CDC
-        </Button>
-        <Button variant="outline" size="sm" onClick={handleDownload} className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
           <Download className="w-3.5 h-3.5 mr-1.5" /> Télécharger .txt
         </Button>
       </div>
     </div>
   );
 }
+
+// ─── User Guide View ──────────────────────────────────────────────────────────
 
 function UserGuideView({ data, streamBuffer, streaming, isActive }: {
   data: Record<string, unknown>;
@@ -461,6 +430,8 @@ function UserGuideView({ data, streamBuffer, streaming, isActive }: {
     </div>
   );
 }
+
+// ─── Calendar View ────────────────────────────────────────────────────────────
 
 function CalendarView({ data, streamBuffer, streaming, isActive }: {
   data: Record<string, unknown>;
@@ -589,8 +560,6 @@ function CalendarView({ data, streamBuffer, streaming, isActive }: {
   );
 }
 
-// ─── Formulaire ───────────────────────────────────────────────────────────────
-
 // ─── Composant principal ──────────────────────────────────────────────────────
 
 export default function Module07() {
@@ -604,7 +573,11 @@ export default function Module07() {
 
   const onSubmit = async () => {
     if (!brief.brand_name || !brief.product_name) {
-      toast({ title: "Brief incomplet", description: "Remplissez au minimum le nom de marque et le produit dans le Brief Global.", variant: "destructive" });
+      toast({
+        title: "Brief incomplet",
+        description: "Remplissez au minimum le nom de marque et le produit dans le Brief Global.",
+        variant: "destructive",
+      });
       return;
     }
     setIsGenerating(true);
@@ -623,6 +596,11 @@ export default function Module07() {
           product_name: brief.product_name,
           sector: brief.sector,
           tone: brief.tone,
+          values: brief.values,
+          target_demographic: brief.target_demographic,
+          competitors: brief.competitors,
+          forbidden_keywords: brief.forbidden_keywords,
+          colors: brief.primary_color,
           product_description: brief.product_description,
           features: toList(brief.product_features),
           benefits: toList(brief.benefits),
@@ -657,14 +635,23 @@ export default function Module07() {
           if (!line.startsWith("data: ")) continue;
           try {
             const event = JSON.parse(line.slice(6));
+
             if (event.type === "section_start") {
               setStreamState((p) => ({
                 activeSection: event.key,
                 sections: {
                   ...p.sections,
-                  [event.key]: { label: event.label, agent: event.agent, buffer: "", data: {}, done: false },
+                  [event.key]: {
+                    label: event.label,
+                    agent: event.agent,
+                    buffer: "",
+                    data: {},
+                    done: false,
+                    reviewing: false,
+                  },
                 },
               }));
+
             } else if (event.type === "chunk") {
               setStreamState((p) => ({
                 ...p,
@@ -676,6 +663,7 @@ export default function Module07() {
                   },
                 },
               }));
+
             } else if (event.type === "section_done") {
               const sec: SectionResult = {
                 key: event.key,
@@ -684,21 +672,105 @@ export default function Module07() {
                 data: event.data ?? {},
                 rawContent: event.rawContent ?? "",
               };
-              finalSections.push(sec);
+              if (event.key !== "landing_page") {
+                finalSections.push(sec);
+              }
               setStreamState((p) => ({
                 activeSection: null,
                 sections: {
                   ...p.sections,
                   [event.key]: {
-                    label: event.label, agent: event.agent,
-                    buffer: "", data: event.data ?? {}, done: true,
+                    label: event.label,
+                    agent: event.agent,
+                    buffer: "",
+                    data: event.data ?? {},
+                    done: event.key !== "landing_page",
+                    reviewing: false,
                   },
                 },
               }));
+
+            } else if (event.type === "review_start") {
+              setStreamState((p) => ({
+                ...p,
+                sections: {
+                  ...p.sections,
+                  [event.key]: {
+                    ...p.sections[event.key],
+                    reviewing: true,
+                  },
+                },
+              }));
+
+            } else if (event.type === "review_done") {
+              const reviewResult: ReviewResult = {
+                refined: event.refined,
+                score: event.score,
+                gpt_score: event.gpt_score,
+                claude_score: event.claude_score,
+                winner: event.winner,
+                improvements: event.improvements,
+              };
+              setStreamState((p) => ({
+                ...p,
+                sections: {
+                  ...p.sections,
+                  [event.key]: {
+                    ...p.sections[event.key],
+                    reviewing: false,
+                    done: true,
+                    reviewResult,
+                  },
+                },
+              }));
+              // Also push final section to results
+              const prevSec = finalSections.find((s) => s.key === event.key);
+              const baseData = prevSec?.data ?? {};
+              const sec: SectionResult = {
+                key: event.key,
+                label: streamState.sections[event.key]?.label ?? "",
+                agent: streamState.sections[event.key]?.agent ?? "",
+                data: baseData,
+                rawContent: event.refined,
+                reviewResult,
+              };
+              finalSections.push(sec);
+
+            } else if (event.type === "review_error") {
+              setStreamState((p) => ({
+                ...p,
+                sections: {
+                  ...p.sections,
+                  [event.key]: {
+                    ...p.sections[event.key],
+                    reviewing: false,
+                    done: true,
+                    reviewError: event.message,
+                  },
+                },
+              }));
+              const baseData = {};
+              finalSections.push({
+                key: event.key,
+                label: streamState.sections[event.key]?.label ?? "",
+                agent: streamState.sections[event.key]?.agent ?? "",
+                data: baseData,
+                rawContent: "",
+              });
+
             } else if (event.type === "section_error") {
               setStreamState((p) => ({
-                ...p, activeSection: null,
-                sections: { ...p.sections, [event.key]: { ...p.sections[event.key], done: true, data: {} } },
+                ...p,
+                activeSection: null,
+                sections: {
+                  ...p.sections,
+                  [event.key]: {
+                    ...p.sections[event.key],
+                    done: true,
+                    reviewing: false,
+                    data: {},
+                  },
+                },
               }));
             }
           } catch {}
@@ -706,7 +778,10 @@ export default function Module07() {
       }
 
       setSections(finalSections);
-      toast({ title: "Module 07 — Launch Ready généré !", description: "Landing page, guide et calendrier 30 jours prêts." });
+      toast({
+        title: "Module 07 — Launch Ready généré !",
+        description: "Landing page GOD-TIER, guide et calendrier 30 jours prêts.",
+      });
     } catch {
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
     } finally {
@@ -714,14 +789,19 @@ export default function Module07() {
     }
   };
 
-  const allDone = sections.length === SECTION_ORDER.length;
+  const allDone = SECTION_ORDER.every((k) => streamState.sections[k]?.done);
 
   const handleDownloadAll = () => {
     if (!sections.length) return;
     let txt = `================================================================================\nPACK MODULE 07 — LAUNCH READY — NEO BRANDING STUDIO\nMarque: ${brief.brand_name} | Produit: ${brief.product_name} | Généré le: ${new Date().toLocaleString("fr-FR")}\n================================================================================\n\n`;
     for (const sec of sections) {
       txt += `\n${"=".repeat(60)}\n${sec.label.toUpperCase()}\nAgent: ${sec.agent}\n${"=".repeat(60)}\n\n`;
-      txt += sec.rawContent + "\n";
+      if (sec.reviewResult) {
+        txt += `[GPT: ${sec.reviewResult.gpt_score}/10 | Claude: ${sec.reviewResult.claude_score}/10 | Score final: ${sec.reviewResult.score}/10 | Gagnant: ${sec.reviewResult.winner.toUpperCase()}]\n\n`;
+        txt += sec.reviewResult.refined + "\n";
+      } else {
+        txt += sec.rawContent + "\n";
+      }
     }
     const a = document.createElement("a");
     a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
@@ -731,7 +811,15 @@ export default function Module07() {
 
   const handleDownloadJSON = () => {
     if (!sections.length) return;
-    const output = { generated_at: new Date().toISOString(), brand_name: brief.brand_name, product_name: brief.product_name, sections };
+    const output = {
+      generated_at: new Date().toISOString(),
+      brand_name: brief.brand_name,
+      product_name: brief.product_name,
+      sections: sections.map((s) => ({
+        ...s,
+        final_document: s.reviewResult?.refined ?? s.rawContent,
+      })),
+    };
     const a = document.createElement("a");
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output, null, 2));
     a.download = `launch_pack_${brief.brand_name.toLowerCase()}.json`;
@@ -747,7 +835,7 @@ export default function Module07() {
             <CardHeader>
               <CardTitle className="text-2xl text-foreground">Launch Ready</CardTitle>
               <CardDescription>
-                Génère un <strong>Prompt IA + Cahier des Charges GOD-TIER</strong> pour votre landing page (prêt pour v0.dev, Cursor AI, Framer…), un guide stratégique et un calendrier 30 jours personnalisé. Bouton "Améliorer" pour optimiser le CDC avec GPT + Claude jusqu'au niveau parfait.
+                Génère un <strong>Prompt IA + Cahier des Charges GOD-TIER fusionnés</strong> pour votre landing page — prêt à coller directement dans v0.dev, Cursor, Claude ou Framer. GPT Challenger + Claude Critique améliorent automatiquement le document vers le niveau 10/10. Inclut un guide stratégique et un calendrier 30 jours personnalisé.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -770,7 +858,15 @@ export default function Module07() {
               <p className="text-sm text-muted-foreground">{brief.sector} · Ton {brief.tone} · {brief.price}€</p>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" size="sm" onClick={() => { setShowResults(false); setSections([]); setStreamState({ sections: {}, activeSection: null }); }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowResults(false);
+                  setSections([]);
+                  setStreamState({ sections: {}, activeSection: null });
+                }}
+              >
                 ← Nouveau brief
               </Button>
               {allDone && (
@@ -791,6 +887,7 @@ export default function Module07() {
             const sec = streamState.sections[key];
             const isActive = streamState.activeSection === key;
             const isDone = sec?.done ?? false;
+            const isReviewing = sec?.reviewing ?? false;
             const sectionData = sec?.data ?? {};
 
             return (
@@ -803,7 +900,7 @@ export default function Module07() {
                 {/* Section header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${isDone ? "bg-primary/20" : isActive ? "bg-white/10 animate-pulse" : "bg-white/5"}`}>
+                    <div className={`p-2 rounded-lg ${isDone ? "bg-primary/20" : isActive || isReviewing ? "bg-white/10 animate-pulse" : "bg-white/5"}`}>
                       {SECTION_ICONS[key]}
                     </div>
                     <div>
@@ -812,12 +909,18 @@ export default function Module07() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isActive && (
-                      <span className="text-xs text-primary animate-pulse font-medium">Génération...</span>
+                    {isActive && !isReviewing && (
+                      <span className="text-xs text-primary animate-pulse font-medium">Génération Cerebras...</span>
                     )}
-                    {isDone && (
+                    {isReviewing && (
+                      <span className="text-xs text-purple-400 animate-pulse font-medium flex items-center gap-1">
+                        <Brain className="w-3 h-3" /> GPT + Claude...
+                      </span>
+                    )}
+                    {isDone && !isReviewing && (
                       <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
-                        <Check className="w-3.5 h-3.5" /> Généré
+                        <Check className="w-3.5 h-3.5" />
+                        {sec?.reviewResult ? `GOD-TIER ${sec.reviewResult.score}/10` : "Généré"}
                       </span>
                     )}
                   </div>
@@ -830,6 +933,9 @@ export default function Module07() {
                     streamBuffer={sec?.buffer ?? ""}
                     streaming={isGenerating}
                     isActive={isActive}
+                    reviewing={isReviewing}
+                    reviewResult={sec?.reviewResult}
+                    reviewError={sec?.reviewError}
                     brief={brief as unknown as Record<string, unknown>}
                   />
                 )}
@@ -860,7 +966,7 @@ export default function Module07() {
               <div>
                 <p className="text-sm font-medium text-foreground">Génération en cours...</p>
                 <p className="text-xs text-muted-foreground">
-                  {sections.length}/{SECTION_ORDER.length} sections complètes
+                  {SECTION_ORDER.filter((k) => streamState.sections[k]?.done).length}/{SECTION_ORDER.length} sections complètes
                 </p>
               </div>
             </div>

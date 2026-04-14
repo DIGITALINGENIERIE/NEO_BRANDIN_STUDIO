@@ -66,6 +66,7 @@ Le serveur Vite proxie les requêtes `/api` vers `http://localhost:3000`.
 
 - `AI_INTEGRATIONS_OPENAI_BASE_URL` — URL de base de l'intégration Replit AI
 - `AI_INTEGRATIONS_OPENAI_API_KEY` — Clé API de l'intégration Replit AI
+- `SERPER_API_KEY` — Secret optionnel pour l'import Google My Business
 - `PORT` — Port de chaque service
 - `BASE_PATH` — Chemin de base pour le frontend
 
@@ -94,13 +95,15 @@ Chaque route backend suit le même pattern :
 
 Le frontend consomme le stream et met à jour l'UI section par section en temps réel.
 
+Le client OpenAI côté serveur est initialisé à la demande : le serveur peut démarrer même si l'intégration AI n'est pas encore configurée, et les routes AI renvoient une erreur explicite au moment de l'utilisation si les variables d'intégration sont absentes.
+
 ## API Routes
 
 Toutes les routes sont montées sous `/api` :
 
 | Route | Module | Paramètres clés |
 |-------|--------|-----------------|
-| `GET /api/health` | — | — |
+| `GET /api/healthz` | — | — |
 | `POST /api/openai/enhance-prompts` | 01 Brand Identity | brand_name, sector, tone, values, colors |
 | `POST /api/openai/enhance-prompts-visual` | 02 Visual Content | brand_name, sector, product_name, colors, style |
 | `POST /api/openai/enhance-prompts-video` | 03 Video Content | brand_name, sector, product_name, tone, target |

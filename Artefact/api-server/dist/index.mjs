@@ -33213,14 +33213,14 @@ var levelNumbers = {
   info: 400,
   debug: 500
 };
-var parseLogLevel = (maybeLevel, sourceName, client) => {
+var parseLogLevel = (maybeLevel, sourceName, client3) => {
   if (!maybeLevel) {
     return void 0;
   }
   if (hasOwn(levelNumbers, maybeLevel)) {
     return maybeLevel;
   }
-  loggerFor(client).warn(`${sourceName} was set to ${JSON.stringify(maybeLevel)}, expected one of ${JSON.stringify(Object.keys(levelNumbers))}`);
+  loggerFor(client3).warn(`${sourceName} was set to ${JSON.stringify(maybeLevel)}, expected one of ${JSON.stringify(Object.keys(levelNumbers))}`);
   return void 0;
 };
 function noop() {
@@ -33239,9 +33239,9 @@ var noopLogger = {
   debug: noop
 };
 var cachedLoggers = /* @__PURE__ */ new WeakMap();
-function loggerFor(client) {
-  const logger2 = client.logger;
-  const logLevel = client.logLevel ?? "off";
+function loggerFor(client3) {
+  const logger2 = client3.logger;
+  const logLevel = client3.logLevel ?? "off";
   if (!logger2) {
     return noopLogger;
   }
@@ -33281,15 +33281,15 @@ var formatRequestDetails = (details) => {
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/core/streaming.mjs
 var _Stream_client;
 var Stream = class _Stream {
-  constructor(iterator, controller, client) {
+  constructor(iterator, controller, client3) {
     this.iterator = iterator;
     _Stream_client.set(this, void 0);
     this.controller = controller;
-    __classPrivateFieldSet(this, _Stream_client, client, "f");
+    __classPrivateFieldSet(this, _Stream_client, client3, "f");
   }
-  static fromSSEResponse(response, controller, client, synthesizeEventData) {
+  static fromSSEResponse(response, controller, client3, synthesizeEventData) {
     let consumed = false;
-    const logger2 = client ? loggerFor(client) : console;
+    const logger2 = client3 ? loggerFor(client3) : console;
     async function* iterator() {
       if (consumed) {
         throw new OpenAIError("Cannot iterate over a consumed stream, use `.tee()` to split the stream.");
@@ -33342,13 +33342,13 @@ var Stream = class _Stream {
           controller.abort();
       }
     }
-    return new _Stream(iterator, controller, client);
+    return new _Stream(iterator, controller, client3);
   }
   /**
    * Generates a Stream from a newline-separated ReadableStream
    * where each item is a JSON value.
    */
-  static fromReadableStream(readableStream, controller, client) {
+  static fromReadableStream(readableStream, controller, client3) {
     let consumed = false;
     async function* iterLines() {
       const lineDecoder = new LineDecoder();
@@ -33385,7 +33385,7 @@ var Stream = class _Stream {
           controller.abort();
       }
     }
-    return new _Stream(iterator, controller, client);
+    return new _Stream(iterator, controller, client3);
   }
   [(_Stream_client = /* @__PURE__ */ new WeakMap(), Symbol.asyncIterator)]() {
     return this.iterator();
@@ -33537,15 +33537,15 @@ function partition(str2, delimiter) {
 }
 
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/internal/parse.mjs
-async function defaultParseResponse(client, props) {
+async function defaultParseResponse(client3, props) {
   const { response, requestLogID, retryOfRequestLogID, startTime } = props;
   const body = await (async () => {
     if (props.options.stream) {
-      loggerFor(client).debug("response", response.status, response.url, response.headers, response.body);
+      loggerFor(client3).debug("response", response.status, response.url, response.headers, response.body);
       if (props.options.__streamClass) {
-        return props.options.__streamClass.fromSSEResponse(response, props.controller, client, props.options.__synthesizeEventData);
+        return props.options.__streamClass.fromSSEResponse(response, props.controller, client3, props.options.__synthesizeEventData);
       }
-      return Stream.fromSSEResponse(response, props.controller, client, props.options.__synthesizeEventData);
+      return Stream.fromSSEResponse(response, props.controller, client3, props.options.__synthesizeEventData);
     }
     if (response.status === 204) {
       return null;
@@ -33567,7 +33567,7 @@ async function defaultParseResponse(client, props) {
     const text = await response.text();
     return text;
   })();
-  loggerFor(client).debug(`[${requestLogID}] response parsed`, formatRequestDetails({
+  loggerFor(client3).debug(`[${requestLogID}] response parsed`, formatRequestDetails({
     retryOfRequestLogID,
     url: response.url,
     status: response.status,
@@ -33589,17 +33589,17 @@ function addRequestID(value, response) {
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/core/api-promise.mjs
 var _APIPromise_client;
 var APIPromise = class _APIPromise extends Promise {
-  constructor(client, responsePromise, parseResponse2 = defaultParseResponse) {
+  constructor(client3, responsePromise, parseResponse2 = defaultParseResponse) {
     super((resolve) => {
       resolve(null);
     });
     this.responsePromise = responsePromise;
     this.parseResponse = parseResponse2;
     _APIPromise_client.set(this, void 0);
-    __classPrivateFieldSet(this, _APIPromise_client, client, "f");
+    __classPrivateFieldSet(this, _APIPromise_client, client3, "f");
   }
   _thenUnwrap(transform) {
-    return new _APIPromise(__classPrivateFieldGet(this, _APIPromise_client, "f"), this.responsePromise, async (client, props) => addRequestID(transform(await this.parseResponse(client, props), props), props.response));
+    return new _APIPromise(__classPrivateFieldGet(this, _APIPromise_client, "f"), this.responsePromise, async (client3, props) => addRequestID(transform(await this.parseResponse(client3, props), props), props.response));
   }
   /**
    * Gets the raw `Response` instance instead of parsing the response
@@ -33652,9 +33652,9 @@ _APIPromise_client = /* @__PURE__ */ new WeakMap();
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/core/pagination.mjs
 var _AbstractPage_client;
 var AbstractPage = class {
-  constructor(client, response, body, options) {
+  constructor(client3, response, body, options) {
     _AbstractPage_client.set(this, void 0);
-    __classPrivateFieldSet(this, _AbstractPage_client, client, "f");
+    __classPrivateFieldSet(this, _AbstractPage_client, client3, "f");
     this.options = options;
     this.response = response;
     this.body = body;
@@ -33689,8 +33689,8 @@ var AbstractPage = class {
   }
 };
 var PagePromise = class extends APIPromise {
-  constructor(client, request, Page2) {
-    super(client, request, async (client2, props) => new Page2(client2, props.response, await defaultParseResponse(client2, props), props.options));
+  constructor(client3, request, Page2) {
+    super(client3, request, async (client4, props) => new Page2(client4, props.response, await defaultParseResponse(client4, props), props.options));
   }
   /**
    * Allow auto-paginating iteration on an unawaited list call, eg:
@@ -33707,8 +33707,8 @@ var PagePromise = class extends APIPromise {
   }
 };
 var Page = class extends AbstractPage {
-  constructor(client, response, body, options) {
-    super(client, response, body, options);
+  constructor(client3, response, body, options) {
+    super(client3, response, body, options);
     this.data = body.data || [];
     this.object = body.object;
   }
@@ -33720,8 +33720,8 @@ var Page = class extends AbstractPage {
   }
 };
 var CursorPage = class extends AbstractPage {
-  constructor(client, response, body, options) {
-    super(client, response, body, options);
+  constructor(client3, response, body, options) {
+    super(client3, response, body, options);
     this.data = body.data || [];
     this.has_more = body.has_more || false;
   }
@@ -33750,8 +33750,8 @@ var CursorPage = class extends AbstractPage {
   }
 };
 var ConversationCursorPage = class extends AbstractPage {
-  constructor(client, response, body, options) {
-    super(client, response, body, options);
+  constructor(client3, response, body, options) {
+    super(client3, response, body, options);
     this.data = body.data || [];
     this.has_more = body.has_more || false;
     this.last_id = body.last_id || "";
@@ -33925,8 +33925,8 @@ function propsForError(value) {
 
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/core/resource.mjs
 var APIResource = class {
-  constructor(client) {
-    this._client = client;
+  constructor(client3) {
+    this._client = client3;
   }
 };
 
@@ -34423,7 +34423,7 @@ var AbstractChatCompletionRunner = class extends EventStream {
       this._emit("totalUsage", __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_calculateTotalUsage).call(this));
     }
   }
-  async _createChatCompletion(client, params, options) {
+  async _createChatCompletion(client3, params, options) {
     const signal = options?.signal;
     if (signal) {
       if (signal.aborted)
@@ -34431,17 +34431,17 @@ var AbstractChatCompletionRunner = class extends EventStream {
       signal.addEventListener("abort", () => this.controller.abort());
     }
     __classPrivateFieldGet(this, _AbstractChatCompletionRunner_instances, "m", _AbstractChatCompletionRunner_validateParams).call(this, params);
-    const chatCompletion = await client.chat.completions.create({ ...params, stream: false }, { ...options, signal: this.controller.signal });
+    const chatCompletion = await client3.chat.completions.create({ ...params, stream: false }, { ...options, signal: this.controller.signal });
     this._connected();
     return this._addChatCompletion(parseChatCompletion(chatCompletion, params));
   }
-  async _runChatCompletion(client, params, options) {
+  async _runChatCompletion(client3, params, options) {
     for (const message of params.messages) {
       this._addMessage(message, false);
     }
-    return await this._createChatCompletion(client, params, options);
+    return await this._createChatCompletion(client3, params, options);
   }
-  async _runTools(client, params, options) {
+  async _runTools(client3, params, options) {
     const role = "tool";
     const { tool_choice = "auto", stream, ...restParams } = params;
     const singleFunctionToCall = typeof tool_choice !== "string" && tool_choice.type === "function" && tool_choice?.function?.name;
@@ -34484,7 +34484,7 @@ var AbstractChatCompletionRunner = class extends EventStream {
       this._addMessage(message, false);
     }
     for (let i = 0; i < maxChatCompletions; ++i) {
-      const chatCompletion = await this._createChatCompletion(client, {
+      const chatCompletion = await this._createChatCompletion(client3, {
         ...restParams,
         tool_choice,
         tools,
@@ -34587,13 +34587,13 @@ _AbstractChatCompletionRunner_instances = /* @__PURE__ */ new WeakSet(), _Abstra
 
 // ../../node_modules/.pnpm/openai@6.32.0_zod@4.3.6/node_modules/openai/lib/ChatCompletionRunner.mjs
 var ChatCompletionRunner = class _ChatCompletionRunner extends AbstractChatCompletionRunner {
-  static runTools(client, params, options) {
+  static runTools(client3, params, options) {
     const runner = new _ChatCompletionRunner();
     const opts = {
       ...options,
       headers: { ...options?.headers, "X-Stainless-Helper-Method": "runTools" }
     };
-    runner._run(() => runner._runTools(client, params, opts));
+    runner._run(() => runner._runTools(client3, params, opts));
     return runner;
   }
   _addMessage(message, emit = true) {
@@ -34854,12 +34854,12 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     runner._run(() => runner._fromReadableStream(stream));
     return runner;
   }
-  static createChatCompletion(client, params, options) {
+  static createChatCompletion(client3, params, options) {
     const runner = new _ChatCompletionStream(params);
-    runner._run(() => runner._runChatCompletion(client, { ...params, stream: true }, { ...options, headers: { ...options?.headers, "X-Stainless-Helper-Method": "stream" } }));
+    runner._run(() => runner._runChatCompletion(client3, { ...params, stream: true }, { ...options, headers: { ...options?.headers, "X-Stainless-Helper-Method": "stream" } }));
     return runner;
   }
-  async _createChatCompletion(client, params, options) {
+  async _createChatCompletion(client3, params, options) {
     super._createChatCompletion;
     const signal = options?.signal;
     if (signal) {
@@ -34868,7 +34868,7 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
       signal.addEventListener("abort", () => this.controller.abort());
     }
     __classPrivateFieldGet(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_beginRequest).call(this);
-    const stream = await client.chat.completions.create({ ...params, stream: true }, { ...options, signal: this.controller.signal });
+    const stream = await client3.chat.completions.create({ ...params, stream: true }, { ...options, signal: this.controller.signal });
     this._connected();
     for await (const chunk of stream) {
       __classPrivateFieldGet(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_addChunk).call(this, chunk);
@@ -35303,7 +35303,7 @@ var ChatCompletionStreamingRunner = class _ChatCompletionStreamingRunner extends
     runner._run(() => runner._fromReadableStream(stream));
     return runner;
   }
-  static runTools(client, params, options) {
+  static runTools(client3, params, options) {
     const runner = new _ChatCompletionStreamingRunner(
       // @ts-expect-error TODO these types are incompatible
       params
@@ -35312,7 +35312,7 @@ var ChatCompletionStreamingRunner = class _ChatCompletionStreamingRunner extends
       ...options,
       headers: { ...options?.headers, "X-Stainless-Helper-Method": "runTools" }
     };
-    runner._run(() => runner._runTools(client, params, opts));
+    runner._run(() => runner._runTools(client3, params, opts));
     return runner;
   }
 };
@@ -37750,15 +37750,15 @@ var ResponseStream = class _ResponseStream extends EventStream {
     _ResponseStream_finalResponse.set(this, void 0);
     __classPrivateFieldSet(this, _ResponseStream_params, params, "f");
   }
-  static createResponse(client, params, options) {
+  static createResponse(client3, params, options) {
     const runner = new _ResponseStream(params);
-    runner._run(() => runner._createOrRetrieveResponse(client, params, {
+    runner._run(() => runner._createOrRetrieveResponse(client3, params, {
       ...options,
       headers: { ...options?.headers, "X-Stainless-Helper-Method": "stream" }
     }));
     return runner;
   }
-  async _createOrRetrieveResponse(client, params, options) {
+  async _createOrRetrieveResponse(client3, params, options) {
     const signal = options?.signal;
     if (signal) {
       if (signal.aborted)
@@ -37769,10 +37769,10 @@ var ResponseStream = class _ResponseStream extends EventStream {
     let stream;
     let starting_after = null;
     if ("response_id" in params) {
-      stream = await client.responses.retrieve(params.response_id, { stream: true }, { ...options, signal: this.controller.signal, stream: true });
+      stream = await client3.responses.retrieve(params.response_id, { stream: true }, { ...options, signal: this.controller.signal, stream: true });
       starting_after = params.starting_after ?? null;
     } else {
-      stream = await client.responses.create({ ...params, stream: true }, { ...options, signal: this.controller.signal });
+      stream = await client3.responses.create({ ...params, stream: true }, { ...options, signal: this.controller.signal });
     }
     this._connected();
     for await (const event of stream) {
@@ -38431,12 +38431,12 @@ var FileBatches = class extends APIResource {
     }
     const configuredConcurrency = options?.maxConcurrency ?? 5;
     const concurrencyLimit = Math.min(configuredConcurrency, files.length);
-    const client = this._client;
+    const client3 = this._client;
     const fileIterator = files.values();
     const allFileIds = [...fileIds];
     async function processFiles(iterator) {
       for (let item of iterator) {
-        const fileObj = await client.files.create({ file: item, purpose: "assistants" }, options);
+        const fileObj = await client3.files.create({ file: item, purpose: "assistants" }, options);
         allFileIds.push(fileObj.id);
       }
     }
@@ -38883,7 +38883,7 @@ var OpenAI = class {
    * Create a new client instance re-using the same options given to the current client with optional overriding.
    */
   withOptions(options) {
-    const client = new this.constructor({
+    const client3 = new this.constructor({
       ...this._options,
       baseURL: this.baseURL,
       maxRetries: this.maxRetries,
@@ -38898,7 +38898,7 @@ var OpenAI = class {
       webhookSecret: this.webhookSecret,
       ...options
     });
-    return client;
+    return client3;
   }
   defaultQuery() {
     return this._options.defaultQuery;
@@ -39289,35 +39289,59 @@ OpenAI.Skills = Skills;
 OpenAI.Videos = Videos;
 
 // ../../lib/integrations-openai-ai-server/src/client.ts
-if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?"
-  );
+var client = null;
+function getOpenAIClient() {
+  const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+  const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+  if (!baseURL) {
+    throw new Error(
+      "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?"
+    );
+  }
+  if (!apiKey) {
+    throw new Error(
+      "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?"
+    );
+  }
+  client ??= new OpenAI({
+    apiKey,
+    baseURL
+  });
+  return client;
 }
-if (!process.env.AI_INTEGRATIONS_OPENAI_API_KEY) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?"
-  );
-}
-var openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+var openai = new Proxy({}, {
+  get(_target, prop) {
+    const value = getOpenAIClient()[prop];
+    return typeof value === "function" ? value.bind(getOpenAIClient()) : value;
+  }
 });
 
 // ../../lib/integrations-openai-ai-server/src/image/client.ts
-if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?"
-  );
+var client2 = null;
+function getOpenAIClient2() {
+  const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+  const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+  if (!baseURL) {
+    throw new Error(
+      "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?"
+    );
+  }
+  if (!apiKey) {
+    throw new Error(
+      "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?"
+    );
+  }
+  client2 ??= new OpenAI({
+    apiKey,
+    baseURL
+  });
+  return client2;
 }
-if (!process.env.AI_INTEGRATIONS_OPENAI_API_KEY) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?"
-  );
-}
-var openai2 = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+var openai2 = new Proxy({}, {
+  get(_target, prop) {
+    const value = getOpenAIClient2()[prop];
+    return typeof value === "function" ? value.bind(getOpenAIClient2()) : value;
+  }
 });
 
 // src/routes/scrape-gmb.ts

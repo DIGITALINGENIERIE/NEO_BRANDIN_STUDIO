@@ -161,68 +161,30 @@ function buildReviewPrompt(
   brief: EnhancedBrief,
   sectionKey: string,
   agentRole: string,
-  isSecondPass: boolean = false
 ): string {
   const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
-  const competitorsStr = brief.competitors
-    ? `\nCompetitors to differentiate from: ${brief.competitors}`
-    : "";
-  const forbiddenStr = brief.forbidden_keywords
-    ? `\nFORBIDDEN words/concepts: ${brief.forbidden_keywords}`
-    : "";
-  const colorsStr = brief.colors
-    ? `\nBrand colors: ${brief.colors}`
-    : "";
-  const targetStr = (brief.target_demographic || (brief as any).target_audience)
-    ? `\nTarget audience: ${brief.target_demographic || (brief as any).target_audience}`
-    : "";
+  const extras = [
+    brief.competitors ? `Competitors: ${brief.competitors}` : "",
+    brief.forbidden_keywords ? `FORBIDDEN: ${brief.forbidden_keywords}` : "",
+    brief.colors ? `Brand colors: ${brief.colors}` : "",
+    (brief.target_demographic || (brief as any).target_audience)
+      ? `Audience: ${brief.target_demographic || (brief as any).target_audience}` : "",
+  ].filter(Boolean).join(" | ");
 
-  const secondPassNote = isSecondPass
-    ? `\n⚠️  FINAL QUALITY PASS — This prompt was already refined once. Your mission: find every remaining weakness and eliminate it. Internally self-review your rewritten prompt before answering. Do not return until your rewritten version would score at least 9.3/10, ideally 10/10. Be ruthlessly precise.\n`
-    : "";
+  return `You are ${agentRole} for RoboNeo.com.
 
-  return `You are ${agentRole} for RoboNeo.com — a professional AI prompt generation platform for brand assets.${secondPassNote}
+BRAND: ${brief.brand_name} | Sector: ${brief.sector} | Tone: ${brief.tone} | Values: ${valuesStr}${extras ? ` | ${extras}` : ""}
+Section: ${sectionKey}
 
-═══ BRAND BRIEF ═══════════════════════════════════════════════
-Brand         : ${brief.brand_name}
-Sector        : ${brief.sector}
-Tone / Voice  : ${brief.tone}
-Values        : ${valuesStr}${targetStr}${competitorsStr}${colorsStr}${forbiddenStr}
-Section       : ${sectionKey}
-═══════════════════════════════════════════════════════════════
-
-PROMPT TO REVIEW AND IMPROVE:
+PROMPT TO IMPROVE:
 """
 ${content}
 """
 
-YOUR DUAL MISSION:
-1. Identify the weaknesses of the prompt above STRICTLY
-2. ALWAYS produce a rewritten version targeting 10/10 — even if the original is already strong, there is always room to sharpen it
-3. Score your rewritten refined_prompt, not the original prompt
+MISSION: Rewrite this prompt pushing it toward 10/10. Score /10 (be strict). Fix: missing HEX codes, vague values, weak brand anchoring, technical gaps. NEVER shorten. NEVER invent facts absent from the brief. All image/video/audio prompts must be in English.
 
-EVALUATION CRITERIA (score /10 — BE RUTHLESSLY STRICT):
-1. Brand anchoring    — "${brief.brand_name}" named explicitly, sector "${brief.sector}" visible in every single detail
-2. Technical precision — HEX codes, px dimensions, f/stop, ISO, BPM, ms, frame counts: ALL values must be exact numbers, zero vague qualifiers
-3. Ready-to-use        — 0 modifications needed, prompt is immediately usable in Midjourney / Runway / Suno / ElevenLabs / DALL-E
-4. Creative richness   — every visual/audio/copy element described with surgical precision (lighting angles, lens mm, specific instruments, exact timings)
-5. Brand voice         — tone "${brief.tone}" maintained start to finish, no forbidden words${forbiddenStr ? ` (${brief.forbidden_keywords})` : ""}
-
-MANDATORY IMPROVEMENT RULES:
-• You MUST ALWAYS rewrite the prompt — never return the original unchanged, even at 9/10
-• Absolute target: 10/10 — add all missing HEX codes, replace every vague estimate with an exact value
-• Enrich technical vocabulary: name specific instruments and their role in the mix, add exact focal lengths, precise shot names, specific transition durations in frames
-• NEVER invent data absent from the brief (dates, certifications, statistics, real names)
-• Maintain or expand the structure — NEVER shorten, condense, or summarize
-• All AI generation prompts (image, video, audio) must be written in English — use native AI model vocabulary
-• For French copy/voice-over/ad scripts: keep French, but add more precision and brand-specific language
-
-Respond in strictly valid JSON only (no markdown block, no explanation outside JSON):
-{
-  "score": <score of your REWRITTEN refined_prompt /10 — 1 decimal — target 9.3 to 10, never inflate weak work>,
-  "improvements": ["specific flaw fixed 1", "specific flaw fixed 2", "specific flaw fixed 3", "specific flaw fixed 4"],
-  "refined_prompt": "<ALWAYS a rewritten, improved version — richer, more precise, more technical, pushing toward 10/10. Never copy the original unchanged.>"
-}`;
+JSON only (no markdown):
+{"score":<1 decimal>,"improvements":["fix1","fix2","fix3"],"refined_prompt":"<improved version>"}`;
 }
 
 function parseAgentReview(text: string, content: string, agentName: string): AgentReviewResult {
@@ -253,23 +215,36 @@ function parseAgentReview(text: string, content: string, agentName: string): Age
   };
 }
 
+const REVIEW_TIMEOUT_MS = 25_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export async function reviewWithGPT(
   content: string,
   brief: EnhancedBrief,
   sectionKey: string,
-  isSecondPass: boolean = false
 ): Promise<AgentReviewResult> {
   const gpt = getGptReviewClient();
   const prompt = buildReviewPrompt(
     content, brief, sectionKey,
     "a technical precision expert and AI prompt specialist (GPT Agent — Challenger)",
-    isSecondPass
   );
-  const response = await gpt.chat.completions.create({
-    model: GPT_MODEL,
-    messages: [{ role: "user", content: prompt }],
-    max_completion_tokens: 4096,
-  });
+  const response = await withTimeout(
+    gpt.chat.completions.create({
+      model: GPT_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_completion_tokens: 1800,
+    }),
+    REVIEW_TIMEOUT_MS,
+    "GPT"
+  );
   const text = response.choices[0]?.message?.content ?? "{}";
   return parseAgentReview(text, content, "GPT");
 }
@@ -278,19 +253,21 @@ export async function reviewWithClaude(
   content: string,
   brief: EnhancedBrief,
   sectionKey: string,
-  isSecondPass: boolean = false
 ): Promise<AgentReviewResult> {
   const claude = getClaudeClient();
   const prompt = buildReviewPrompt(
     content, brief, sectionKey,
     "a brand voice expert, creative strategist and narrative precision specialist (Claude Agent — Critic)",
-    isSecondPass
   );
-  const message = await claude.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 4096,
-    messages: [{ role: "user", content: prompt }],
-  });
+  const message = await withTimeout(
+    claude.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 1800,
+      messages: [{ role: "user", content: prompt }],
+    }),
+    REVIEW_TIMEOUT_MS,
+    "Claude"
+  );
   const block = message.content[0];
   const text = block.type === "text" ? block.text : "{}";
   return parseAgentReview(text, content, "Claude");
@@ -301,9 +278,10 @@ export async function reviewPromptQuality(
   brief: EnhancedBrief,
   sectionKey: string
 ): Promise<ReviewResult> {
+  // GPT et Claude lancés en parallèle — un seul round
   const [gptSettled, claudeSettled] = await Promise.allSettled([
-    reviewWithGPT(content, brief, sectionKey, false),
-    reviewWithClaude(content, brief, sectionKey, false),
+    reviewWithGPT(content, brief, sectionKey),
+    reviewWithClaude(content, brief, sectionKey),
   ]);
 
   if (gptSettled.status === "rejected" && claudeSettled.status === "rejected") {
@@ -313,86 +291,49 @@ export async function reviewPromptQuality(
   const gptResult =
     gptSettled.status === "fulfilled"
       ? gptSettled.value
-      : { score: 0, refined: "", improvements: ["GPT indisponible ou réponse invalide"] };
+      : { score: 0, refined: "", improvements: ["GPT indisponible"] };
   const claudeResult =
     claudeSettled.status === "fulfilled"
       ? claudeSettled.value
-      : { score: 0, refined: "", improvements: ["Claude indisponible ou réponse invalide"] };
+      : { score: 0, refined: "", improvements: ["Claude indisponible"] };
 
-  console.log(
-    `[Review R1] ${sectionKey} → GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`
-  );
+  console.log(`[Review] ${sectionKey} → GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`);
 
-  // The most demanding agent (lowest score) wins — their rewrite corrects more issues
+  // L'agent avec le score le plus haut remporte (version la plus améliorée)
   let winner: "gpt" | "claude" | "tie";
   let winnerResult: AgentReviewResult;
 
   if (gptSettled.status === "fulfilled" && claudeSettled.status !== "fulfilled") {
-    winner = "gpt";
-    winnerResult = gptResult;
+    winner = "gpt"; winnerResult = gptResult;
   } else if (claudeSettled.status === "fulfilled" && gptSettled.status !== "fulfilled") {
-    winner = "claude";
-    winnerResult = claudeResult;
-  } else if (gptResult.score > claudeResult.score) {
-    winner = "gpt";
+    winner = "claude"; winnerResult = claudeResult;
+  } else if (gptResult.score >= claudeResult.score) {
+    winner = gptResult.score > claudeResult.score ? "gpt" : "tie";
     winnerResult = gptResult;
-  } else if (claudeResult.score > gptResult.score) {
-    winner = "claude";
-    winnerResult = claudeResult;
   } else {
-    winner = "tie";
-    // On tie: prefer Claude for brand voice nuance
-    winnerResult = claudeResult;
+    winner = "claude"; winnerResult = claudeResult;
   }
 
   const successfulScores = [
     gptSettled.status === "fulfilled" ? gptResult.score : undefined,
     claudeSettled.status === "fulfilled" ? claudeResult.score : undefined,
-  ].filter((score): score is number => typeof score === "number");
-  const avgScoreR1 =
-    successfulScores.reduce((sum, score) => sum + score, 0) / successfulScores.length;
+  ].filter((s): s is number => typeof s === "number");
+  const avgScore = Math.round(
+    (successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length) * 10
+  ) / 10;
 
-  let finalRefined = winnerResult.refined;
-  let finalWinner = winner;
-  let finalScore = avgScoreR1;
-  const laterImprovements: string[] = [];
-
-  if (avgScoreR1 < 9.5 && winnerResult.refined && winnerResult.refined !== content) {
-    try {
-      const secondPassFn = winner === "gpt" ? reviewWithClaude : reviewWithGPT;
-      const round2 = await secondPassFn(winnerResult.refined, brief, sectionKey, true);
-      console.log(
-        `[Review R2] ${sectionKey} → ${winner === "gpt" ? "Claude" : "GPT"}: ${round2.score}/10`
-      );
-      if (round2.refined && round2.refined !== winnerResult.refined) {
-        finalRefined = round2.refined;
-        finalWinner = winner === "gpt" ? "claude" : "gpt";
-        finalScore = round2.score;
-        laterImprovements.push(
-          ...round2.improvements.map((i) => `[Round 2 ${finalWinner === "gpt" ? "GPT" : "Claude"}] ${i}`)
-        );
-      }
-    } catch (err) {
-      console.warn(`[Review R2] ${sectionKey} second pass skipped`, err);
-    }
-  }
-
-  // Merge improvements from both agents
   const allImprovements = [
     ...gptResult.improvements.map((i) => `[GPT] ${i}`),
     ...claudeResult.improvements.map((i) => `[Claude] ${i}`),
-    ...laterImprovements,
-  ].slice(0, 8);
-
-  const avgScore = Math.round(finalScore * 10) / 10;
+  ].slice(0, 6);
 
   return {
     score: avgScore,
-    refined: finalRefined,
+    refined: winnerResult.refined || content,
     improvements: allImprovements,
     gpt_score: gptResult.score,
     claude_score: claudeResult.score,
-    winner: finalWinner,
+    winner,
   };
 }
 

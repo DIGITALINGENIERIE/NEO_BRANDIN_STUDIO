@@ -34,12 +34,15 @@ const TRYON_CATEGORY_MAP: Record<string, string> = {
   lunettes: "lunettes", cosmétique: "vêtement", fitness: "vêtement",
 };
 
+// ⚠️ ANTI-BIAIS: Ces profils sont des SUGGESTIONS génériques par tranche d'âge.
+// Ils sont REMPLACÉS si target_audience précise une ethnie/couleur de peau spécifique (ex: "femmes africaines").
+// Dans ce cas, le system prompt impose de respecter exactement la description fournie dans le brief.
 const AUDIENCE_PROFILES: Record<string, [string, string]> = {
-  femmes_18_25: ["jeune femme 20-25 ans, peau claire, cheveux bruns, style urbain dynamique", "jeune femme 22-25 ans, peau miel, cheveux noirs longs, style sportif chic"],
-  femmes_25_45: ["femme élégante 30-35 ans, peau claire, cheveux châtains, style sophistiqué", "femme distinguée 38-42 ans, peau mate, cheveux noirs, style professionnel"],
-  femmes_35_50: ["femme raffinée 38-42 ans, peau claire, cheveux blonds, style luxe", "femme élégante 45-50 ans, peau mate, cheveux grisonnants stylisés, style contemporain"],
-  hommes_25_40: ["homme élancé 28-32 ans, peau claire, cheveux bruns courts, style décontracté chic", "homme sportif 33-38 ans, peau mate, barbe soignée, style urban chic"],
-  mixte: ["femme élégante 28-35 ans, peau claire, cheveux bruns, style moderne et accessible", "homme distingué 30-38 ans, peau mate, style urban chic"],
+  femmes_18_25: ["jeune femme 20-25 ans, peau miel dorée, cheveux noirs coiffés naturels, style urbain dynamique", "jeune femme 22-25 ans, peau mate lumineuse, cheveux longs, style sportif chic"],
+  femmes_25_45: ["femme élégante 30-35 ans, peau noire lumineuse, cheveux naturels ou lissés, style sophistiqué", "femme distinguée 38-42 ans, peau métissée, cheveux noirs, style professionnel moderne"],
+  femmes_35_50: ["femme raffinée 40-45 ans, peau mate éclatante, cheveux noirs stylisés, style luxe contemporain", "femme élégante 45-50 ans, peau noire, cheveux grisonnants tressés ou naturels, style contemporain"],
+  hommes_25_40: ["homme élancé 28-32 ans, peau noire, cheveux courts soignés, style décontracté chic", "homme sportif 33-38 ans, peau miel, barbe soignée, style urban chic"],
+  mixte: ["femme élégante 28-35 ans, peau noire lumineuse, style moderne et accessible", "homme distingué 30-38 ans, peau miel, style urban chic contemporain"],
 };
 
 const SCENARIO_DETAILS: Record<string, { context: string; before: string; after: string }> = {
@@ -359,7 +362,10 @@ Retourne UNIQUEMENT un JSON valide:
     },
     "MODULE 02 — Visual Content (Photos Produit, Lifestyle, Détail, Before/After, Try-On, Carrousel)"
   );
-  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}
+  const audienceNote = body.target_audience
+    ? `\n\n⚠️ RÈGLE ANTI-BIAIS — REPRÉSENTATION DES PERSONNES:\n• Le sujet humain dans chaque visuel DOIT correspondre EXACTEMENT à la cible déclarée: "${body.target_audience}".\n• INTERDIT d'inventer ou d'imposer une ethnie, couleur de peau ou morphologie non mentionnée dans le brief.\n• Les profils génériques de la base sont IGNORÉS si une cible précise est fournie.\n• Toujours écrire explicitement la couleur de peau, la coiffure et le style culturel du sujet dans chaque prompt.`
+    : "";
+  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}${audienceNote}
 
 IMPORTANT: Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans texte avant ou après le JSON.
 Chaque prompt visuel doit inclure un champ "negative_prompt" avec les éléments à éviter: "${negativePart}"`;

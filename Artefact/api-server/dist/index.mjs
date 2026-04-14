@@ -46421,11 +46421,11 @@ var TRYON_CATEGORY_MAP = {
   fitness: "v\xEAtement"
 };
 var AUDIENCE_PROFILES = {
-  femmes_18_25: ["jeune femme 20-25 ans, peau claire, cheveux bruns, style urbain dynamique", "jeune femme 22-25 ans, peau miel, cheveux noirs longs, style sportif chic"],
-  femmes_25_45: ["femme \xE9l\xE9gante 30-35 ans, peau claire, cheveux ch\xE2tains, style sophistiqu\xE9", "femme distingu\xE9e 38-42 ans, peau mate, cheveux noirs, style professionnel"],
-  femmes_35_50: ["femme raffin\xE9e 38-42 ans, peau claire, cheveux blonds, style luxe", "femme \xE9l\xE9gante 45-50 ans, peau mate, cheveux grisonnants stylis\xE9s, style contemporain"],
-  hommes_25_40: ["homme \xE9lanc\xE9 28-32 ans, peau claire, cheveux bruns courts, style d\xE9contract\xE9 chic", "homme sportif 33-38 ans, peau mate, barbe soign\xE9e, style urban chic"],
-  mixte: ["femme \xE9l\xE9gante 28-35 ans, peau claire, cheveux bruns, style moderne et accessible", "homme distingu\xE9 30-38 ans, peau mate, style urban chic"]
+  femmes_18_25: ["jeune femme 20-25 ans, peau miel dor\xE9e, cheveux noirs coiff\xE9s naturels, style urbain dynamique", "jeune femme 22-25 ans, peau mate lumineuse, cheveux longs, style sportif chic"],
+  femmes_25_45: ["femme \xE9l\xE9gante 30-35 ans, peau noire lumineuse, cheveux naturels ou liss\xE9s, style sophistiqu\xE9", "femme distingu\xE9e 38-42 ans, peau m\xE9tiss\xE9e, cheveux noirs, style professionnel moderne"],
+  femmes_35_50: ["femme raffin\xE9e 40-45 ans, peau mate \xE9clatante, cheveux noirs stylis\xE9s, style luxe contemporain", "femme \xE9l\xE9gante 45-50 ans, peau noire, cheveux grisonnants tress\xE9s ou naturels, style contemporain"],
+  hommes_25_40: ["homme \xE9lanc\xE9 28-32 ans, peau noire, cheveux courts soign\xE9s, style d\xE9contract\xE9 chic", "homme sportif 33-38 ans, peau miel, barbe soign\xE9e, style urban chic"],
+  mixte: ["femme \xE9l\xE9gante 28-35 ans, peau noire lumineuse, style moderne et accessible", "homme distingu\xE9 30-38 ans, peau miel, style urban chic contemporain"]
 };
 var SCENARIO_DETAILS = {
   skin: {
@@ -46740,7 +46740,14 @@ Ces couleurs sont SACR\xC9ES \u2014 les utiliser EXACTEMENT dans tous les visuel
     },
     "MODULE 02 \u2014 Visual Content (Photos Produit, Lifestyle, D\xE9tail, Before/After, Try-On, Carrousel)"
   );
-  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}
+  const audienceNote = body.target_audience ? `
+
+\u26A0\uFE0F R\xC8GLE ANTI-BIAIS \u2014 REPR\xC9SENTATION DES PERSONNES:
+\u2022 Le sujet humain dans chaque visuel DOIT correspondre EXACTEMENT \xE0 la cible d\xE9clar\xE9e: "${body.target_audience}".
+\u2022 INTERDIT d'inventer ou d'imposer une ethnie, couleur de peau ou morphologie non mentionn\xE9e dans le brief.
+\u2022 Les profils g\xE9n\xE9riques de la base sont IGNOR\xC9S si une cible pr\xE9cise est fournie.
+\u2022 Toujours \xE9crire explicitement la couleur de peau, la coiffure et le style culturel du sujet dans chaque prompt.` : "";
+  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}${audienceNote}
 
 IMPORTANT: Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans texte avant ou apr\xE8s le JSON.
 Chaque prompt visuel doit inclure un champ "negative_prompt" avec les \xE9l\xE9ments \xE0 \xE9viter: "${negativePart}"`;
@@ -47277,7 +47284,14 @@ Couleurs: ${colorStr} | Code promo: ${promoCode} | Remise: ${discount}% | Livrai
   const systemPrompt = `Tu es un expert senior en publicit\xE9 digitale et cr\xE9ation de prompts pour RoboNeo.com.
 Tu g\xE9n\xE8res des prompts de cr\xE9ation publicitaire ultra-pr\xE9cis (Meta Ads, Google Display, TikTok, Carousel) et des copies publicitaires pr\xEAtes \xE0 l'emploi.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.
-Tous les textes sont en fran\xE7ais, percutants, adapt\xE9s au secteur ${sector} et au style ${style}.${colorPriorityBlock}`;
+Tous les textes sont en fran\xE7ais, percutants, adapt\xE9s au secteur ${sector} et au style ${style}.${colorPriorityBlock}
+
+\u26A0\uFE0F R\xC8GLE ANTI-HALLUCINATION \u2014 REPR\xC9SENTATION DES PERSONNES:
+\u2022 INTERDIT d'inventer une ethnie, couleur de peau, morphologie ou identit\xE9 culturelle non mentionn\xE9e dans le brief.
+\u2022 Le sujet humain dans chaque visuel DOIT correspondre EXACTEMENT \xE0 la cible d\xE9clar\xE9e: "${target_audience}".
+\u2022 Si la cible est "femmes africaines", "femmes noires", "femmes m\xE9tiss\xE9es" ou similaire: utiliser UNIQUEMENT des sujets avec ces caract\xE9ristiques. \xC9crire "femme blanche" dans ce contexte est une erreur grave de ciblage.
+\u2022 Si aucune ethnie n'est pr\xE9cis\xE9e dans la cible, rester neutre et diversifi\xE9 \u2014 ne pas imposer une ethnie par d\xE9faut.
+\u2022 Les prompts de cr\xE9ation doivent refl\xE9ter la r\xE9alit\xE9 culturelle du secteur et du march\xE9 cible de la marque.`;
   const SECTIONS = [
     {
       key: "meta_ads",
@@ -47391,6 +47405,7 @@ STRUCTURE SHOT-LIST PR\xC9CISE:
 
 POUR CHAQUE S\xC9QUENCE:
 \u2022 Description pr\xE9cise du plan (angle, sujet, mouvement cam\xE9ra)
+\u2022 SUJET HUMAIN: doit correspondre EXACTEMENT \xE0 la cible "${target_audience}" \u2014 respecter l'ethnie, la couleur de peau, le style vestimentaire et culturel d\xE9clar\xE9s dans le brief
 \u2022 Texte overlay (contenu, position, style, dur\xE9e)
 \u2022 Effets TikTok recommand\xE9s
 \u2022 Timing musical (genre, BPM, moment de pic)
@@ -47402,9 +47417,15 @@ R\xC8GLES ALGORITHME TIKTOK:
 \u2022 Mouvements naturels (pas de pub trop "corporate")
 \u2022 Texte lisible sur fond variable
 
+NOTE TECHNIQUE \u2014 OUTILS DE G\xC9N\xC9RATION:
+Les g\xE9n\xE9rateurs vid\xE9o (Runway, Pika, Kling) et image (Midjourney, DALL-E) ne lisent pas le JSON.
+Inclure un "narrative_prompt" en texte narratif continu, directement utilisable dans ces outils.
+Format: "Vid\xE9o TikTok 9:16. Plan 1 (0-3s): [sujet pr\xE9cis] [action] [cadrage] [lumi\xE8re]. Plan 2 (3-12s): ..."
+
 Retourne UNIQUEMENT ce JSON:
 {
-  "tiktok_main": "prompt r\xE9alisation TikTok complet et ultra-d\xE9taill\xE9",
+  "tiktok_main": "prompt r\xE9alisation TikTok complet et ultra-d\xE9taill\xE9 (format shot-list structur\xE9)",
+  "narrative_prompt": "Vid\xE9o TikTok 9:16, 21-34s. Plan 1 (0-3s): [description narrative directement utilisable dans Runway/Pika/Midjourney]. Plan 2 (3-12s): [suite narrative]. Plan 3 (12-22s): [suite]. Plan 4 (22-30s): [CTA narratif].",
   "hashtags": "#${brand_name.replace(/\s/g, "")} #${sector} #${product_name.replace(/\s/g, "")} + 5 hashtags tendance",
   "music_direction": "genre musical, BPM, ambiance recommand\xE9s"
 }`
@@ -47415,9 +47436,15 @@ Retourne UNIQUEMENT ce JSON:
       agent: "AI Poster Agent",
       buildPrompt: () => `${contextBlock}
 
+FORMAT TECHNIQUE OBLIGATOIRE \u2014 CARROUSEL META ADS:
+\u2022 Nombre de slides: 5 (obligatoire pour Meta Carousel)
+\u2022 Ratio: 1:1 CARR\xC9 \u2014 1080\xD71080px (ne pas utiliser 4:5 vertical qui occupe trop d'espace dans le feed)
+\u2022 Format fichier: JPG ou PNG, < 30 Mo par slide
+\u2022 Note: le ratio 4:5 (1080\xD71350px) peut \xEAtre utilis\xE9 uniquement si la campagne est Stories-only
+
 G\xE9n\xE8re 5 prompts de cr\xE9ation pour un Carousel Ad Meta pour ${product_name} (${brand_name}).
 Narrative: Hook \u2192 Probl\xE8me \u2192 Solution \u2192 Preuve \u2192 CTA
-Format chaque slide: 1080x1080 (1:1) | Style: ${style}
+Format chaque slide: 1080\xD71080px (ratio 1:1 carr\xE9) | Style: ${style}
 
 SLIDE 1 \u2014 HOOK (arr\xEAter le scroll):
 \u2022 Visuel: lifestyle accrocheur, produit dans son univers

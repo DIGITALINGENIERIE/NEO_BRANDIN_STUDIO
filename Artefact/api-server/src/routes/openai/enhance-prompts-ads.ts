@@ -106,7 +106,14 @@ Couleurs: ${colorStr} | Code promo: ${promoCode} | Remise: ${discount}% | Livrai
   const systemPrompt = `Tu es un expert senior en publicité digitale et création de prompts pour RoboNeo.com.
 Tu génères des prompts de création publicitaire ultra-précis (Meta Ads, Google Display, TikTok, Carousel) et des copies publicitaires prêtes à l'emploi.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou après.
-Tous les textes sont en français, percutants, adaptés au secteur ${sector} et au style ${style}.${colorPriorityBlock}`;
+Tous les textes sont en français, percutants, adaptés au secteur ${sector} et au style ${style}.${colorPriorityBlock}
+
+⚠️ RÈGLE ANTI-HALLUCINATION — REPRÉSENTATION DES PERSONNES:
+• INTERDIT d'inventer une ethnie, couleur de peau, morphologie ou identité culturelle non mentionnée dans le brief.
+• Le sujet humain dans chaque visuel DOIT correspondre EXACTEMENT à la cible déclarée: "${target_audience}".
+• Si la cible est "femmes africaines", "femmes noires", "femmes métissées" ou similaire: utiliser UNIQUEMENT des sujets avec ces caractéristiques. Écrire "femme blanche" dans ce contexte est une erreur grave de ciblage.
+• Si aucune ethnie n'est précisée dans la cible, rester neutre et diversifié — ne pas imposer une ethnie par défaut.
+• Les prompts de création doivent refléter la réalité culturelle du secteur et du marché cible de la marque.`;
 
   const SECTIONS = [
     {
@@ -221,6 +228,7 @@ STRUCTURE SHOT-LIST PRÉCISE:
 
 POUR CHAQUE SÉQUENCE:
 • Description précise du plan (angle, sujet, mouvement caméra)
+• SUJET HUMAIN: doit correspondre EXACTEMENT à la cible "${target_audience}" — respecter l'ethnie, la couleur de peau, le style vestimentaire et culturel déclarés dans le brief
 • Texte overlay (contenu, position, style, durée)
 • Effets TikTok recommandés
 • Timing musical (genre, BPM, moment de pic)
@@ -232,9 +240,15 @@ RÈGLES ALGORITHME TIKTOK:
 • Mouvements naturels (pas de pub trop "corporate")
 • Texte lisible sur fond variable
 
+NOTE TECHNIQUE — OUTILS DE GÉNÉRATION:
+Les générateurs vidéo (Runway, Pika, Kling) et image (Midjourney, DALL-E) ne lisent pas le JSON.
+Inclure un "narrative_prompt" en texte narratif continu, directement utilisable dans ces outils.
+Format: "Vidéo TikTok 9:16. Plan 1 (0-3s): [sujet précis] [action] [cadrage] [lumière]. Plan 2 (3-12s): ..."
+
 Retourne UNIQUEMENT ce JSON:
 {
-  "tiktok_main": "prompt réalisation TikTok complet et ultra-détaillé",
+  "tiktok_main": "prompt réalisation TikTok complet et ultra-détaillé (format shot-list structuré)",
+  "narrative_prompt": "Vidéo TikTok 9:16, 21-34s. Plan 1 (0-3s): [description narrative directement utilisable dans Runway/Pika/Midjourney]. Plan 2 (3-12s): [suite narrative]. Plan 3 (12-22s): [suite]. Plan 4 (22-30s): [CTA narratif].",
   "hashtags": "#${brand_name.replace(/\s/g, "")} #${sector} #${product_name.replace(/\s/g, "")} + 5 hashtags tendance",
   "music_direction": "genre musical, BPM, ambiance recommandés"
 }`,
@@ -245,9 +259,15 @@ Retourne UNIQUEMENT ce JSON:
       agent: "AI Poster Agent",
       buildPrompt: () => `${contextBlock}
 
+FORMAT TECHNIQUE OBLIGATOIRE — CARROUSEL META ADS:
+• Nombre de slides: 5 (obligatoire pour Meta Carousel)
+• Ratio: 1:1 CARRÉ — 1080×1080px (ne pas utiliser 4:5 vertical qui occupe trop d'espace dans le feed)
+• Format fichier: JPG ou PNG, < 30 Mo par slide
+• Note: le ratio 4:5 (1080×1350px) peut être utilisé uniquement si la campagne est Stories-only
+
 Génère 5 prompts de création pour un Carousel Ad Meta pour ${product_name} (${brand_name}).
 Narrative: Hook → Problème → Solution → Preuve → CTA
-Format chaque slide: 1080x1080 (1:1) | Style: ${style}
+Format chaque slide: 1080×1080px (ratio 1:1 carré) | Style: ${style}
 
 SLIDE 1 — HOOK (arrêter le scroll):
 • Visuel: lifestyle accrocheur, produit dans son univers

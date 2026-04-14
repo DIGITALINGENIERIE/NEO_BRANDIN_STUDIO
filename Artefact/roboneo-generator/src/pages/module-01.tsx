@@ -27,34 +27,34 @@ const SECTION_PARAMS: Record<string, Record<string, unknown>> = {
   guidelines: { rules: Array.from({ length: 10 }, (_, i) => `R${(i + 1).toString().padStart(2, "0")}`), format: "pdf", do_donts: true },
 };
 
-const AI_MODEL_RECOMMENDATIONS: Record<SectionKey, { name: string; useCase: string }[]> = {
+const AI_MODEL_RECOMMENDATIONS: Record<SectionKey, { name: string; useCase: string; howToUse: string }[]> = {
   logo: [
-    { name: "Midjourney V7", useCase: "logos premium, monogrammes, directions artistiques luxe" },
-    { name: "Ideogram 3.0", useCase: "logos avec texte lisible et lettering de marque" },
-    { name: "Recraft V3", useCase: "icônes vectorielles, SVG et systèmes de marque" },
-    { name: "FLUX.1 Kontext Pro", useCase: "variations cohérentes et retouches de concept" },
-    { name: "GPT-Image", useCase: "brief créatif précis et déclinaisons contrôlées" },
+    { name: "Midjourney V7", useCase: "logos premium, monogrammes, directions artistiques luxe", howToUse: "Colle le prompt complet dans Imagine, garde les paramètres techniques et ajoute --style raw si tu veux un rendu plus fidèle au brief." },
+    { name: "Ideogram 3.0", useCase: "logos avec texte lisible et lettering de marque", howToUse: "Utilise-le quand le nom de marque doit apparaître proprement dans le logo, puis lance 2 à 4 variations typographiques." },
+    { name: "Recraft V3", useCase: "icônes vectorielles, SVG et systèmes de marque", howToUse: "Colle surtout les sections symbole, palette et contraintes SVG pour obtenir une base vectorielle exploitable." },
+    { name: "FLUX.1 Kontext Pro", useCase: "variations cohérentes et retouches de concept", howToUse: "Utilise le prompt comme référence créative, puis demande une variation ciblée sans changer la structure de marque." },
+    { name: "GPT-Image", useCase: "brief créatif précis et déclinaisons contrôlées", howToUse: "Colle le prompt entier et demande une planche de 4 directions logo pour comparer avant finalisation." },
   ],
   palette: [
-    { name: "GPT-5.2", useCase: "raisonnement couleur, contrastes et cohérence secteur" },
-    { name: "Claude Sonnet", useCase: "nuance de marque et choix chromatiques éditoriaux" },
-    { name: "Gemini 2.5 Pro", useCase: "comparaison de palettes et justification stratégique" },
-    { name: "Recraft V3", useCase: "application visuelle directe sur assets de marque" },
-    { name: "Figma AI", useCase: "tests rapides UI, composants et tokens couleurs" },
+    { name: "GPT-5.2", useCase: "raisonnement couleur, contrastes et cohérence secteur", howToUse: "Colle le prompt et demande une validation WCAG, des tokens CSS et une version light/dark si nécessaire." },
+    { name: "Claude Sonnet", useCase: "nuance de marque et choix chromatiques éditoriaux", howToUse: "Utilise-le pour challenger la symbolique des couleurs et vérifier que la palette respecte le ton de marque." },
+    { name: "Gemini 2.5 Pro", useCase: "comparaison de palettes et justification stratégique", howToUse: "Demande un tableau comparatif entre palette principale, alternative premium et alternative conversion." },
+    { name: "Recraft V3", useCase: "application visuelle directe sur assets de marque", howToUse: "Colle les HEX et demande une planche d’applications : logo, packaging, social post et bannière." },
+    { name: "Figma AI", useCase: "tests rapides UI, composants et tokens couleurs", howToUse: "Transforme la palette en styles Figma, puis teste-la sur boutons, cartes, formulaires et états d’alerte." },
   ],
   typography: [
-    { name: "GPT-5.2", useCase: "systèmes typographiques, CSS et hiérarchie technique" },
-    { name: "Claude Sonnet", useCase: "voix de marque, lisibilité et cohérence éditoriale" },
-    { name: "Gemini 2.5 Pro", useCase: "benchmark de font pairings et alternatives web" },
-    { name: "Figma AI", useCase: "prototypage UI et validation des tailles" },
-    { name: "Perplexity Pro", useCase: "recherche de polices, licences et références" },
+    { name: "GPT-5.2", useCase: "systèmes typographiques, CSS et hiérarchie technique", howToUse: "Colle le prompt et demande un export CSS complet avec variables, classes utilitaires et responsive sizes." },
+    { name: "Claude Sonnet", useCase: "voix de marque, lisibilité et cohérence éditoriale", howToUse: "Utilise-le pour vérifier si les polices soutiennent bien le ton, la cible et le niveau premium attendu." },
+    { name: "Gemini 2.5 Pro", useCase: "benchmark de font pairings et alternatives web", howToUse: "Demande 3 paires alternatives Google Fonts avec avantages, risques et usages recommandés." },
+    { name: "Figma AI", useCase: "prototypage UI et validation des tailles", howToUse: "Transforme les tailles et graisses du prompt en styles texte Figma, puis teste la hiérarchie sur une page." },
+    { name: "Perplexity Pro", useCase: "recherche de polices, licences et références", howToUse: "Colle les noms de polices proposés pour vérifier licences, alternatives open-source et liens officiels." },
   ],
   guidelines: [
-    { name: "Claude Sonnet", useCase: "charte narrative, règles Do/Don't et cohérence globale" },
-    { name: "GPT-5.2", useCase: "structuration PDF, checklists et précision opérationnelle" },
-    { name: "Gemini 2.5 Pro", useCase: "audit multi-critères et synthèse stratégique" },
-    { name: "Canva Magic Studio", useCase: "mise en page de brand book et templates" },
-    { name: "Figma AI", useCase: "documentation design system et composants" },
+    { name: "Claude Sonnet", useCase: "charte narrative, règles Do/Don't et cohérence globale", howToUse: "Colle le prompt et demande une charte rédigée en sections prêtes à maqueter, avec exemples concrets." },
+    { name: "GPT-5.2", useCase: "structuration PDF, checklists et précision opérationnelle", howToUse: "Utilise-le pour convertir le contenu en sommaire PDF, checklist d’usage et règles applicables par équipe." },
+    { name: "Gemini 2.5 Pro", useCase: "audit multi-critères et synthèse stratégique", howToUse: "Demande un audit de cohérence entre logo, palette, typo et règles graphiques avant livraison client." },
+    { name: "Canva Magic Studio", useCase: "mise en page de brand book et templates", howToUse: "Colle les sections une par une pour créer les pages du brand book et générer des templates de présentation." },
+    { name: "Figma AI", useCase: "documentation design system et composants", howToUse: "Utilise les règles pour documenter composants, tokens, espacements et exemples Do/Don’t dans Figma." },
   ],
 };
 
@@ -117,6 +117,33 @@ const fmtRate = (rate: number) => Number.isFinite(rate) ? rate.toFixed(1) : "0.0
 const elapsed = (start?: number, end?: number): string | null => {
   if (!start) return null;
   return fmtMs((end ?? Date.now()) - start);
+};
+const getQualityBadge = (score?: number) => {
+  if (score === undefined) return null;
+  if (score >= 9) return {
+    label: "Premium",
+    description: "Prompt prêt pour une production haut de gamme",
+    className: "border-amber-300/40 bg-amber-300/15 text-amber-200",
+    barClassName: "bg-amber-300",
+  };
+  if (score >= 8) return {
+    label: "Gold",
+    description: "Très solide, exploitable avec peu d'ajustements",
+    className: "border-yellow-500/35 bg-yellow-500/10 text-yellow-300",
+    barClassName: "bg-yellow-500",
+  };
+  if (score >= 7) return {
+    label: "Silver",
+    description: "Bonne base premium, améliorable selon le contexte",
+    className: "border-slate-300/35 bg-slate-300/10 text-slate-200",
+    barClassName: "bg-slate-300",
+  };
+  return {
+    label: "Bronze",
+    description: "Base exploitable, à renforcer avant livraison",
+    className: "border-orange-600/35 bg-orange-600/10 text-orange-300",
+    barClassName: "bg-orange-600",
+  };
 };
 
 export default function Module01() {
@@ -559,6 +586,7 @@ export default function Module01() {
               const timing = sectionTimings[key];
               const optimizationHasRun = !!review || !!timing?.gptStart || !!timing?.claudeStart;
               const modelRecommendations = AI_MODEL_RECOMMENDATIONS[key];
+              const qualityBadge = getQualityBadge(review?.score);
 
               return (
                 <motion.div key={key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="flex flex-col gap-3">
@@ -582,6 +610,11 @@ export default function Module01() {
                             <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border font-semibold ${scoreColor(review.score)}`}>
                               <Star className="w-2.5 h-2.5" />
                               {review.score}/10
+                            </span>
+                          )}
+                          {qualityBadge && (
+                            <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider ${qualityBadge.className}`}>
+                              {qualityBadge.label}
                             </span>
                           )}
                           {(isDone || !isStreaming) && prompt && (
@@ -613,22 +646,42 @@ export default function Module01() {
                                     {review.winner === "gpt" ? "GPT le plus exigeant" : review.winner === "claude" ? "Claude le plus exigeant" : "Équilibre GPT/Claude"}
                                   </span>
                                 )}
+                                {qualityBadge && (
+                                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${qualityBadge.className}`}>
+                                    Niveau {qualityBadge.label}
+                                  </span>
+                                )}
                               </div>
                               <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
                                 {review
                                   ? "Ce prompt a été généré par Qwen-3, puis relu, scoré et renforcé par GPT-5.2 et Claude avant affichage final."
                                   : "Qwen-3 a terminé sa base et les agents GPT-5.2 / Claude sont en train de contrôler la précision premium."}
                               </p>
+                              {qualityBadge && (
+                                <div className="mt-3 rounded-md border border-white/5 bg-black/20 p-2">
+                                  <div className="flex items-center justify-between gap-3 text-[11px]">
+                                    <span className="font-semibold text-foreground/90">Classement automatique : {qualityBadge.label}</span>
+                                    <span className="tabular-nums text-muted-foreground">{review?.score}/10</span>
+                                  </div>
+                                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (review?.score ?? 0) * 10)}%` }} className={`h-full rounded-full ${qualityBadge.barClassName}`} />
+                                  </div>
+                                  <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">{qualityBadge.description}</p>
+                                </div>
+                              )}
                               <div className="mt-3 space-y-1.5">
                                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">5 modèles IA idéaux pour exploiter ce prompt premium</p>
                                 <div className="grid gap-1.5">
                                   {modelRecommendations.map((model, idx) => (
                                     <div key={model.name} className="flex items-start gap-2 rounded-md border border-white/5 bg-black/20 px-2 py-1.5">
                                       <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">{idx + 1}</span>
-                                      <p className="text-[11px] leading-snug text-muted-foreground">
-                                        <span className="font-semibold text-foreground/90">{model.name}</span>
-                                        <span className="text-muted-foreground"> — {model.useCase}</span>
-                                      </p>
+                                      <div className="min-w-0 space-y-1">
+                                        <p className="text-[11px] leading-snug text-muted-foreground">
+                                          <span className="font-semibold text-foreground/90">{model.name}</span>
+                                          <span className="text-muted-foreground"> — {model.useCase}</span>
+                                        </p>
+                                        <p className="text-[10px] leading-snug text-muted-foreground/75">{model.howToUse}</p>
+                                      </div>
                                     </div>
                                   ))}
                                 </div>

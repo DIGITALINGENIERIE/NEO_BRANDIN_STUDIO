@@ -27,15 +27,18 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     tone = "professionnel",
     product_name,
     product_description = "",
+    ingredients = "",
     material = "matériaux d'exception",
     warranty = 2,
-    delivery_days = 3,
+    delivery_days_local = 3,
+    delivery_days_international = 7,
     express_delivery_days = 1,
     express_price = 9.90,
     return_days = 30,
     discount = 20,
     promo_code,
     price = 299,
+    currency = "FCFA",
     free_shipping = 100,
     support_email,
     unique_feature = "fabrication artisanale",
@@ -47,15 +50,18 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     tone?: string;
     product_name: string;
     product_description?: string;
+    ingredients?: string;
     material?: string;
     warranty?: number;
-    delivery_days?: number;
+    delivery_days_local?: number;
+    delivery_days_international?: number;
     express_delivery_days?: number;
     express_price?: number;
     return_days?: number;
     discount?: number;
     promo_code?: string;
     price?: number;
+    currency?: string;
     free_shipping?: number;
     support_email?: string;
     unique_feature?: string;
@@ -71,6 +77,9 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const email = support_email || `contact@${brand_name.toLowerCase().replace(/\s+/g, "")}.com`;
   const discountedPrice = Math.round(price * (1 - discount / 100) * 100) / 100;
+  const ingredientsBlock = ingredients
+    ? `- Ingrédients/composants OFFICIELS du produit (UTILISER UNIQUEMENT CES INGRÉDIENTS — ne jamais en inventer): ${ingredients}`
+    : "";
 
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -85,16 +94,24 @@ Contexte de la marque:
 - Ton: ${tone}
 - Matériau principal: ${material}
 - Description: ${product_description || "produit premium"}
+${ingredientsBlock}
 - Garantie: ${warranty} ans
-- Livraison: ${delivery_days} jours ouvrés (express: ${express_delivery_days}j pour ${express_price}€)
+- Livraison Côte d'Ivoire: ${delivery_days_local} jours ouvrés
+- Livraison reste de l'Afrique: ${delivery_days_international} jours ouvrés
+- Livraison express: ${express_delivery_days}j pour ${express_price}€
 - Retours: ${return_days} jours
-- Prix: ${price}€ (remise ${discount}% → ${discountedPrice}€ avec code ${code})
-- Livraison offerte dès: ${free_shipping}€
+- Prix: ${price} ${currency} (remise ${discount}% → ${discountedPrice} ${currency} avec code ${code})
+- Livraison offerte dès: ${free_shipping} ${currency}
 - Email support: ${email}
 - Point différenciateur: ${unique_feature}
 - Best-sellers: ${best_seller_1 || "produit phare"}, ${best_seller_2 || "coup de cœur"}
 
-RÈGLE ABSOLUE: Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.`;
+RÈGLES ABSOLUES:
+1. Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
+2. ANTI-HALLUCINATION INGRÉDIENTS: Si des ingrédients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingrédients (ex: "gingembre doré", "extrait de rose", etc.) non mentionnés dans le brief.
+3. DÉLAIS DE LIVRAISON RÉALISTES: Toujours distinguer Côte d'Ivoire (${delivery_days_local} jours) du reste de l'Afrique (${delivery_days_international} jours). Ne jamais promettre "${delivery_days_local} jours partout en Afrique".
+4. DEVISE: Utiliser ${currency} pour tous les montants. Si des prix en Euros apparaissent, ajouter "(Prix indicatif — paiement en FCFA disponible)".
+5. Ne jamais inventer un prix remisé différent de ${discountedPrice} ${currency}.`;
 
   const sections = [
     {
@@ -119,7 +136,8 @@ Réponds en JSON avec exactement cette structure:
 }
 
 Les 20 questions doivent être variées, réalistes et 100% adaptées au secteur "${sector}" et au produit "${product_name}".
-Inclure les infos spécifiques: livraison ${delivery_days}j, retours ${return_days}j, garantie ${warranty}ans, code promo ${code}, email ${email}.`,
+Inclure les infos spécifiques: livraison ${delivery_days_local}j en Côte d'Ivoire / ${delivery_days_international}j reste Afrique, retours ${return_days}j, garantie ${warranty}ans, code promo ${code} (→ ${discountedPrice} ${currency}), email ${email}.
+RAPPEL: Ne jamais halluciner des ingrédients. Ne jamais promettre "${delivery_days_local} jours partout en Afrique". Prix en ${currency}.`,
     },
     {
       key: "objections",
@@ -152,7 +170,7 @@ Réponds en JSON avec exactement cette structure:
   ]
 }
 
-Personnaliser avec: prix ${price}€, remise ${discount}%, code ${code} (→ ${discountedPrice}€), livraison ${delivery_days}j, express ${express_delivery_days}j à ${express_price}€, garantie ${warranty}ans, retours ${return_days}j, livraison offerte dès ${free_shipping}€, point fort "${unique_feature}".`,
+Personnaliser avec: prix ${price} ${currency}, remise ${discount}%, code ${code} (→ ${discountedPrice} ${currency}), livraison ${delivery_days_local}j en Côte d'Ivoire / ${delivery_days_international}j reste Afrique, express ${express_delivery_days}j à ${express_price}€, garantie ${warranty}ans, retours ${return_days}j, livraison offerte dès ${free_shipping} ${currency}, point fort "${unique_feature}".`,
     },
     {
       key: "negative_comments",

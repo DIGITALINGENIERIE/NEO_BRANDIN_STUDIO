@@ -48302,9 +48302,9 @@ router9.post("/openai/enhance-prompts-launch", async (req, res) => {
     shipping_info = "Livraison offerte d\xE8s 100\u20AC",
     features = [],
     benefits = [],
-    primary_color = "#D4AF37",
+    primary_color = "#C8A96E",
     heading_font = "Playfair Display",
-    body_font = "Montserrat"
+    body_font = "Lora"
   } = req.body;
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
@@ -48335,7 +48335,13 @@ Contexte:
 - Police titres: ${heading_font} | Police corps: ${body_font}
 - Ann\xE9e: ${year}
 
-R\xC8GLE ABSOLUE: R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.`;
+R\xC8GLES ABSOLUES:
+1. R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.
+2. HTML VALIDE OBLIGATOIRE: toutes les balises doivent \xEAtre correctement ouvertes ET ferm\xE9es. Ne jamais laisser une balise corrompue ou incompl\xE8te (ex: <h2>Titre Not<\\/h2> est INTERDIT \u2014 \xE9crire <h2>Titre complet</h2>).
+3. Ne JAMAIS tronquer ou abr\xE9ger le nom de la marque "${brand_name}" \u2014 toujours l'\xE9crire en entier.
+4. Pour les march\xE9s africains francophones: afficher les prix avec mention "(Prix indicatif en Euros \u2014 paiement en FCFA disponible)" ou convertir directement en FCFA (1\u20AC \u2248 655 FCFA).
+5. CSS de qualit\xE9 luxe: inclure des transitions fluides (transition: all 0.3s ease) sur les boutons, liens et \xE9l\xE9ments interactifs. Utiliser la couleur exacte ${primary_color} et sa variante hover \xE0 -10% de luminosit\xE9 \u2014 ne jamais utiliser une autre teinte dor\xE9e.
+6. Police corps = ${body_font} EXCLUSIVEMENT pour le texte de paragraphe \u2014 ne pas substituer par Montserrat ou une autre police g\xE9om\xE9trique.`;
   const sections = [
     {
       key: "landing_page",
@@ -48351,7 +48357,19 @@ La landing page doit inclure :
 - Section FAQ (4 questions/r\xE9ponses pertinentes pour le secteur)
 - Footer avec mentions l\xE9gales
 
-CSS int\xE9gr\xE9 utilisant : couleur principale ${primary_color}, police ${heading_font} pour les titres, ${body_font} pour le corps, fond blanc, design responsive.
+CSS int\xE9gr\xE9 utilisant EXACTEMENT:
+- Couleur principale: ${primary_color} (OBLIGATOIRE \u2014 ne pas substituer par #D4AF37 ou toute autre teinte)
+- Couleur hover: calculer ${primary_color} \xE0 -10% de luminosit\xE9 (ex: si #C8A96E \u2192 hover: #B49455)
+- Police titres: ${heading_font} (import Google Fonts)
+- Police corps: ${body_font} (import Google Fonts \u2014 OBLIGATOIRE pour tous les paragraphes, ne pas utiliser Montserrat)
+- Fond blanc, design responsive mobile-first
+- Transitions CSS fluides sur TOUS les boutons et liens: transition: all 0.3s ease;
+- Effets hover subtils: transform: translateY(-2px) sur les boutons CTA
+
+R\xC8GLES HTML STRICTES:
+- Toutes les balises DOIVENT \xEAtre correctement ferm\xE9es \u2014 jamais de balise tronqu\xE9e ou corrompue
+- Le nom "${brand_name}" doit appara\xEEtre EN ENTIER, jamais abr\xE9g\xE9
+- Les prix: afficher ${old_price}\u20AC barr\xE9 \u2192 ${price}\u20AC avec la mention "(Prix indicatif \u2014 paiement en FCFA disponible)"
 
 R\xE9ponds en JSON avec exactement cette structure:
 {
@@ -48508,15 +48526,18 @@ router10.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     tone = "professionnel",
     product_name,
     product_description = "",
+    ingredients = "",
     material = "mat\xE9riaux d'exception",
     warranty = 2,
-    delivery_days = 3,
+    delivery_days_local = 3,
+    delivery_days_international = 7,
     express_delivery_days = 1,
     express_price = 9.9,
     return_days = 30,
     discount = 20,
     promo_code,
     price = 299,
+    currency = "FCFA",
     free_shipping = 100,
     support_email,
     unique_feature = "fabrication artisanale",
@@ -48530,6 +48551,7 @@ router10.post("/openai/enhance-prompts-chatbot", async (req, res) => {
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const email = support_email || `contact@${brand_name.toLowerCase().replace(/\s+/g, "")}.com`;
   const discountedPrice = Math.round(price * (1 - discount / 100) * 100) / 100;
+  const ingredientsBlock = ingredients ? `- Ingr\xE9dients/composants OFFICIELS du produit (UTILISER UNIQUEMENT CES INGR\xC9DIENTS \u2014 ne jamais en inventer): ${ingredients}` : "";
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -48542,16 +48564,24 @@ Contexte de la marque:
 - Ton: ${tone}
 - Mat\xE9riau principal: ${material}
 - Description: ${product_description || "produit premium"}
+${ingredientsBlock}
 - Garantie: ${warranty} ans
-- Livraison: ${delivery_days} jours ouvr\xE9s (express: ${express_delivery_days}j pour ${express_price}\u20AC)
+- Livraison C\xF4te d'Ivoire: ${delivery_days_local} jours ouvr\xE9s
+- Livraison reste de l'Afrique: ${delivery_days_international} jours ouvr\xE9s
+- Livraison express: ${express_delivery_days}j pour ${express_price}\u20AC
 - Retours: ${return_days} jours
-- Prix: ${price}\u20AC (remise ${discount}% \u2192 ${discountedPrice}\u20AC avec code ${code})
-- Livraison offerte d\xE8s: ${free_shipping}\u20AC
+- Prix: ${price} ${currency} (remise ${discount}% \u2192 ${discountedPrice} ${currency} avec code ${code})
+- Livraison offerte d\xE8s: ${free_shipping} ${currency}
 - Email support: ${email}
 - Point diff\xE9renciateur: ${unique_feature}
 - Best-sellers: ${best_seller_1 || "produit phare"}, ${best_seller_2 || "coup de c\u0153ur"}
 
-R\xC8GLE ABSOLUE: R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.`;
+R\xC8GLES ABSOLUES:
+1. R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.
+2. ANTI-HALLUCINATION INGR\xC9DIENTS: Si des ingr\xE9dients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingr\xE9dients (ex: "gingembre dor\xE9", "extrait de rose", etc.) non mentionn\xE9s dans le brief.
+3. D\xC9LAIS DE LIVRAISON R\xC9ALISTES: Toujours distinguer C\xF4te d'Ivoire (${delivery_days_local} jours) du reste de l'Afrique (${delivery_days_international} jours). Ne jamais promettre "${delivery_days_local} jours partout en Afrique".
+4. DEVISE: Utiliser ${currency} pour tous les montants. Si des prix en Euros apparaissent, ajouter "(Prix indicatif \u2014 paiement en FCFA disponible)".
+5. Ne jamais inventer un prix remis\xE9 diff\xE9rent de ${discountedPrice} ${currency}.`;
   const sections = [
     {
       key: "faq",
@@ -48575,7 +48605,8 @@ R\xE9ponds en JSON avec exactement cette structure:
 }
 
 Les 20 questions doivent \xEAtre vari\xE9es, r\xE9alistes et 100% adapt\xE9es au secteur "${sector}" et au produit "${product_name}".
-Inclure les infos sp\xE9cifiques: livraison ${delivery_days}j, retours ${return_days}j, garantie ${warranty}ans, code promo ${code}, email ${email}.`
+Inclure les infos sp\xE9cifiques: livraison ${delivery_days_local}j en C\xF4te d'Ivoire / ${delivery_days_international}j reste Afrique, retours ${return_days}j, garantie ${warranty}ans, code promo ${code} (\u2192 ${discountedPrice} ${currency}), email ${email}.
+RAPPEL: Ne jamais halluciner des ingr\xE9dients. Ne jamais promettre "${delivery_days_local} jours partout en Afrique". Prix en ${currency}.`
     },
     {
       key: "objections",
@@ -48608,7 +48639,7 @@ R\xE9ponds en JSON avec exactement cette structure:
   ]
 }
 
-Personnaliser avec: prix ${price}\u20AC, remise ${discount}%, code ${code} (\u2192 ${discountedPrice}\u20AC), livraison ${delivery_days}j, express ${express_delivery_days}j \xE0 ${express_price}\u20AC, garantie ${warranty}ans, retours ${return_days}j, livraison offerte d\xE8s ${free_shipping}\u20AC, point fort "${unique_feature}".`
+Personnaliser avec: prix ${price} ${currency}, remise ${discount}%, code ${code} (\u2192 ${discountedPrice} ${currency}), livraison ${delivery_days_local}j en C\xF4te d'Ivoire / ${delivery_days_international}j reste Afrique, express ${express_delivery_days}j \xE0 ${express_price}\u20AC, garantie ${warranty}ans, retours ${return_days}j, livraison offerte d\xE8s ${free_shipping} ${currency}, point fort "${unique_feature}".`
     },
     {
       key: "negative_comments",
@@ -48718,7 +48749,9 @@ router11.post("/openai/enhance-prompts-upsell", async (req, res) => {
     product_name,
     product_price = 299,
     product_features = [],
-    values = []
+    values = [],
+    currency = "FCFA",
+    brand_colors = ""
   } = req.body;
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
@@ -48729,38 +48762,51 @@ router11.post("/openai/enhance-prompts-upsell", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   const featuresStr = product_features.length > 0 ? product_features.join(", ") : "non sp\xE9cifi\xE9es";
   const valuesStr = values.length > 0 ? values.join(", ") : "qualit\xE9, confiance, \xE9l\xE9gance";
+  const brandColorsBlock = brand_colors ? `- Charte couleurs SACR\xC9E (respecter dans TOUS les visuels produits): ${brand_colors}` : "";
   const systemPrompt = `Tu es un expert en strat\xE9gie e-commerce et maximisation du panier moyen pour RoboNeo.com.
 Ta mission: g\xE9n\xE9rer des strat\xE9gies d'upsell et cross-sell PR\xC9CISES et ACTIONNABLES pour augmenter le chiffre d'affaires.
 Contexte de la marque:
 - Nom: ${brand_name}
 - Secteur: ${sector}
 - Ton: ${tone}
-- Produit principal: ${product_name} (${product_price}\u20AC)
+- Produit principal: ${product_name} (${product_price} ${currency})
 - Caract\xE9ristiques: ${featuresStr}
 - Valeurs: ${valuesStr}
+${brandColorsBlock}
 
-Toutes tes r\xE9ponses doivent \xEAtre en JSON valide, directement exploitables.`;
+R\xC8GLES ABSOLUES:
+1. Toutes tes r\xE9ponses doivent \xEAtre en JSON valide, directement exploitables.
+2. NOMS DE PRODUITS BRAND\xC9S: Chaque produit compl\xE9mentaire doit porter le nom de la marque "${brand_name}" dedans. Ex: au lieu de "Cr\xE8me de Nuit", \xE9crire "Baume Nuit R\xE9g\xE9n\xE9rant \u2014 ${brand_name}". Les noms doivent sonner comme une extension de gamme, pas un produit g\xE9n\xE9rique.
+3. COH\xC9RENCE COULEURS: Si une charte couleur est fournie, les produits visuels (Gua Sha, accessoires, packaging) doivent respecter ces couleurs. Interdire les couleurs hors charte (ex: si la charte est Ivoire/Or/Vert, ne pas proposer un Gua Sha rose).
+4. DEVISE LOCALE: Afficher les prix en ${currency}. Si des prix en Euros sont utilis\xE9s, ajouter "(Prix indicatif \u2014 paiement en FCFA disponible)".
+5. Ne jamais alt\xE9rer ou d\xE9former le nom de marque "${brand_name}".`;
   const sections = [
     {
       key: "cross_sell",
       label: "Produits Compl\xE9mentaires",
       agent: "Manual (strategy)",
       userPrompt: `G\xE9n\xE8re exactement 3 id\xE9es de produits compl\xE9mentaires (cross-sell) pour ${brand_name} dans le secteur ${sector}.
-Le produit principal est: ${product_name} \xE0 ${product_price}\u20AC.
+Le produit principal est: ${product_name} \xE0 ${product_price} ${currency}.
+
+R\xC8GLES OBLIGATOIRES:
+- Chaque "product_name" DOIT inclure le nom "${brand_name}" (ex: "Baume Corps \xC9clat \u2014 ${brand_name}", pas juste "Baume Corps")
+- Les prix dans "price_range" en ${currency}
+- Les visuels produits doivent respecter la charte couleurs: ${brand_colors || "couleurs neutres luxe (ivoire, or, vert naturel)"}
+- Ne jamais sugg\xE9rer des couleurs hors charte pour les accessoires/produits (ex: pas de Gua Sha rose si la charte est Ivoire/Or/Vert)
 
 R\xE9ponds UNIQUEMENT avec un JSON valide, sans texte avant ou apr\xE8s:
 {
   "ideas": [
     {
       "id": 1,
-      "product_name": "Nom du produit compl\xE9mentaire",
+      "product_name": "Nom brand\xE9 du produit compl\xE9mentaire incluant ${brand_name}",
       "description": "Description courte et percutante (1 phrase)",
-      "price_range": "XX-XX\u20AC",
+      "price_range": "XX-XX ${currency}",
       "justification": "Pourquoi ce produit compl\xE8te parfaitement ${product_name}",
       "margin": "XX%",
       "bundle_discount": 15,
       "placement": "Page produit / Panier / Post-achat",
-      "visual_prompt": "Prompt d\xE9taill\xE9 pour g\xE9n\xE9rer le visuel produit sur RoboNeo. Format carr\xE9 1080x1080px, fond \xE9pur\xE9, style coh\xE9rent avec ${brand_name}."
+      "visual_prompt": "Prompt d\xE9taill\xE9 pour g\xE9n\xE9rer le visuel produit sur RoboNeo. Format carr\xE9 1080x1080px, fond \xE9pur\xE9, couleurs respectant la charte ${brand_name}, style coh\xE9rent avec la marque."
     }
   ]
 }`
@@ -48987,10 +49033,15 @@ router12.post("/openai/enhance-prompts-performance", async (req, res) => {
   const systemPrompt = `Tu es un expert en performance marketing e-commerce et analyse de donn\xE9es pour RoboNeo.com.
 Ta mission: cr\xE9er des outils de tracking et d'optimisation PR\xC9CIS et ACTIONNABLES pour maximiser le ROI.
 Contexte de la marque:
-- Nom: ${brand_name}
+- Nom EXACT de la marque: ${brand_name} (NE JAMAIS alt\xE9rer ce nom \u2014 ex: ne pas \xE9crire "${brand_name}kin" ou "${brand_name.slice(0, -1)}" ou toute variation)
 - Secteur: ${sector}
 - Objectifs: CA cible ${ctx.ca_target}\u20AC, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa}\u20AC
-Toutes tes r\xE9ponses doivent \xEAtre en JSON valide, directement exploitables.`;
+
+R\xC8GLES ABSOLUES:
+1. Toutes tes r\xE9ponses doivent \xEAtre en JSON valide, directement exploitables.
+2. INT\xC9GRIT\xC9 DU NOM: Toujours \xE9crire le nom de la marque exactement: "${brand_name}". Ne jamais l'abr\xE9ger, d\xE9former ou halluciner une variante.
+3. GLOSSAIRE OBLIGATOIRE: Dans la section kpi_guide, inclure syst\xE9matiquement un champ "lexique" avec les d\xE9finitions simples de: ROAS, CPA, CTR, CAC, Taux de conversion \u2014 pour qu'une fondatrice de TPE sans exp\xE9rience marketing puisse comprendre.
+4. Les exemples de produits dans les fichiers doivent utiliser le vrai nom "${brand_name}" et non un nom invent\xE9.`;
   const sections = [
     {
       key: "dashboard",
@@ -49035,6 +49086,33 @@ Adapte les seuils au secteur ${sector} et aux objectifs: ROAS ${ctx.roas_target}
 
 R\xE9ponds UNIQUEMENT avec un JSON valide:
 {
+  "lexique": [
+    {
+      "terme": "ROAS",
+      "definition": "Return On Ad Spend = CA g\xE9n\xE9r\xE9 par la pub / Co\xFBt de la pub. Exemple: si tu d\xE9penses 10 000 FCFA en pub et g\xE9n\xE8res 40 000 FCFA de ventes, ton ROAS est de 4.",
+      "exemple_concret": "exemple pratique pour une fondatrice de TPE"
+    },
+    {
+      "terme": "CPA",
+      "definition": "Co\xFBt Par Acquisition = Budget pub total / Nombre de commandes. Exemple: 50 000 FCFA de pub pour 10 commandes = CPA de 5 000 FCFA.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "CTR",
+      "definition": "Click-Through Rate (Taux de clic) = Nombre de clics / Nombre d'impressions \xD7 100. Mesure combien de personnes cliquent sur ta pub.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "CAC",
+      "definition": "Co\xFBt d'Acquisition Client = Total d\xE9penses marketing / Nombre de nouveaux clients. Diff\xE9rent du CPA: inclut toutes les d\xE9penses, pas seulement la pub.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "Taux de conversion",
+      "definition": "% de visiteurs qui ach\xE8tent = Commandes / Visiteurs \xD7 100. Exemple: 100 visiteurs, 3 achats = taux de conversion de 3%.",
+      "exemple_concret": "exemple pratique"
+    }
+  ],
   "platforms": [
     {
       "name": "Nom de la plateforme",
@@ -49057,7 +49135,8 @@ R\xE9ponds UNIQUEMENT avec un JSON valide:
   "global_rules": ["R\xE8gle globale 1", "R\xE8gle globale 2", "R\xE8gle globale 3"]
 }
 
-Couvre: Meta Ads, Google Ads, TikTok Ads, Organique, Email Marketing.`
+Couvre: Meta Ads, Google Ads, TikTok Ads, Organique, Email Marketing.
+RAPPEL: Adapter les exemples concrets du lexique au secteur ${sector} et \xE0 la marque ${brand_name}.`
     },
     {
       key: "scaling_guide",

@@ -25,6 +25,8 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
     product_price = 299,
     product_features = [],
     values = [],
+    currency = "FCFA",
+    brand_colors = "",
   } = req.body as {
     brand_name: string;
     sector: string;
@@ -33,6 +35,8 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
     product_price?: number;
     product_features?: string[];
     values?: string[];
+    currency?: string;
+    brand_colors?: string;
   };
 
   if (!brand_name || !sector || !product_name) {
@@ -47,17 +51,27 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
   const featuresStr = product_features.length > 0 ? product_features.join(", ") : "non spécifiées";
   const valuesStr = values.length > 0 ? values.join(", ") : "qualité, confiance, élégance";
 
+  const brandColorsBlock = brand_colors
+    ? `- Charte couleurs SACRÉE (respecter dans TOUS les visuels produits): ${brand_colors}`
+    : "";
+
   const systemPrompt = `Tu es un expert en stratégie e-commerce et maximisation du panier moyen pour RoboNeo.com.
 Ta mission: générer des stratégies d'upsell et cross-sell PRÉCISES et ACTIONNABLES pour augmenter le chiffre d'affaires.
 Contexte de la marque:
 - Nom: ${brand_name}
 - Secteur: ${sector}
 - Ton: ${tone}
-- Produit principal: ${product_name} (${product_price}€)
+- Produit principal: ${product_name} (${product_price} ${currency})
 - Caractéristiques: ${featuresStr}
 - Valeurs: ${valuesStr}
+${brandColorsBlock}
 
-Toutes tes réponses doivent être en JSON valide, directement exploitables.`;
+RÈGLES ABSOLUES:
+1. Toutes tes réponses doivent être en JSON valide, directement exploitables.
+2. NOMS DE PRODUITS BRANDÉS: Chaque produit complémentaire doit porter le nom de la marque "${brand_name}" dedans. Ex: au lieu de "Crème de Nuit", écrire "Baume Nuit Régénérant — ${brand_name}". Les noms doivent sonner comme une extension de gamme, pas un produit générique.
+3. COHÉRENCE COULEURS: Si une charte couleur est fournie, les produits visuels (Gua Sha, accessoires, packaging) doivent respecter ces couleurs. Interdire les couleurs hors charte (ex: si la charte est Ivoire/Or/Vert, ne pas proposer un Gua Sha rose).
+4. DEVISE LOCALE: Afficher les prix en ${currency}. Si des prix en Euros sont utilisés, ajouter "(Prix indicatif — paiement en FCFA disponible)".
+5. Ne jamais altérer ou déformer le nom de marque "${brand_name}".`;
 
   const sections = [
     {
@@ -65,21 +79,27 @@ Toutes tes réponses doivent être en JSON valide, directement exploitables.`;
       label: "Produits Complémentaires",
       agent: "Manual (strategy)",
       userPrompt: `Génère exactement 3 idées de produits complémentaires (cross-sell) pour ${brand_name} dans le secteur ${sector}.
-Le produit principal est: ${product_name} à ${product_price}€.
+Le produit principal est: ${product_name} à ${product_price} ${currency}.
+
+RÈGLES OBLIGATOIRES:
+- Chaque "product_name" DOIT inclure le nom "${brand_name}" (ex: "Baume Corps Éclat — ${brand_name}", pas juste "Baume Corps")
+- Les prix dans "price_range" en ${currency}
+- Les visuels produits doivent respecter la charte couleurs: ${brand_colors || "couleurs neutres luxe (ivoire, or, vert naturel)"}
+- Ne jamais suggérer des couleurs hors charte pour les accessoires/produits (ex: pas de Gua Sha rose si la charte est Ivoire/Or/Vert)
 
 Réponds UNIQUEMENT avec un JSON valide, sans texte avant ou après:
 {
   "ideas": [
     {
       "id": 1,
-      "product_name": "Nom du produit complémentaire",
+      "product_name": "Nom brandé du produit complémentaire incluant ${brand_name}",
       "description": "Description courte et percutante (1 phrase)",
-      "price_range": "XX-XX€",
+      "price_range": "XX-XX ${currency}",
       "justification": "Pourquoi ce produit complète parfaitement ${product_name}",
       "margin": "XX%",
       "bundle_discount": 15,
       "placement": "Page produit / Panier / Post-achat",
-      "visual_prompt": "Prompt détaillé pour générer le visuel produit sur RoboNeo. Format carré 1080x1080px, fond épuré, style cohérent avec ${brand_name}."
+      "visual_prompt": "Prompt détaillé pour générer le visuel produit sur RoboNeo. Format carré 1080x1080px, fond épuré, couleurs respectant la charte ${brand_name}, style cohérent avec la marque."
     }
   ]
 }`,

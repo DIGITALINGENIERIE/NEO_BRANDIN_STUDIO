@@ -79,10 +79,15 @@ router.post("/openai/enhance-prompts-performance", async (req, res) => {
   const systemPrompt = `Tu es un expert en performance marketing e-commerce et analyse de données pour RoboNeo.com.
 Ta mission: créer des outils de tracking et d'optimisation PRÉCIS et ACTIONNABLES pour maximiser le ROI.
 Contexte de la marque:
-- Nom: ${brand_name}
+- Nom EXACT de la marque: ${brand_name} (NE JAMAIS altérer ce nom — ex: ne pas écrire "${brand_name}kin" ou "${brand_name.slice(0, -1)}" ou toute variation)
 - Secteur: ${sector}
 - Objectifs: CA cible ${ctx.ca_target}€, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa}€
-Toutes tes réponses doivent être en JSON valide, directement exploitables.`;
+
+RÈGLES ABSOLUES:
+1. Toutes tes réponses doivent être en JSON valide, directement exploitables.
+2. INTÉGRITÉ DU NOM: Toujours écrire le nom de la marque exactement: "${brand_name}". Ne jamais l'abréger, déformer ou halluciner une variante.
+3. GLOSSAIRE OBLIGATOIRE: Dans la section kpi_guide, inclure systématiquement un champ "lexique" avec les définitions simples de: ROAS, CPA, CTR, CAC, Taux de conversion — pour qu'une fondatrice de TPE sans expérience marketing puisse comprendre.
+4. Les exemples de produits dans les fichiers doivent utiliser le vrai nom "${brand_name}" et non un nom inventé.`;
 
   const sections = [
     {
@@ -128,6 +133,33 @@ Adapte les seuils au secteur ${sector} et aux objectifs: ROAS ${ctx.roas_target}
 
 Réponds UNIQUEMENT avec un JSON valide:
 {
+  "lexique": [
+    {
+      "terme": "ROAS",
+      "definition": "Return On Ad Spend = CA généré par la pub / Coût de la pub. Exemple: si tu dépenses 10 000 FCFA en pub et génères 40 000 FCFA de ventes, ton ROAS est de 4.",
+      "exemple_concret": "exemple pratique pour une fondatrice de TPE"
+    },
+    {
+      "terme": "CPA",
+      "definition": "Coût Par Acquisition = Budget pub total / Nombre de commandes. Exemple: 50 000 FCFA de pub pour 10 commandes = CPA de 5 000 FCFA.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "CTR",
+      "definition": "Click-Through Rate (Taux de clic) = Nombre de clics / Nombre d'impressions × 100. Mesure combien de personnes cliquent sur ta pub.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "CAC",
+      "definition": "Coût d'Acquisition Client = Total dépenses marketing / Nombre de nouveaux clients. Différent du CPA: inclut toutes les dépenses, pas seulement la pub.",
+      "exemple_concret": "exemple pratique"
+    },
+    {
+      "terme": "Taux de conversion",
+      "definition": "% de visiteurs qui achètent = Commandes / Visiteurs × 100. Exemple: 100 visiteurs, 3 achats = taux de conversion de 3%.",
+      "exemple_concret": "exemple pratique"
+    }
+  ],
   "platforms": [
     {
       "name": "Nom de la plateforme",
@@ -150,7 +182,8 @@ Réponds UNIQUEMENT avec un JSON valide:
   "global_rules": ["Règle globale 1", "Règle globale 2", "Règle globale 3"]
 }
 
-Couvre: Meta Ads, Google Ads, TikTok Ads, Organique, Email Marketing.`,
+Couvre: Meta Ads, Google Ads, TikTok Ads, Organique, Email Marketing.
+RAPPEL: Adapter les exemples concrets du lexique au secteur ${sector} et à la marque ${brand_name}.`,
     },
     {
       key: "scaling_guide",

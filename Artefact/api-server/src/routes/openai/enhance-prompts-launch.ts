@@ -35,9 +35,9 @@ router.post("/openai/enhance-prompts-launch", async (req, res) => {
     shipping_info = "Livraison offerte dès 100€",
     features = [],
     benefits = [],
-    primary_color = "#D4AF37",
+    primary_color = "#C8A96E",
     heading_font = "Playfair Display",
-    body_font = "Montserrat",
+    body_font = "Lora",
   } = req.body as {
     brand_name: string;
     sector: string;
@@ -89,7 +89,13 @@ Contexte:
 - Police titres: ${heading_font} | Police corps: ${body_font}
 - Année: ${year}
 
-RÈGLE ABSOLUE: Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.`;
+RÈGLES ABSOLUES:
+1. Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
+2. HTML VALIDE OBLIGATOIRE: toutes les balises doivent être correctement ouvertes ET fermées. Ne jamais laisser une balise corrompue ou incomplète (ex: <h2>Titre Not<\\/h2> est INTERDIT — écrire <h2>Titre complet</h2>).
+3. Ne JAMAIS tronquer ou abréger le nom de la marque "${brand_name}" — toujours l'écrire en entier.
+4. Pour les marchés africains francophones: afficher les prix avec mention "(Prix indicatif en Euros — paiement en FCFA disponible)" ou convertir directement en FCFA (1€ ≈ 655 FCFA).
+5. CSS de qualité luxe: inclure des transitions fluides (transition: all 0.3s ease) sur les boutons, liens et éléments interactifs. Utiliser la couleur exacte ${primary_color} et sa variante hover à -10% de luminosité — ne jamais utiliser une autre teinte dorée.
+6. Police corps = ${body_font} EXCLUSIVEMENT pour le texte de paragraphe — ne pas substituer par Montserrat ou une autre police géométrique.`;
 
   const sections = [
     {
@@ -106,7 +112,19 @@ La landing page doit inclure :
 - Section FAQ (4 questions/réponses pertinentes pour le secteur)
 - Footer avec mentions légales
 
-CSS intégré utilisant : couleur principale ${primary_color}, police ${heading_font} pour les titres, ${body_font} pour le corps, fond blanc, design responsive.
+CSS intégré utilisant EXACTEMENT:
+- Couleur principale: ${primary_color} (OBLIGATOIRE — ne pas substituer par #D4AF37 ou toute autre teinte)
+- Couleur hover: calculer ${primary_color} à -10% de luminosité (ex: si #C8A96E → hover: #B49455)
+- Police titres: ${heading_font} (import Google Fonts)
+- Police corps: ${body_font} (import Google Fonts — OBLIGATOIRE pour tous les paragraphes, ne pas utiliser Montserrat)
+- Fond blanc, design responsive mobile-first
+- Transitions CSS fluides sur TOUS les boutons et liens: transition: all 0.3s ease;
+- Effets hover subtils: transform: translateY(-2px) sur les boutons CTA
+
+RÈGLES HTML STRICTES:
+- Toutes les balises DOIVENT être correctement fermées — jamais de balise tronquée ou corrompue
+- Le nom "${brand_name}" doit apparaître EN ENTIER, jamais abrégé
+- Les prix: afficher ${old_price}€ barré → ${price}€ avec la mention "(Prix indicatif — paiement en FCFA disponible)"
 
 Réponds en JSON avec exactement cette structure:
 {

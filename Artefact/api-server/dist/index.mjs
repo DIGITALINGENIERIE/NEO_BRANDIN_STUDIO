@@ -45551,59 +45551,70 @@ Tu ne dois JAMAIS inventer ni supposer:
 \u2022 Toute information factuelle absente du brief client
 Si une donn\xE9e n'est pas explicitement fournie dans le brief, OMETS-LA totalement. N'invente rien, n'assume rien. Utilise uniquement ce qui est dans le brief.`;
 }
-function buildReviewPrompt(content, brief, sectionKey, agentRole) {
+function buildReviewPrompt(content, brief, sectionKey, agentRole, isSecondPass = false) {
   const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
   const competitorsStr = brief.competitors ? `
-Concurrents \xE0 diff\xE9rencier : ${brief.competitors}` : "";
+Competitors to differentiate from: ${brief.competitors}` : "";
   const forbiddenStr = brief.forbidden_keywords ? `
-Mots/concepts INTERDITS : ${brief.forbidden_keywords}` : "";
+FORBIDDEN words/concepts: ${brief.forbidden_keywords}` : "";
   const colorsStr = brief.colors ? `
-Couleurs de la marque : ${brief.colors}` : "";
+Brand colors: ${brief.colors}` : "";
   const targetStr = brief.target_demographic || brief.target_audience ? `
-Cible : ${brief.target_demographic || brief.target_audience}` : "";
-  return `Tu es ${agentRole} pour RoboNeo.com \u2014 plateforme de g\xE9n\xE9ration de prompts IA pour des marques professionnelles.
+Target audience: ${brief.target_demographic || brief.target_audience}` : "";
+  const secondPassNote = isSecondPass ? `
+\u26A0\uFE0F  SECOND PASS \u2014 This prompt was already refined once. Your mission: find every remaining weakness and eliminate it. Push from 8-9/10 to a perfect 10/10. Be ruthlessly precise.
+` : "";
+  return `You are ${agentRole} for RoboNeo.com \u2014 a professional AI prompt generation platform for brand assets.${secondPassNote}
 
-\u2550\u2550\u2550 BRIEF DE LA MARQUE \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-Marque        : ${brief.brand_name}
-Secteur       : ${brief.sector}
-Ton / Voix    : ${brief.tone}
-Valeurs       : ${valuesStr}${targetStr}${competitorsStr}${colorsStr}${forbiddenStr}
-Module \xE9valu\xE9 : ${sectionKey}
+\u2550\u2550\u2550 BRAND BRIEF \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+Brand         : ${brief.brand_name}
+Sector        : ${brief.sector}
+Tone / Voice  : ${brief.tone}
+Values        : ${valuesStr}${targetStr}${competitorsStr}${colorsStr}${forbiddenStr}
+Section       : ${sectionKey}
 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
-PROMPT \xC0 \xC9VALUER :
+PROMPT TO REVIEW AND IMPROVE:
 """
 ${content}
 """
 
-CRIT\xC8RES D'\xC9VALUATION (note /10 \u2014 sois STRICT, exige 9-10/10 pour valider) :
-1. Ancrage marque   \u2014 "${brief.brand_name}" est nomm\xE9, le secteur "${brief.sector}" transpara\xEEt dans chaque d\xE9tail
-2. Pr\xE9cision tech   \u2014 codes HEX, dimensions px, f/stop, ISO, BPM, ms : toutes les valeurs sont exactes
-3. Pr\xEAt \xE0 l'emploi \u2014 0 modification n\xE9cessaire, prompt directement utilisable dans RoboNeo
-4. Richesse cr\xE9ative \u2014 chaque \xE9l\xE9ment visuel/sonore/copy est d\xE9crit avec pr\xE9cision chirurgicale
-5. Voix de marque  \u2014 ton "${brief.tone}" tenu du d\xE9but \xE0 la fin, aucun mot interdit${forbiddenStr ? ` (${brief.forbidden_keywords})` : ""}
+YOUR DUAL MISSION:
+1. Score the prompt above STRICTLY (this is your honest assessment of the ORIGINAL)
+2. ALWAYS produce a rewritten version targeting 10/10 \u2014 even if the original scores 9/10, there is always room to sharpen it
 
-R\xC8GLES D'AM\xC9LIORATION :
-\u2022 Score < 9 \u2192 g\xE9n\xE9rer une version am\xE9lior\xE9e qui atteint 9-10/10
-\u2022 Ajouter les HEX manquants, remplacer toute valeur vague par une valeur exacte
-\u2022 Ne JAMAIS inventer de donn\xE9es absentes du brief (dates, certifications, stats)
-\u2022 Maintenir la structure \u2014 am\xE9liorer la pr\xE9cision et la richesse, ne pas raccourcir
+EVALUATION CRITERIA (score /10 \u2014 BE RUTHLESSLY STRICT):
+1. Brand anchoring    \u2014 "${brief.brand_name}" named explicitly, sector "${brief.sector}" visible in every single detail
+2. Technical precision \u2014 HEX codes, px dimensions, f/stop, ISO, BPM, ms, frame counts: ALL values must be exact numbers, zero vague qualifiers
+3. Ready-to-use        \u2014 0 modifications needed, prompt is immediately usable in Midjourney / Runway / Suno / ElevenLabs / DALL-E
+4. Creative richness   \u2014 every visual/audio/copy element described with surgical precision (lighting angles, lens mm, specific instruments, exact timings)
+5. Brand voice         \u2014 tone "${brief.tone}" maintained start to finish, no forbidden words${forbiddenStr ? ` (${brief.forbidden_keywords})` : ""}
 
-R\xE9ponds en JSON strictement valide (sans bloc markdown) :
+MANDATORY IMPROVEMENT RULES:
+\u2022 You MUST ALWAYS rewrite the prompt \u2014 never return the original unchanged, even at 9/10
+\u2022 Absolute target: 10/10 \u2014 add all missing HEX codes, replace every vague estimate with an exact value
+\u2022 Enrich technical vocabulary: name specific instruments and their role in the mix, add exact focal lengths, precise shot names, specific transition durations in frames
+\u2022 NEVER invent data absent from the brief (dates, certifications, statistics, real names)
+\u2022 Maintain or expand the structure \u2014 NEVER shorten, condense, or summarize
+\u2022 All AI generation prompts (image, video, audio) must be written in English \u2014 use native AI model vocabulary
+\u2022 For French copy/voice-over/ad scripts: keep French, but add more precision and brand-specific language
+
+Respond in strictly valid JSON only (no markdown block, no explanation outside JSON):
 {
-  "score": <note moyenne sur 10, 1 d\xE9cimale>,
-  "improvements": ["point pr\xE9cis 1", "point pr\xE9cis 2", "point pr\xE9cis 3"],
-  "refined_prompt": "<version am\xE9lior\xE9e compl\xE8te si score < 9, sinon copie exacte de l'original>"
+  "score": <score of the ORIGINAL prompt /10 \u2014 1 decimal \u2014 be strict, most prompts need improvement>,
+  "improvements": ["specific flaw fixed 1", "specific flaw fixed 2", "specific flaw fixed 3", "specific flaw fixed 4"],
+  "refined_prompt": "<ALWAYS a rewritten, improved version \u2014 richer, more precise, more technical, pushing toward 10/10. Never copy the original unchanged.>"
 }`;
 }
-async function reviewWithGPT(content, brief, sectionKey) {
+async function reviewWithGPT(content, brief, sectionKey, isSecondPass = false) {
   try {
     const gpt = getGptReviewClient();
     const prompt = buildReviewPrompt(
       content,
       brief,
       sectionKey,
-      "un expert en pr\xE9cision technique et coh\xE9rence IA (Agent GPT \u2014 Challenger)"
+      "a technical precision expert and AI prompt specialist (GPT Agent \u2014 Challenger)",
+      isSecondPass
     );
     const response = await gpt.chat.completions.create({
       model: GPT_MODEL,
@@ -45614,22 +45625,23 @@ async function reviewWithGPT(content, brief, sectionKey) {
     const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const parsed = JSON.parse(clean);
     return {
-      score: parsed.score ?? 7,
+      score: parsed.score ?? 6,
       refined: parsed.refined_prompt ?? content,
       improvements: parsed.improvements ?? []
     };
   } catch {
-    return { score: 7, refined: content, improvements: [] };
+    return { score: 6, refined: content, improvements: [] };
   }
 }
-async function reviewWithClaude(content, brief, sectionKey) {
+async function reviewWithClaude(content, brief, sectionKey, isSecondPass = false) {
   try {
     const claude = getClaudeClient();
     const prompt = buildReviewPrompt(
       content,
       brief,
       sectionKey,
-      "un expert en voix de marque, nuance cr\xE9ative et coh\xE9rence strat\xE9gique (Agent Claude \u2014 Critique)"
+      "a brand voice expert, creative strategist and narrative precision specialist (Claude Agent \u2014 Critic)",
+      isSecondPass
     );
     const message = await claude.messages.create({
       model: CLAUDE_MODEL,
@@ -45641,21 +45653,21 @@ async function reviewWithClaude(content, brief, sectionKey) {
     const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const parsed = JSON.parse(clean);
     return {
-      score: parsed.score ?? 7,
+      score: parsed.score ?? 6,
       refined: parsed.refined_prompt ?? content,
       improvements: parsed.improvements ?? []
     };
   } catch {
-    return { score: 7, refined: content, improvements: [] };
+    return { score: 6, refined: content, improvements: [] };
   }
 }
 async function reviewPromptQuality(content, brief, sectionKey) {
   const [gptResult, claudeResult] = await Promise.all([
-    reviewWithGPT(content, brief, sectionKey),
-    reviewWithClaude(content, brief, sectionKey)
+    reviewWithGPT(content, brief, sectionKey, false),
+    reviewWithClaude(content, brief, sectionKey, false)
   ]);
   console.log(
-    `[Review] ${sectionKey} \u2192 GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`
+    `[Review R1] ${sectionKey} \u2192 GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`
   );
   let winner;
   let winnerResult;
@@ -45669,18 +45681,35 @@ async function reviewPromptQuality(content, brief, sectionKey) {
     winner = "tie";
     winnerResult = claudeResult;
   }
+  const avgScoreR1 = (gptResult.score + claudeResult.score) / 2;
+  let finalRefined = winnerResult.refined;
+  let finalWinner = winner;
+  if (avgScoreR1 < 8.5 && winnerResult.refined && winnerResult.refined !== content) {
+    try {
+      const secondPassFn = winner === "gpt" ? reviewWithClaude : reviewWithGPT;
+      const round2 = await secondPassFn(winnerResult.refined, brief, sectionKey, true);
+      console.log(
+        `[Review R2] ${sectionKey} \u2192 ${winner === "gpt" ? "Claude" : "GPT"}: ${round2.score}/10`
+      );
+      if (round2.refined && round2.refined !== winnerResult.refined) {
+        finalRefined = round2.refined;
+        finalWinner = winner === "gpt" ? "claude" : "gpt";
+      }
+    } catch {
+    }
+  }
   const allImprovements = [
     ...gptResult.improvements.map((i) => `[GPT] ${i}`),
     ...claudeResult.improvements.map((i) => `[Claude] ${i}`)
   ].slice(0, 6);
-  const avgScore = Math.round((gptResult.score + claudeResult.score) / 2 * 10) / 10;
+  const avgScore = Math.round(avgScoreR1 * 10) / 10;
   return {
     score: avgScore,
-    refined: winnerResult.refined,
+    refined: finalRefined,
     improvements: allImprovements,
     gpt_score: gptResult.score,
     claude_score: claudeResult.score,
-    winner
+    winner: finalWinner
   };
 }
 async function generatePersonaVariants(basePrompt, brief) {

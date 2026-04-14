@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import {
   ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, AlertCircle,
-  MapPin, Loader2, Star, ExternalLink,
+  MapPin, Loader2, Star, ExternalLink, History, Trash2, Clock,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -409,7 +409,7 @@ function GmbImportBlock({ onImport }: GmbImportProps) {
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function BrandBriefPanel() {
-  const { brief, updateBrief, resetBrief, completionPct, filledCount } = useBrand();
+  const { brief, savedBriefs, updateBrief, resetBrief, restoreBrief, deleteSavedBrief, completionPct, filledCount } = useBrand();
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("identity");
   const [saved, setSaved] = useState(false);
@@ -422,6 +422,13 @@ export default function BrandBriefPanel() {
   React.useEffect(() => {
     form.reset(brief);
   }, [brief]);
+
+  React.useEffect(() => {
+    const subscription = form.watch((values) => {
+      updateBrief(values as Partial<BrandBrief>);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, updateBrief]);
 
   const onSave = form.handleSubmit((values) => {
     updateBrief(values);
@@ -441,6 +448,7 @@ export default function BrandBriefPanel() {
   };
 
   const isComplete = completionPct >= 80;
+  const recentBriefs = savedBriefs.slice(0, 5);
 
   return (
     <div className="mb-6 rounded-2xl border border-white/8 bg-card/40 backdrop-blur-sm overflow-hidden">
@@ -503,6 +511,64 @@ export default function BrandBriefPanel() {
             <div className="border-t border-white/5">
               {/* GMB Import */}
               <GmbImportBlock onImport={handleGmbImport} />
+
+              {/* Autosaved briefs */}
+              <div className="mx-5 mb-4 rounded-xl border border-white/8 bg-black/15 overflow-hidden">
+                <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/5">
+                  <div className="flex items-center gap-2">
+                    <History className="w-4 h-4 text-primary flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Briefs sauvegardés automatiquement</p>
+                      <p className="text-[10px] text-muted-foreground">Retrouvez et réutilisez vos derniers briefs de marque</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground/60">{savedBriefs.length}/12</span>
+                </div>
+
+                {recentBriefs.length > 0 ? (
+                  <div className="divide-y divide-white/5">
+                    {recentBriefs.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            restoreBrief(item.id);
+                            form.reset(item.brief);
+                            setSaved(true);
+                            setTimeout(() => setSaved(false), 2000);
+                          }}
+                          className="flex-1 min-w-0 text-left group"
+                        >
+                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                            {item.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5 text-[10px] text-muted-foreground">
+                            {item.subtitle && <span className="truncate">{item.subtitle}</span>}
+                            <span className="flex items-center gap-1 flex-shrink-0">
+                              <Clock className="w-2.5 h-2.5" />
+                              {new Date(item.updatedAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteSavedBrief(item.id)}
+                          className="p-1.5 rounded-md text-muted-foreground/50 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                          aria-label={`Supprimer le brief ${item.title}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-3">
+                    <p className="text-[11px] text-muted-foreground">
+                      Aucun brief archivé pour l’instant. Dès que vous remplissez un brief, il est sauvegardé ici automatiquement.
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Section tabs */}
               <div className="flex gap-0.5 px-5 pt-2 pb-2 overflow-x-auto scrollbar-none border-t border-white/5">

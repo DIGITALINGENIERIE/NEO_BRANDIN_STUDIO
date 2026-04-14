@@ -61,6 +61,15 @@ export interface BrandBrief {
 
 export type BriefField = keyof BrandBrief;
 
+export interface SavedBrandBrief {
+  id: string;
+  title: string;
+  subtitle: string;
+  createdAt: string;
+  updatedAt: string;
+  brief: BrandBrief;
+}
+
 export const BRIEF_DEFAULTS: BrandBrief = {
   brand_name: "",
   sector: "luxe",
@@ -116,8 +125,11 @@ export const COMPLETION_FIELDS: BriefField[] = [
 
 interface BrandContextValue {
   brief: BrandBrief;
+  savedBriefs: SavedBrandBrief[];
   updateBrief: (patch: Partial<BrandBrief>) => void;
   resetBrief: () => void;
+  restoreBrief: (id: string) => void;
+  deleteSavedBrief: (id: string) => void;
   completionPct: number;
   filledCount: number;
 }
@@ -125,6 +137,9 @@ interface BrandContextValue {
 const BrandContext = createContext<BrandContextValue | null>(null);
 
 const STORAGE_KEY = "roboneo_brand_brief_v1";
+const HISTORY_KEY = "roboneo_brand_brief_history_v1";
+const ACTIVE_HISTORY_ID_KEY = "roboneo_active_brand_brief_id_v1";
+const MAX_SAVED_BRIEFS = 12;
 
 function loadFromStorage(): BrandBrief {
   try {
@@ -136,17 +151,73 @@ function loadFromStorage(): BrandBrief {
   }
 }
 
+function loadHistory(): SavedBrandBrief[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item) => item?.id && item?.brief)
+      .map((item) => ({
+        id: String(item.id),
+        title: String(item.title ?? item.brief.brand_name ?? "Brief sans nom"),
+        subtitle: String(item.subtitle ?? item.brief.product_name ?? ""),
+        createdAt: String(item.createdAt ?? new Date().toISOString()),
+        updatedAt: String(item.updatedAt ?? new Date().toISOString()),
+        brief: { ...BRIEF_DEFAULTS, ...item.brief },
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function getStoredActiveId(): string {
+  try {
+    const stored = localStorage.getItem(ACTIVE_HISTORY_ID_KEY);
+    if (stored) return stored;
+  } catch {}
+  return crypto.randomUUID();
+}
+
+function getBriefTitle(brief: BrandBrief): string {
+  return brief.brand_name.trim() || brief.product_name.trim() || "Brief sans nom";
+}
+
+function getBriefSubtitle(brief: BrandBrief): string {
+  const parts = [brief.product_name, brief.sector, brief.tone]
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return parts.join(" · ");
+}
+
+function isBriefWorthSaving(brief: BrandBrief): boolean {
+  return COMPLETION_FIELDS.some((field) => {
+    const value = brief[field];
+    const defaultValue = BRIEF_DEFAULTS[field];
+    return value.trim() !== "" && value !== defaultValue;
+  });
+}
+
 export function BrandProvider({ children }: { children: React.ReactNode }) {
   const [brief, setBrief] = useState<BrandBrief>(loadFromStorage);
+  const [savedBriefs, setSavedBriefs] = useState<SavedBrandBrief[]>(loadHistory);
+  const [activeHistoryId, setActiveHistoryId] = useState(getStoredActiveId);
 
   const updateBrief = useCallback((patch: Partial<BrandBrief>) => {
     setBrief((prev) => {
       const next = { ...prev };
+      let changed = false;
       for (const [k, v] of Object.entries(patch)) {
-        if (v !== undefined && v !== null && String(v).trim() !== "") {
-          (next as any)[k] = String(v);
+        if (v !== undefined && v !== null) {
+          const value = String(v);
+          if ((next as any)[k] !== value) {
+            (next as any)[k] = value;
+            changed = true;
+          }
         }
       }
+      if (!changed) return prev;
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
@@ -154,15 +225,72 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
 
   const resetBrief = useCallback(() => {
     const fresh = { ...BRIEF_DEFAULTS };
+    const nextId = crypto.randomUUID();
     setBrief(fresh);
+    setActiveHistoryId(nextId);
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    try { localStorage.setItem(ACTIVE_HISTORY_ID_KEY, nextId); } catch {}
   }, []);
+
+  const restoreBrief = useCallback((id: string) => {
+    const saved = savedBriefs.find((item) => item.id === id);
+    if (!saved) return;
+    const restored = { ...BRIEF_DEFAULTS, ...saved.brief };
+    setBrief(restored);
+    setActiveHistoryId(id);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
+      localStorage.setItem(ACTIVE_HISTORY_ID_KEY, id);
+    } catch {}
+  }, [savedBriefs]);
+
+  const deleteSavedBrief = useCallback((id: string) => {
+    setSavedBriefs((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+    if (id === activeHistoryId) {
+      const nextId = crypto.randomUUID();
+      setActiveHistoryId(nextId);
+      try { localStorage.setItem(ACTIVE_HISTORY_ID_KEY, nextId); } catch {}
+    }
+  }, [activeHistoryId]);
+
+  useEffect(() => {
+    if (!isBriefWorthSaving(brief)) return;
+
+    const timeout = window.setTimeout(() => {
+      const now = new Date().toISOString();
+      setSavedBriefs((prev) => {
+        const existing = prev.find((item) => item.id === activeHistoryId);
+        const current: SavedBrandBrief = {
+          id: activeHistoryId,
+          title: getBriefTitle(brief),
+          subtitle: getBriefSubtitle(brief),
+          createdAt: existing?.createdAt ?? now,
+          updatedAt: now,
+          brief,
+        };
+        const next = [current, ...prev.filter((item) => item.id !== activeHistoryId)]
+          .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+          .slice(0, MAX_SAVED_BRIEFS);
+        try {
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+          localStorage.setItem(ACTIVE_HISTORY_ID_KEY, activeHistoryId);
+        } catch {}
+        return next;
+      });
+    }, 800);
+
+    return () => window.clearTimeout(timeout);
+  }, [activeHistoryId, brief]);
 
   const filledCount = COMPLETION_FIELDS.filter((f) => brief[f] && String(brief[f]).trim() !== "").length;
   const completionPct = Math.round((filledCount / COMPLETION_FIELDS.length) * 100);
 
   return (
-    <BrandContext.Provider value={{ brief, updateBrief, resetBrief, completionPct, filledCount }}>
+    <BrandContext.Provider value={{ brief, savedBriefs, updateBrief, resetBrief, restoreBrief, deleteSavedBrief, completionPct, filledCount }}>
       {children}
     </BrandContext.Provider>
   );

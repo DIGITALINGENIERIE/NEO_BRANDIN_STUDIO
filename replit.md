@@ -62,6 +62,8 @@ Le workflow démarre les deux services en parallèle :
 
 Le serveur Vite proxie les requêtes `/api` vers `http://localhost:3000`.
 
+Préférence utilisateur : répondre en français.
+
 ## Key Environment Variables
 
 - `AI_INTEGRATIONS_OPENAI_BASE_URL` — URL de base de l'intégration Replit AI
@@ -96,6 +98,8 @@ Chaque route backend suit le même pattern :
 Le frontend consomme le stream et met à jour l'UI section par section en temps réel.
 
 Le client OpenAI côté serveur est initialisé à la demande : le serveur peut démarrer même si l'intégration AI n'est pas encore configurée, et les routes AI renvoient une erreur explicite au moment de l'utilisation si les variables d'intégration sont absentes.
+
+Le brief global se sauvegarde automatiquement dans `localStorage` avec un historique des 12 derniers briefs, restaurable depuis le panneau "Brief Global de Marque".
 
 ## API Routes
 

@@ -103,6 +103,8 @@ Le brief global se sauvegarde automatiquement dans `localStorage` avec un histor
 
 Module 01 suit le pipeline Qwen-3/Cerebras → GPT-5.2 → Claude : les agents GPT et Claude ne démarrent qu'après la génération complète Qwen-3 de chaque section. Le serveur envoie ensuite un récapitulatif SSE final avec temps total, durée Qwen-3, tokens estimés, tokens/s et scores moyens GPT/Claude pour l'affichage graphique en bas de page.
 
+Chaque carte de sous-module du Module 01 affiche une notification de validation lorsque le prompt a réellement été optimisé par GPT/Claude, avec un rappel du pipeline et 5 modèles IA recommandés pour exploiter le prompt premium selon son type (logo, palette, typographie ou charte).
+
 ## API Routes
 
 Toutes les routes sont montées sous `/api` :

@@ -27,6 +27,37 @@ const SECTION_PARAMS: Record<string, Record<string, unknown>> = {
   guidelines: { rules: Array.from({ length: 10 }, (_, i) => `R${(i + 1).toString().padStart(2, "0")}`), format: "pdf", do_donts: true },
 };
 
+const AI_MODEL_RECOMMENDATIONS: Record<SectionKey, { name: string; useCase: string }[]> = {
+  logo: [
+    { name: "Midjourney V7", useCase: "logos premium, monogrammes, directions artistiques luxe" },
+    { name: "Ideogram 3.0", useCase: "logos avec texte lisible et lettering de marque" },
+    { name: "Recraft V3", useCase: "icônes vectorielles, SVG et systèmes de marque" },
+    { name: "FLUX.1 Kontext Pro", useCase: "variations cohérentes et retouches de concept" },
+    { name: "GPT-Image", useCase: "brief créatif précis et déclinaisons contrôlées" },
+  ],
+  palette: [
+    { name: "GPT-5.2", useCase: "raisonnement couleur, contrastes et cohérence secteur" },
+    { name: "Claude Sonnet", useCase: "nuance de marque et choix chromatiques éditoriaux" },
+    { name: "Gemini 2.5 Pro", useCase: "comparaison de palettes et justification stratégique" },
+    { name: "Recraft V3", useCase: "application visuelle directe sur assets de marque" },
+    { name: "Figma AI", useCase: "tests rapides UI, composants et tokens couleurs" },
+  ],
+  typography: [
+    { name: "GPT-5.2", useCase: "systèmes typographiques, CSS et hiérarchie technique" },
+    { name: "Claude Sonnet", useCase: "voix de marque, lisibilité et cohérence éditoriale" },
+    { name: "Gemini 2.5 Pro", useCase: "benchmark de font pairings et alternatives web" },
+    { name: "Figma AI", useCase: "prototypage UI et validation des tailles" },
+    { name: "Perplexity Pro", useCase: "recherche de polices, licences et références" },
+  ],
+  guidelines: [
+    { name: "Claude Sonnet", useCase: "charte narrative, règles Do/Don't et cohérence globale" },
+    { name: "GPT-5.2", useCase: "structuration PDF, checklists et précision opérationnelle" },
+    { name: "Gemini 2.5 Pro", useCase: "audit multi-critères et synthèse stratégique" },
+    { name: "Canva Magic Studio", useCase: "mise en page de brand book et templates" },
+    { name: "Figma AI", useCase: "documentation design system et composants" },
+  ],
+};
+
 const formSchema = z.object({
   style_pref: z.string().optional().default("auto-detect"),
   enable_review: z.boolean().optional().default(false),
@@ -525,6 +556,9 @@ export default function Module01() {
               const variants = personaVariants[key];
               const isLoadingVariants = loadingPersonas[key];
               const showVariants = openPersonas[key] && variants && variants.length > 0;
+              const timing = sectionTimings[key];
+              const optimizationHasRun = !!review || !!timing?.gptStart || !!timing?.claudeStart;
+              const modelRecommendations = AI_MODEL_RECOMMENDATIONS[key];
 
               return (
                 <motion.div key={key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="flex flex-col gap-3">
@@ -562,6 +596,47 @@ export default function Module01() {
                       <div className="bg-black/30 rounded-md p-4 h-56 overflow-y-auto font-mono text-sm text-foreground/80 leading-relaxed border border-white/5 whitespace-pre-wrap">
                         {isPending ? <span className="text-muted-foreground/40 italic">En attente...</span> : <>{prompt}{isActive && <span className="inline-block w-2 h-4 bg-primary/80 animate-pulse ml-0.5 align-middle" />}</>}
                       </div>
+
+                      {prompt && optimizationHasRun && (
+                        <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-lg border border-amber-400/25 bg-amber-400/5 p-3">
+                          <div className="flex items-start gap-2">
+                            <div className="mt-0.5 rounded-full border border-amber-400/30 bg-amber-400/10 p-1">
+                              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-amber-300">
+                                  {review ? "Prompt validé par les agents optimisateurs" : "Optimisation IA en cours"}
+                                </p>
+                                {review?.winner && (
+                                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${review.winner === "gpt" ? "border-blue-400/30 bg-blue-400/10 text-blue-300" : review.winner === "claude" ? "border-orange-400/30 bg-orange-400/10 text-orange-300" : "border-violet-400/30 bg-violet-400/10 text-violet-300"}`}>
+                                    {review.winner === "gpt" ? "GPT le plus exigeant" : review.winner === "claude" ? "Claude le plus exigeant" : "Équilibre GPT/Claude"}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                                {review
+                                  ? "Ce prompt a été généré par Qwen-3, puis relu, scoré et renforcé par GPT-5.2 et Claude avant affichage final."
+                                  : "Qwen-3 a terminé sa base et les agents GPT-5.2 / Claude sont en train de contrôler la précision premium."}
+                              </p>
+                              <div className="mt-3 space-y-1.5">
+                                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">5 modèles IA idéaux pour exploiter ce prompt premium</p>
+                                <div className="grid gap-1.5">
+                                  {modelRecommendations.map((model, idx) => (
+                                    <div key={model.name} className="flex items-start gap-2 rounded-md border border-white/5 bg-black/20 px-2 py-1.5">
+                                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[9px] font-bold text-primary">{idx + 1}</span>
+                                      <p className="text-[11px] leading-snug text-muted-foreground">
+                                        <span className="font-semibold text-foreground/90">{model.name}</span>
+                                        <span className="text-muted-foreground"> — {model.useCase}</span>
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
 
                       {/* ── Chronos par phase IA ──────────────────────────────── */}
                       {(() => {

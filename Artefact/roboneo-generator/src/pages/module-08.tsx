@@ -468,6 +468,7 @@ export default function Module08() {
           unique_feature: brief.unique_feature || undefined,
           best_seller_1: brief.best_seller_1 || undefined,
           best_seller_2: brief.best_seller_2 || undefined,
+          market: brief.market,
         }),
       });
 

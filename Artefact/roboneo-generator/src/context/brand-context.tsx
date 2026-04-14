@@ -60,6 +60,9 @@ export interface BrandBrief {
 
   // Couleurs de marque (priorité absolue sur auto-détection)
   colors: string;
+
+  // Marché / Pays cible (adapte devise, délais, contexte local)
+  market: string;
 }
 
 export type BriefField = keyof BrandBrief;
@@ -116,6 +119,7 @@ export const BRIEF_DEFAULTS: BrandBrief = {
   competitors: "",
   forbidden_keywords: "",
   colors: "",
+  market: "international",
 };
 
 // Champs "importants" dont la complétude est mesurée

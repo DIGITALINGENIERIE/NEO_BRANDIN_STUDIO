@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
+import { getMarketConfig, buildMarketContext, convertPrice } from "../../lib/market-config";
 
 const router: IRouter = Router();
 
@@ -38,6 +39,7 @@ router.post("/openai/enhance-prompts-launch", async (req, res) => {
     primary_color = "#C8A96E",
     heading_font = "Playfair Display",
     body_font = "Lora",
+    market,
   } = req.body as {
     brand_name: string;
     sector: string;
@@ -55,12 +57,18 @@ router.post("/openai/enhance-prompts-launch", async (req, res) => {
     primary_color?: string;
     heading_font?: string;
     body_font?: string;
+    market?: string;
   };
 
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
     return;
   }
+
+  const marketCfg = getMarketConfig(market);
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(price, marketCfg);
+  const oldPriceDisplay = convertPrice(old_price, marketCfg);
 
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const featuresStr = Array.isArray(features) ? features.join(", ") : features;
@@ -73,18 +81,23 @@ router.post("/openai/enhance-prompts-launch", async (req, res) => {
 
   const systemPrompt = `Tu es un expert développeur web et stratège de lancement pour RoboNeo.com.
 Tu génères des contenus prêts à l'emploi, ultra-professionnels, adaptés à la marque.
+
+${marketCtx}
+
 Contexte:
 - Marque: ${brand_name}
 - Produit: ${product_name}
 - Secteur: ${sector}
 - Ton: ${tone}
-- Prix: ${price}€ (avant: ${old_price}€, remise: ${discount}%)
+- Pays / Marché: ${marketCfg.country} (${marketCfg.region})
+- Prix: ${priceDisplay} (avant: ${oldPriceDisplay}, remise: ${discount}%)
 - Code promo: ${code}
 - Description: ${product_description || "produit premium"}
 - Caractéristiques: ${featuresStr || "qualité supérieure"}
 - Bénéfices: ${benefitsStr || "élégance, durabilité"}
 - URL checkout: ${checkout_url}
 - Livraison: ${shipping_info}
+- Modes de paiement locaux: ${marketCfg.payment_methods.slice(0, 4).join(", ")}
 - Couleur principale: ${primary_color}
 - Police titres: ${heading_font} | Police corps: ${body_font}
 - Année: ${year}

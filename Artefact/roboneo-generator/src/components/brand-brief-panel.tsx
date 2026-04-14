@@ -11,6 +11,26 @@ import { useBrand, BrandBrief, BRIEF_DEFAULTS } from "@/context/brand-context";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
+const MARKETS = [
+  { value: "international",  label: "🌍 International (Générique)", currency: "€" },
+  // Afrique
+  { value: "cote-divoire",   label: "🇨🇮 Côte d'Ivoire",            currency: "FCFA" },
+  { value: "senegal",        label: "🇸🇳 Sénégal",                  currency: "FCFA" },
+  { value: "maroc",          label: "🇲🇦 Maroc",                    currency: "DH" },
+  { value: "nigeria",        label: "🇳🇬 Nigeria",                  currency: "₦" },
+  // Europe
+  { value: "france",         label: "🇫🇷 France",                   currency: "€" },
+  { value: "belgique",       label: "🇧🇪 Belgique",                 currency: "€" },
+  { value: "suisse",         label: "🇨🇭 Suisse",                   currency: "CHF" },
+  { value: "allemagne",      label: "🇩🇪 Allemagne",                currency: "€" },
+  { value: "royaume-uni",    label: "🇬🇧 Royaume-Uni",              currency: "£" },
+  // Amérique
+  { value: "usa",            label: "🇺🇸 États-Unis",               currency: "$" },
+  { value: "canada",         label: "🇨🇦 Canada",                   currency: "CA$" },
+  // Moyen-Orient
+  { value: "emirats",        label: "🇦🇪 Émirats Arabes Unis",      currency: "AED" },
+];
+
 const SECTORS = [
   { value: "bijou",        label: "Bijouterie / Accessoires" },
   { value: "luxe",         label: "Luxe / Premium" },
@@ -113,10 +133,16 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 function IdentitySection({ form }: { form: any }) {
+  const selectedMarket = MARKETS.find(m => m.value === form.watch("market")) ?? MARKETS[0];
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <FieldRow label="Nom de la marque *">
         <Input {...form.register("brand_name")} placeholder="ex: LUXEOR" className="bg-black/20 h-9 text-sm" />
+      </FieldRow>
+      <FieldRow label="Marché / Pays cible *">
+        <select {...form.register("market")} className={selectCls()}>
+          {MARKETS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+        </select>
       </FieldRow>
       <FieldRow label="Secteur *">
         <select {...form.register("sector")} className={selectCls()}>
@@ -130,6 +156,11 @@ function IdentitySection({ form }: { form: any }) {
       </FieldRow>
       <FieldRow label="Valeurs de marque">
         <Input {...form.register("values")} placeholder="ex: excellence, prestige, authenticité" className="bg-black/20 h-9 text-sm" />
+      </FieldRow>
+      <FieldRow label={`Devise locale (${selectedMarket.currency})`}>
+        <div className="flex h-10 items-center px-3 rounded-md border border-white/10 bg-primary/10 text-sm text-primary font-mono">
+          {selectedMarket.currency} — auto-détectée selon le marché
+        </div>
       </FieldRow>
       <div className="sm:col-span-2">
         <FieldRow label="Couleurs de marque (HEX ou description)">

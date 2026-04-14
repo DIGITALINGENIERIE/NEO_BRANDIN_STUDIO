@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
+import { getMarketConfig, buildMarketContext, convertPrice } from "../../lib/market-config";
 
 const router: IRouter = Router();
 
@@ -38,7 +39,8 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     discount = 20,
     promo_code,
     price = 299,
-    currency = "FCFA",
+    currency,
+    market,
     free_shipping = 100,
     support_email,
     unique_feature = "fabrication artisanale",
@@ -62,6 +64,7 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     promo_code?: string;
     price?: number;
     currency?: string;
+    market?: string;
     free_shipping?: number;
     support_email?: string;
     unique_feature?: string;
@@ -74,9 +77,16 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     return;
   }
 
+  const marketCfg = getMarketConfig(market);
+  const localCurrency = currency ?? marketCfg.currency_symbol;
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(price, marketCfg);
+  const freeShippingDisplay = convertPrice(free_shipping, marketCfg);
+
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const email = support_email || `contact@${brand_name.toLowerCase().replace(/\s+/g, "")}.com`;
   const discountedPrice = Math.round(price * (1 - discount / 100) * 100) / 100;
+  const discountedPriceDisplay = convertPrice(discountedPrice, marketCfg);
   const ingredientsBlock = ingredients
     ? `- Ingrédients/composants OFFICIELS du produit (UTILISER UNIQUEMENT CES INGRÉDIENTS — ne jamais en inventer): ${ingredients}`
     : "";
@@ -86,7 +96,10 @@ router.post("/openai/enhance-prompts-chatbot", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   const systemPrompt = `Tu es un expert en service client, gestion de communauté et chatbot marketing pour RoboNeo.com.
-Tu génères des scripts de service client ultra-professionnels, empathiques et orientés conversion, en français.
+Tu génères des scripts de service client ultra-professionnels, empathiques et orientés conversion.
+
+${marketCtx}
+
 Contexte de la marque:
 - Marque: ${brand_name}
 - Produit: ${product_name}
@@ -96,22 +109,22 @@ Contexte de la marque:
 - Description: ${product_description || "produit premium"}
 ${ingredientsBlock}
 - Garantie: ${warranty} ans
-- Livraison Côte d'Ivoire: ${delivery_days_local} jours ouvrés
-- Livraison reste de l'Afrique: ${delivery_days_international} jours ouvrés
-- Livraison express: ${express_delivery_days}j pour ${express_price}€
+- Livraison locale (${marketCfg.country}): ${delivery_days_local} jours ouvrés
+- Livraison internationale: ${delivery_days_international} jours ouvrés
+- Livraison express: ${express_delivery_days}j
 - Retours: ${return_days} jours
-- Prix: ${price} ${currency} (remise ${discount}% → ${discountedPrice} ${currency} avec code ${code})
-- Livraison offerte dès: ${free_shipping} ${currency}
+- Prix: ${priceDisplay} (remise ${discount}% → ${discountedPriceDisplay} avec code ${code})
+- Livraison offerte dès: ${freeShippingDisplay}
 - Email support: ${email}
 - Point différenciateur: ${unique_feature}
 - Best-sellers: ${best_seller_1 || "produit phare"}, ${best_seller_2 || "coup de cœur"}
 
 RÈGLES ABSOLUES:
 1. Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
-2. ANTI-HALLUCINATION INGRÉDIENTS: Si des ingrédients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingrédients (ex: "gingembre doré", "extrait de rose", etc.) non mentionnés dans le brief.
-3. DÉLAIS DE LIVRAISON RÉALISTES: Toujours distinguer Côte d'Ivoire (${delivery_days_local} jours) du reste de l'Afrique (${delivery_days_international} jours). Ne jamais promettre "${delivery_days_local} jours partout en Afrique".
-4. DEVISE: Utiliser ${currency} pour tous les montants. Si des prix en Euros apparaissent, ajouter "(Prix indicatif — paiement en FCFA disponible)".
-5. Ne jamais inventer un prix remisé différent de ${discountedPrice} ${currency}.`;
+2. ANTI-HALLUCINATION INGRÉDIENTS: Si des ingrédients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingrédients non mentionnés dans le brief.
+3. DÉLAIS DE LIVRAISON RÉALISTES: Distinguer livraison locale ${marketCfg.country} (${delivery_days_local} jours) de la livraison internationale (${delivery_days_international} jours).
+4. DEVISE OBLIGATOIRE: Utiliser ${marketCfg.currency_symbol} (${marketCfg.currency_code}) pour TOUS les montants.
+5. MODES DE PAIEMENT LOCAUX: Mentionner ${marketCfg.payment_methods.slice(0, 3).join(", ")} comme options de paiement adaptées au marché ${marketCfg.country}.`;
 
   const sections = [
     {

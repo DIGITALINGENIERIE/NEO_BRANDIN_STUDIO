@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
+import { getMarketConfig, buildMarketContext } from "../../lib/market-config";
 
 const router: IRouter = Router();
 
@@ -33,6 +34,7 @@ router.post("/openai/enhance-prompts-performance", async (req, res) => {
     brand_name,
     sector,
     tone = "professionnel",
+    market,
     ca_target,
     basket_target,
     conv_target,
@@ -53,12 +55,16 @@ router.post("/openai/enhance-prompts-performance", async (req, res) => {
     margin_percent?: number;
     max_cpa?: number;
     target_cpa?: number;
+    market?: string;
   };
 
   if (!brand_name || !sector) {
     res.status(400).json({ error: "brand_name et sector sont requis" });
     return;
   }
+
+  const marketCfg = getMarketConfig(market);
+  const marketCtx = buildMarketContext(marketCfg);
 
   const defaults = SECTOR_DEFAULTS[sector] ?? SECTOR_DEFAULTS["bijou"];
   const ctx = {
@@ -78,10 +84,14 @@ router.post("/openai/enhance-prompts-performance", async (req, res) => {
 
   const systemPrompt = `Tu es un expert en performance marketing e-commerce et analyse de données pour RoboNeo.com.
 Ta mission: créer des outils de tracking et d'optimisation PRÉCIS et ACTIONNABLES pour maximiser le ROI.
+
+${marketCtx}
+
 Contexte de la marque:
 - Nom EXACT de la marque: ${brand_name} (NE JAMAIS altérer ce nom — ex: ne pas écrire "${brand_name}kin" ou "${brand_name.slice(0, -1)}" ou toute variation)
+- Pays / Marché: ${marketCfg.country} (${marketCfg.region})
 - Secteur: ${sector}
-- Objectifs: CA cible ${ctx.ca_target}€, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa}€
+- Objectifs: CA cible ${ctx.ca_target} ${marketCfg.currency_symbol}, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa} ${marketCfg.currency_symbol}
 
 RÈGLES ABSOLUES:
 1. Toutes tes réponses doivent être en JSON valide, directement exploitables.

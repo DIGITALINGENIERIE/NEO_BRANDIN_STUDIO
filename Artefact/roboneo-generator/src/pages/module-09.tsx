@@ -642,8 +642,9 @@ export default function Module09() {
           values: brief.values
             ? brief.values.split(",").map(s => s.trim()).filter(Boolean)
             : [],
-          currency: brief.currency || "FCFA",
+          currency: brief.currency,
           brand_colors: brief.colors || brief.brand_colors || "",
+          market: brief.market,
         }),
       });
 

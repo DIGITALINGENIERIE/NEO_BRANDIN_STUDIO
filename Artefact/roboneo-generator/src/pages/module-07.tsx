@@ -412,6 +412,7 @@ export default function Module07() {
           primary_color: brief.primary_color,
           heading_font: brief.heading_font,
           body_font: brief.body_font,
+          market: brief.market,
         }),
       });
 

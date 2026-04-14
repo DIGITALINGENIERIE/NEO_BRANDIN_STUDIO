@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
+import { getMarketConfig, buildMarketContext, convertPrice } from "../../lib/market-config";
 
 const router: IRouter = Router();
 
@@ -25,8 +26,9 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
     product_price = 299,
     product_features = [],
     values = [],
-    currency = "FCFA",
+    currency,
     brand_colors = "",
+    market,
   } = req.body as {
     brand_name: string;
     sector: string;
@@ -37,6 +39,7 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
     values?: string[];
     currency?: string;
     brand_colors?: string;
+    market?: string;
   };
 
   if (!brand_name || !sector || !product_name) {
@@ -48,6 +51,11 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  const marketCfg = getMarketConfig(market);
+  const localCurrency = currency ?? marketCfg.currency_symbol;
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(product_price, marketCfg);
+
   const featuresStr = product_features.length > 0 ? product_features.join(", ") : "non spécifiées";
   const valuesStr = values.length > 0 ? values.join(", ") : "qualité, confiance, élégance";
 
@@ -57,11 +65,15 @@ router.post("/openai/enhance-prompts-upsell", async (req, res) => {
 
   const systemPrompt = `Tu es un expert en stratégie e-commerce et maximisation du panier moyen pour RoboNeo.com.
 Ta mission: générer des stratégies d'upsell et cross-sell PRÉCISES et ACTIONNABLES pour augmenter le chiffre d'affaires.
+
+${marketCtx}
+
 Contexte de la marque:
 - Nom: ${brand_name}
+- Pays / Marché: ${marketCfg.country} (${marketCfg.region})
 - Secteur: ${sector}
 - Ton: ${tone}
-- Produit principal: ${product_name} (${product_price} ${currency})
+- Produit principal: ${product_name} (${priceDisplay})
 - Caractéristiques: ${featuresStr}
 - Valeurs: ${valuesStr}
 ${brandColorsBlock}

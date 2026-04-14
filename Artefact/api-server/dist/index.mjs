@@ -48273,6 +48273,291 @@ var enhance_prompts_copy_default = router8;
 
 // src/routes/openai/enhance-prompts-launch.ts
 var import_express9 = __toESM(require_express2(), 1);
+
+// src/lib/market-config.ts
+var MARKET_CONFIGS = {
+  // ── Afrique de l'Ouest ─────────────────────────────────────────────────────
+  "cote-divoire": {
+    market: "cote-divoire",
+    country: "C\xF4te d'Ivoire",
+    region: "Afrique de l'Ouest",
+    currency_code: "XOF",
+    currency_symbol: "FCFA",
+    currency_name: "Franc CFA Ouest-Africain",
+    rate_vs_eur: 655.957,
+    delivery_local_days: "2-4 jours ouvr\xE9s (Abidjan), 5-8 jours (reste du pays)",
+    delivery_international_days: "7-14 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Wave", "Orange Money", "MTN Money", "Moov Money", "virement bancaire", "paiement \xE0 la livraison"],
+    platforms: ["Instagram", "TikTok", "WhatsApp", "Facebook"],
+    price_sensitivity: "medium",
+    consumer_protection: "Droit OHADA \u2014 d\xE9lai de r\xE9tractation 7 jours recommand\xE9 pour l'e-commerce",
+    logistics_context: "Livraison locale fiable \xE0 Abidjan. Inter-villes variable. Partenaires: Colissimo CI, TangaExpress, Jumia Logistics.",
+    market_context: "March\xE9 dynamique avec forte adoption du mobile money. TikTok et Instagram tr\xE8s actifs. WhatsApp Commerce en croissance.",
+    language_note: "Fran\xE7ais ivoirien \u2014 ton chaleureux, expressions locales appr\xE9ci\xE9es"
+  },
+  "senegal": {
+    market: "senegal",
+    country: "S\xE9n\xE9gal",
+    region: "Afrique de l'Ouest",
+    currency_code: "XOF",
+    currency_symbol: "FCFA",
+    currency_name: "Franc CFA Ouest-Africain",
+    rate_vs_eur: 655.957,
+    delivery_local_days: "2-4 jours ouvr\xE9s (Dakar), 5-8 jours (r\xE9gions)",
+    delivery_international_days: "7-14 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Wave", "Orange Money", "Free Money", "virement bancaire", "paiement \xE0 la livraison"],
+    platforms: ["Instagram", "TikTok", "WhatsApp", "Facebook"],
+    price_sensitivity: "medium",
+    consumer_protection: "Code de la Consommation s\xE9n\xE9galais \u2014 d\xE9lai l\xE9gal 7 jours",
+    logistics_context: "Livraison Dakar rapide. R\xE9gions plus lentes. DHL/Chronopost disponibles pour l'international.",
+    market_context: "\xC9conomie en croissance. E-commerce en plein essor. Wave tr\xE8s populaire pour les paiements.",
+    language_note: "Fran\xE7ais avec ton dynamique et bienveillant"
+  },
+  "maroc": {
+    market: "maroc",
+    country: "Maroc",
+    region: "Afrique du Nord",
+    currency_code: "MAD",
+    currency_symbol: "DH",
+    currency_name: "Dirham marocain",
+    rate_vs_eur: 10.8,
+    delivery_local_days: "2-4 jours ouvr\xE9s (Casablanca/Rabat), 4-7 jours (autres villes)",
+    delivery_international_days: "5-10 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["CMI", "carte bancaire (Visa/Mastercard)", "virement", "paiement \xE0 la livraison", "PayPal"],
+    platforms: ["Instagram", "TikTok", "Facebook", "YouTube", "Pinterest"],
+    price_sensitivity: "medium",
+    consumer_protection: "Loi 31-08 sur la protection du consommateur \u2014 r\xE9tractation 7 jours",
+    logistics_context: "Infrastructure logistique d\xE9velopp\xE9e. Amana Express, Aramex, DHL bien implant\xE9s. Livraison \xE0 la livraison (COD) tr\xE8s r\xE9pandue.",
+    market_context: "March\xE9 e-commerce mature. Consommateurs exigeants. Forte culture du luxe accessible. Casablanca hub \xE9conomique.",
+    language_note: "Fran\xE7ais ou arabe \u2014 ton professionnel, r\xE9f\xE9rences locales appr\xE9ci\xE9es"
+  },
+  "nigeria": {
+    market: "nigeria",
+    country: "Nigeria",
+    region: "Afrique de l'Ouest",
+    currency_code: "NGN",
+    currency_symbol: "\u20A6",
+    currency_name: "Naira nig\xE9rian",
+    rate_vs_eur: 1720,
+    delivery_local_days: "2-5 jours ouvr\xE9s (Lagos/Abuja), 5-10 jours (autres \xC9tats)",
+    delivery_international_days: "7-14 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Flutterwave", "Paystack", "carte bancaire", "Bank Transfer", "POS \xE0 la livraison"],
+    platforms: ["Instagram", "TikTok", "Twitter/X", "WhatsApp", "Facebook"],
+    price_sensitivity: "high",
+    consumer_protection: "Consumer Protection Council (CPC) \u2014 7 jours recommand\xE9",
+    logistics_context: "Lagos est le hub logistique principal. GIG Logistics, Sendbox, DHL Express disponibles.",
+    market_context: "Plus grand march\xE9 d'Afrique. Tr\xE8s forte culture lifestyle & fashion. Influenceurs tr\xE8s actifs. TikTok & Instagram essentiels.",
+    language_note: "Anglais nig\xE9rian \u2014 ton \xE9nergique, direct, aspirationnel"
+  },
+  // ── Europe ──────────────────────────────────────────────────────────────────
+  "france": {
+    market: "france",
+    country: "France",
+    region: "Europe Occidentale",
+    currency_code: "EUR",
+    currency_symbol: "\u20AC",
+    currency_name: "Euro",
+    rate_vs_eur: 1,
+    delivery_local_days: "2-3 jours ouvr\xE9s",
+    delivery_international_days: "5-7 jours ouvr\xE9s (UE), 7-14 jours hors UE",
+    express_available: true,
+    payment_methods: ["Carte bancaire (CB/Visa/Mastercard)", "PayPal", "Apple Pay", "Google Pay", "virement SEPA", "Klarna/Alma"],
+    platforms: ["Instagram", "TikTok", "Pinterest", "Facebook", "YouTube", "LinkedIn"],
+    price_sensitivity: "low",
+    consumer_protection: "Directive UE sur les droits des consommateurs \u2014 r\xE9tractation l\xE9gale 14 jours, conformit\xE9 2 ans",
+    logistics_context: "La Poste (Colissimo), Chronopost, UPS, DHL, Mondial Relay. Livraison en point relais tr\xE8s populaire.",
+    market_context: "March\xE9 mature et exigeant. Fort focus sur le luxe, le made-in-France et l'authenticit\xE9. ROAS moyen 2.5-4x.",
+    language_note: "Fran\xE7ais standard \u2014 ton \xE9l\xE9gant, pr\xE9cis, conformit\xE9 UE obligatoire"
+  },
+  "belgique": {
+    market: "belgique",
+    country: "Belgique",
+    region: "Europe Occidentale",
+    currency_code: "EUR",
+    currency_symbol: "\u20AC",
+    currency_name: "Euro",
+    rate_vs_eur: 1,
+    delivery_local_days: "1-3 jours ouvr\xE9s",
+    delivery_international_days: "3-5 jours ouvr\xE9s (UE)",
+    express_available: true,
+    payment_methods: ["Bancontact", "Carte bancaire", "PayPal", "Apple Pay", "virement SEPA"],
+    platforms: ["Instagram", "Facebook", "TikTok", "Pinterest"],
+    price_sensitivity: "low",
+    consumer_protection: "Directive UE \u2014 r\xE9tractation 14 jours, garantie l\xE9gale 2 ans",
+    logistics_context: "bpost, DHL, UPS bien implant\xE9s. Point relais PostNL/Bpost populaires.",
+    market_context: "March\xE9 bilingue (fran\xE7ais/n\xE9erlandais). Consommateurs prudents mais fid\xE8les. E-commerce mature.",
+    language_note: "Fran\xE7ais belge \u2014 ton professionnel et bienveillant"
+  },
+  "suisse": {
+    market: "suisse",
+    country: "Suisse",
+    region: "Europe Occidentale",
+    currency_code: "CHF",
+    currency_symbol: "CHF",
+    currency_name: "Franc suisse",
+    rate_vs_eur: 0.96,
+    delivery_local_days: "1-3 jours ouvr\xE9s",
+    delivery_international_days: "3-7 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Twint", "Carte bancaire", "PostFinance", "PayPal", "Apple Pay"],
+    platforms: ["Instagram", "LinkedIn", "Facebook", "TikTok"],
+    price_sensitivity: "low",
+    consumer_protection: "LCC suisse \u2014 r\xE9tractation 14 jours, haute exigence qualit\xE9",
+    logistics_context: "Swiss Post, DHL, UPS. Excellente infrastructure. TVA \xE0 8.1% \xE0 ajouter hors UE.",
+    market_context: "March\xE9 ultra-premium. Consommateurs \xE0 fort pouvoir d'achat. Qualit\xE9 et fiabilit\xE9 sont non-n\xE9gociables.",
+    language_note: "Fran\xE7ais suisse \u2014 ton neutre, pr\xE9cis, qualit\xE9 irr\xE9prochable"
+  },
+  "allemagne": {
+    market: "allemagne",
+    country: "Allemagne",
+    region: "Europe Centrale",
+    currency_code: "EUR",
+    currency_symbol: "\u20AC",
+    currency_name: "Euro",
+    rate_vs_eur: 1,
+    delivery_local_days: "1-3 jours ouvr\xE9s",
+    delivery_international_days: "3-5 jours ouvr\xE9s (UE)",
+    express_available: true,
+    payment_methods: ["SEPA Lastschrift", "PayPal", "Klarna", "carte bancaire", "Sofort"],
+    platforms: ["Instagram", "Pinterest", "YouTube", "TikTok", "Facebook"],
+    price_sensitivity: "low",
+    consumer_protection: "BGB allemand \u2014 r\xE9tractation 14 jours obligatoire, conformit\xE9 stricte",
+    logistics_context: "DHL, Hermes, DPD, UPS. Retours tr\xE8s fr\xE9quents (culture du retour tr\xE8s d\xE9velopp\xE9e).",
+    market_context: "Plus grand march\xE9 e-commerce europ\xE9en. Consommateurs analytiques, qualit\xE9 > prix. ROAS moyen 3-5x.",
+    language_note: "Allemand \u2014 ton professionnel, factuel, pr\xE9cis (ou fran\xE7ais si cibl\xE9 franco-allemand)"
+  },
+  // ── Amérique du Nord ────────────────────────────────────────────────────────
+  "usa": {
+    market: "usa",
+    country: "\xC9tats-Unis",
+    region: "Am\xE9rique du Nord",
+    currency_code: "USD",
+    currency_symbol: "$",
+    currency_name: "Dollar am\xE9ricain",
+    rate_vs_eur: 1.08,
+    delivery_local_days: "2-5 jours ouvr\xE9s (contiguous US)",
+    delivery_international_days: "7-14 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Stripe", "PayPal", "Apple Pay", "Google Pay", "Shop Pay", "Klarna", "Afterpay"],
+    platforms: ["Instagram", "TikTok", "Pinterest", "YouTube", "Facebook", "Snapchat"],
+    price_sensitivity: "low",
+    consumer_protection: "FTC regulations \u2014 politique de retour standard 30 jours recommand\xE9e",
+    logistics_context: "USPS, UPS, FedEx, ShipBob. Free shipping est un standard attendu \xE0 partir de 50-100$.",
+    market_context: "Plus grand march\xE9 e-commerce mondial. Shopify dominant. Influenceurs tr\xE8s actifs. Black Friday/Cyber Monday essentiels.",
+    language_note: "Anglais am\xE9ricain \u2014 ton direct, aspirationnel, focus sur les b\xE9n\xE9fices (benefits-driven)"
+  },
+  "canada": {
+    market: "canada",
+    country: "Canada",
+    region: "Am\xE9rique du Nord",
+    currency_code: "CAD",
+    currency_symbol: "CA$",
+    currency_name: "Dollar canadien",
+    rate_vs_eur: 1.46,
+    delivery_local_days: "2-5 jours ouvr\xE9s",
+    delivery_international_days: "7-14 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Interac", "Stripe", "PayPal", "carte bancaire", "Apple Pay"],
+    platforms: ["Instagram", "TikTok", "Pinterest", "Facebook", "YouTube"],
+    price_sensitivity: "low",
+    consumer_protection: "Loi sur la protection du consommateur \u2014 retour 14-30 jours selon province",
+    logistics_context: "Canada Post, UPS, FedEx, Purolator. Livraison Quebec plus lente vers l'Ouest.",
+    market_context: "March\xE9 bilingue (anglais/fran\xE7ais au Qu\xE9bec). Consommateurs sensibles \xE0 l'\xE9thique et au d\xE9veloppement durable.",
+    language_note: "Anglais (ou fran\xE7ais qu\xE9b\xE9cois) \u2014 ton bienveillant, inclusif"
+  },
+  // ── Moyen-Orient ────────────────────────────────────────────────────────────
+  "emirats": {
+    market: "emirats",
+    country: "\xC9mirats Arabes Unis",
+    region: "Moyen-Orient",
+    currency_code: "AED",
+    currency_symbol: "AED",
+    currency_name: "Dirham des \xC9mirats",
+    rate_vs_eur: 3.97,
+    delivery_local_days: "1-3 jours ouvr\xE9s (Dubai/Abu Dhabi)",
+    delivery_international_days: "5-10 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["Stripe", "carte bancaire", "Apple Pay", "COD (paiement \xE0 la livraison)", "tabby", "Tamara"],
+    platforms: ["Instagram", "TikTok", "Snapchat", "YouTube", "LinkedIn"],
+    price_sensitivity: "low",
+    consumer_protection: "Loi UAE sur la protection du consommateur \u2014 7 \xE0 30 jours selon le produit",
+    logistics_context: "Aramex, DHL, Fetchr tr\xE8s actifs. Livraison le jour m\xEAme disponible \xE0 Dubai.",
+    market_context: "March\xE9 ultra-premium. Forte demande pour le luxe. Dubai Shopping Festival un \xE9v\xE9nement cl\xE9. VAT 5%.",
+    language_note: "Anglais ou arabe (selon cible) \u2014 ton luxe, exclusif, prestige"
+  },
+  // ── Asie ────────────────────────────────────────────────────────────────────
+  "royaume-uni": {
+    market: "royaume-uni",
+    country: "Royaume-Uni",
+    region: "Europe",
+    currency_code: "GBP",
+    currency_symbol: "\xA3",
+    currency_name: "Livre sterling",
+    rate_vs_eur: 0.85,
+    delivery_local_days: "1-3 jours ouvr\xE9s",
+    delivery_international_days: "5-10 jours ouvr\xE9s",
+    express_available: true,
+    payment_methods: ["carte bancaire", "PayPal", "Apple Pay", "Klarna", "Clearpay", "Shop Pay"],
+    platforms: ["Instagram", "TikTok", "Pinterest", "YouTube", "Facebook"],
+    price_sensitivity: "low",
+    consumer_protection: "UK Consumer Rights Act 2015 \u2014 r\xE9tractation 14 jours, conformit\xE9 6 ans",
+    logistics_context: "Royal Mail, DHL, Hermes/Evri, DPD. Post-Brexit: droits de douane applicables depuis UE.",
+    market_context: "March\xE9 mature. Fashion tr\xE8s fort. Forte culture du cashback et des promotions. ROAS moyen 2.5-4x.",
+    language_note: "Anglais britannique \u2014 ton poli, \xE9l\xE9gant, understatement appr\xE9ci\xE9"
+  }
+};
+var DEFAULT_CONFIG = {
+  market: "international",
+  country: "International",
+  region: "Global",
+  currency_code: "EUR",
+  currency_symbol: "\u20AC",
+  currency_name: "Euro",
+  rate_vs_eur: 1,
+  delivery_local_days: "3-7 jours ouvr\xE9s selon le pays",
+  delivery_international_days: "7-21 jours ouvr\xE9s",
+  express_available: true,
+  payment_methods: ["carte bancaire (Visa/Mastercard)", "PayPal", "Apple Pay", "Google Pay"],
+  platforms: ["Instagram", "TikTok", "Facebook", "YouTube"],
+  price_sensitivity: "medium",
+  consumer_protection: "Adaptez les d\xE9lais de r\xE9tractation selon la l\xE9gislation locale du client",
+  logistics_context: "DHL, UPS, FedEx disponibles pour la livraison internationale.",
+  market_context: "March\xE9 international \u2014 adapter les r\xE9f\xE9rences culturelles et le contenu selon la cible finale.",
+  language_note: "Fran\xE7ais ou anglais selon la cible \u2014 ton universel et professionnel"
+};
+function getMarketConfig(market) {
+  if (!market) return DEFAULT_CONFIG;
+  return MARKET_CONFIGS[market.toLowerCase()] ?? DEFAULT_CONFIG;
+}
+function buildMarketContext(config) {
+  return `
+CONTEXTE MARCH\xC9 \u2014 ${config.country} (${config.region}):
+- Devise locale: ${config.currency_symbol} (${config.currency_code}) \u2014 utiliser EXCLUSIVEMENT cette devise pour tous les prix
+- Livraison locale: ${config.delivery_local_days}
+- Livraison internationale: ${config.delivery_international_days}
+- Modes de paiement locaux: ${config.payment_methods.join(", ")}
+- Plateformes prioritaires: ${config.platforms.join(", ")}
+- Contexte logistique: ${config.logistics_context}
+- Contexte march\xE9: ${config.market_context}
+- Protection consommateur: ${config.consumer_protection}
+- Note linguistique: ${config.language_note}
+
+\u26A0\uFE0F R\xC8GLE ABSOLUE DEVISE: Tous les montants doivent \xEAtre en ${config.currency_symbol}. Ne JAMAIS afficher une autre devise sans mention explicite du taux de conversion. Si tu dois mentionner un prix en euros pour r\xE9f\xE9rence, ajoute toujours "(\u2248 X ${config.currency_symbol})" apr\xE8s.`.trim();
+}
+function convertPrice(priceEur, config) {
+  const converted = Math.round(priceEur * config.rate_vs_eur);
+  if (config.currency_code === "EUR") return `${priceEur}${config.currency_symbol}`;
+  if (config.currency_code === "XOF") {
+    return `${converted.toLocaleString("fr-FR")} ${config.currency_symbol}`;
+  }
+  return `${converted.toLocaleString("fr-FR")} ${config.currency_symbol}`;
+}
+
+// src/routes/openai/enhance-prompts-launch.ts
 var router9 = (0, import_express9.Router)();
 function sendEvent6(res, data) {
   res.write(`data: ${JSON.stringify(data)}
@@ -48304,12 +48589,17 @@ router9.post("/openai/enhance-prompts-launch", async (req, res) => {
     benefits = [],
     primary_color = "#C8A96E",
     heading_font = "Playfair Display",
-    body_font = "Lora"
+    body_font = "Lora",
+    market
   } = req.body;
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
     return;
   }
+  const marketCfg = getMarketConfig(market);
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(price, marketCfg);
+  const oldPriceDisplay = convertPrice(old_price, marketCfg);
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const featuresStr = Array.isArray(features) ? features.join(", ") : features;
   const benefitsStr = Array.isArray(benefits) ? benefits.join(", ") : benefits;
@@ -48319,18 +48609,23 @@ router9.post("/openai/enhance-prompts-launch", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   const systemPrompt = `Tu es un expert d\xE9veloppeur web et strat\xE8ge de lancement pour RoboNeo.com.
 Tu g\xE9n\xE8res des contenus pr\xEAts \xE0 l'emploi, ultra-professionnels, adapt\xE9s \xE0 la marque.
+
+${marketCtx}
+
 Contexte:
 - Marque: ${brand_name}
 - Produit: ${product_name}
 - Secteur: ${sector}
 - Ton: ${tone}
-- Prix: ${price}\u20AC (avant: ${old_price}\u20AC, remise: ${discount}%)
+- Pays / March\xE9: ${marketCfg.country} (${marketCfg.region})
+- Prix: ${priceDisplay} (avant: ${oldPriceDisplay}, remise: ${discount}%)
 - Code promo: ${code}
 - Description: ${product_description || "produit premium"}
 - Caract\xE9ristiques: ${featuresStr || "qualit\xE9 sup\xE9rieure"}
 - B\xE9n\xE9fices: ${benefitsStr || "\xE9l\xE9gance, durabilit\xE9"}
 - URL checkout: ${checkout_url}
 - Livraison: ${shipping_info}
+- Modes de paiement locaux: ${marketCfg.payment_methods.slice(0, 4).join(", ")}
 - Couleur principale: ${primary_color}
 - Police titres: ${heading_font} | Police corps: ${body_font}
 - Ann\xE9e: ${year}
@@ -48537,7 +48832,8 @@ router10.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     discount = 20,
     promo_code,
     price = 299,
-    currency = "FCFA",
+    currency,
+    market,
     free_shipping = 100,
     support_email,
     unique_feature = "fabrication artisanale",
@@ -48548,15 +48844,24 @@ router10.post("/openai/enhance-prompts-chatbot", async (req, res) => {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
     return;
   }
+  const marketCfg = getMarketConfig(market);
+  const localCurrency = currency ?? marketCfg.currency_symbol;
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(price, marketCfg);
+  const freeShippingDisplay = convertPrice(free_shipping, marketCfg);
   const code = promo_code || brand_name.slice(0, 4).toUpperCase() + discount;
   const email = support_email || `contact@${brand_name.toLowerCase().replace(/\s+/g, "")}.com`;
   const discountedPrice = Math.round(price * (1 - discount / 100) * 100) / 100;
+  const discountedPriceDisplay = convertPrice(discountedPrice, marketCfg);
   const ingredientsBlock = ingredients ? `- Ingr\xE9dients/composants OFFICIELS du produit (UTILISER UNIQUEMENT CES INGR\xC9DIENTS \u2014 ne jamais en inventer): ${ingredients}` : "";
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   const systemPrompt = `Tu es un expert en service client, gestion de communaut\xE9 et chatbot marketing pour RoboNeo.com.
-Tu g\xE9n\xE8res des scripts de service client ultra-professionnels, empathiques et orient\xE9s conversion, en fran\xE7ais.
+Tu g\xE9n\xE8res des scripts de service client ultra-professionnels, empathiques et orient\xE9s conversion.
+
+${marketCtx}
+
 Contexte de la marque:
 - Marque: ${brand_name}
 - Produit: ${product_name}
@@ -48566,22 +48871,22 @@ Contexte de la marque:
 - Description: ${product_description || "produit premium"}
 ${ingredientsBlock}
 - Garantie: ${warranty} ans
-- Livraison C\xF4te d'Ivoire: ${delivery_days_local} jours ouvr\xE9s
-- Livraison reste de l'Afrique: ${delivery_days_international} jours ouvr\xE9s
-- Livraison express: ${express_delivery_days}j pour ${express_price}\u20AC
+- Livraison locale (${marketCfg.country}): ${delivery_days_local} jours ouvr\xE9s
+- Livraison internationale: ${delivery_days_international} jours ouvr\xE9s
+- Livraison express: ${express_delivery_days}j
 - Retours: ${return_days} jours
-- Prix: ${price} ${currency} (remise ${discount}% \u2192 ${discountedPrice} ${currency} avec code ${code})
-- Livraison offerte d\xE8s: ${free_shipping} ${currency}
+- Prix: ${priceDisplay} (remise ${discount}% \u2192 ${discountedPriceDisplay} avec code ${code})
+- Livraison offerte d\xE8s: ${freeShippingDisplay}
 - Email support: ${email}
 - Point diff\xE9renciateur: ${unique_feature}
 - Best-sellers: ${best_seller_1 || "produit phare"}, ${best_seller_2 || "coup de c\u0153ur"}
 
 R\xC8GLES ABSOLUES:
 1. R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.
-2. ANTI-HALLUCINATION INGR\xC9DIENTS: Si des ingr\xE9dients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingr\xE9dients (ex: "gingembre dor\xE9", "extrait de rose", etc.) non mentionn\xE9s dans le brief.
-3. D\xC9LAIS DE LIVRAISON R\xC9ALISTES: Toujours distinguer C\xF4te d'Ivoire (${delivery_days_local} jours) du reste de l'Afrique (${delivery_days_international} jours). Ne jamais promettre "${delivery_days_local} jours partout en Afrique".
-4. DEVISE: Utiliser ${currency} pour tous les montants. Si des prix en Euros apparaissent, ajouter "(Prix indicatif \u2014 paiement en FCFA disponible)".
-5. Ne jamais inventer un prix remis\xE9 diff\xE9rent de ${discountedPrice} ${currency}.`;
+2. ANTI-HALLUCINATION INGR\xC9DIENTS: Si des ingr\xE9dients officiels sont fournis, les utiliser EXCLUSIVEMENT. Ne jamais inventer d'ingr\xE9dients non mentionn\xE9s dans le brief.
+3. D\xC9LAIS DE LIVRAISON R\xC9ALISTES: Distinguer livraison locale ${marketCfg.country} (${delivery_days_local} jours) de la livraison internationale (${delivery_days_international} jours).
+4. DEVISE OBLIGATOIRE: Utiliser ${marketCfg.currency_symbol} (${marketCfg.currency_code}) pour TOUS les montants.
+5. MODES DE PAIEMENT LOCAUX: Mentionner ${marketCfg.payment_methods.slice(0, 3).join(", ")} comme options de paiement adapt\xE9es au march\xE9 ${marketCfg.country}.`;
   const sections = [
     {
       key: "faq",
@@ -48750,8 +49055,9 @@ router11.post("/openai/enhance-prompts-upsell", async (req, res) => {
     product_price = 299,
     product_features = [],
     values = [],
-    currency = "FCFA",
-    brand_colors = ""
+    currency,
+    brand_colors = "",
+    market
   } = req.body;
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "brand_name, sector et product_name sont requis" });
@@ -48760,16 +49066,24 @@ router11.post("/openai/enhance-prompts-upsell", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+  const marketCfg = getMarketConfig(market);
+  const localCurrency = currency ?? marketCfg.currency_symbol;
+  const marketCtx = buildMarketContext(marketCfg);
+  const priceDisplay = convertPrice(product_price, marketCfg);
   const featuresStr = product_features.length > 0 ? product_features.join(", ") : "non sp\xE9cifi\xE9es";
   const valuesStr = values.length > 0 ? values.join(", ") : "qualit\xE9, confiance, \xE9l\xE9gance";
   const brandColorsBlock = brand_colors ? `- Charte couleurs SACR\xC9E (respecter dans TOUS les visuels produits): ${brand_colors}` : "";
   const systemPrompt = `Tu es un expert en strat\xE9gie e-commerce et maximisation du panier moyen pour RoboNeo.com.
 Ta mission: g\xE9n\xE9rer des strat\xE9gies d'upsell et cross-sell PR\xC9CISES et ACTIONNABLES pour augmenter le chiffre d'affaires.
+
+${marketCtx}
+
 Contexte de la marque:
 - Nom: ${brand_name}
+- Pays / March\xE9: ${marketCfg.country} (${marketCfg.region})
 - Secteur: ${sector}
 - Ton: ${tone}
-- Produit principal: ${product_name} (${product_price} ${currency})
+- Produit principal: ${product_name} (${priceDisplay})
 - Caract\xE9ristiques: ${featuresStr}
 - Valeurs: ${valuesStr}
 ${brandColorsBlock}
@@ -49003,6 +49317,7 @@ router12.post("/openai/enhance-prompts-performance", async (req, res) => {
     brand_name,
     sector,
     tone = "professionnel",
+    market,
     ca_target,
     basket_target,
     conv_target,
@@ -49016,6 +49331,8 @@ router12.post("/openai/enhance-prompts-performance", async (req, res) => {
     res.status(400).json({ error: "brand_name et sector sont requis" });
     return;
   }
+  const marketCfg = getMarketConfig(market);
+  const marketCtx = buildMarketContext(marketCfg);
   const defaults2 = SECTOR_DEFAULTS[sector] ?? SECTOR_DEFAULTS["bijou"];
   const ctx = {
     ca_target: ca_target ?? defaults2.ca_target,
@@ -49032,10 +49349,14 @@ router12.post("/openai/enhance-prompts-performance", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   const systemPrompt = `Tu es un expert en performance marketing e-commerce et analyse de donn\xE9es pour RoboNeo.com.
 Ta mission: cr\xE9er des outils de tracking et d'optimisation PR\xC9CIS et ACTIONNABLES pour maximiser le ROI.
+
+${marketCtx}
+
 Contexte de la marque:
 - Nom EXACT de la marque: ${brand_name} (NE JAMAIS alt\xE9rer ce nom \u2014 ex: ne pas \xE9crire "${brand_name}kin" ou "${brand_name.slice(0, -1)}" ou toute variation)
+- Pays / March\xE9: ${marketCfg.country} (${marketCfg.region})
 - Secteur: ${sector}
-- Objectifs: CA cible ${ctx.ca_target}\u20AC, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa}\u20AC
+- Objectifs: CA cible ${ctx.ca_target} ${marketCfg.currency_symbol}, ROAS cible ${ctx.roas_target}x, CPA cible ${ctx.target_cpa} ${marketCfg.currency_symbol}
 
 R\xC8GLES ABSOLUES:
 1. Toutes tes r\xE9ponses doivent \xEAtre en JSON valide, directement exploitables.

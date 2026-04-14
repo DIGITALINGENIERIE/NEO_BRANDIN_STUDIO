@@ -660,6 +660,7 @@ export default function Module10() {
           conv_target:   brief.conv_target ? Number(brief.conv_target) : undefined,
           roas_target:   brief.roas_target ? Number(brief.roas_target) : undefined,
           target_cpa:    brief.target_cpa ? Number(brief.target_cpa) : undefined,
+          market:        brief.market,
         }),
       });
 

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
-import { buildSystemPrompt, buildNegativePrompt } from "../../lib/prompt-utils";
+import { buildSystemPrompt, buildNegativePrompt, reviewPromptQuality, type EnhancedBrief } from "../../lib/prompt-utils";
 
 const router: IRouter = Router();
 
@@ -393,14 +393,35 @@ Chaque prompt visuel doit inclure un champ "negative_prompt" avec les éléments
         }
       }
 
-      const parsed = parseJsonSafe(fullContent);
+      let reviewedContent = fullContent;
+      let reviewAgent = section.agent;
+      try {
+        const brief: EnhancedBrief = {
+          brand_name, sector,
+          tone: sectorTone,
+          values: Array.isArray(sectorValues) ? sectorValues : [String(sectorValues)],
+          product_name,
+          target_demographic: body.target_demographic ?? body.target_audience ?? target_audience,
+          competitors: body.competitors ?? undefined,
+          forbidden_keywords: body.forbidden_keywords ?? undefined,
+          colors: brand_colors || undefined,
+        };
+        const review = await reviewPromptQuality(fullContent, brief, section.key);
+        const origIsJson = !!parseJsonSafe(fullContent);
+        const reviewIsJson = !!parseJsonSafe(review.refined);
+        if (!origIsJson || reviewIsJson) reviewedContent = review.refined || fullContent;
+        reviewAgent = `${section.agent} → GPT×2 → Claude (${review.score}/10)`;
+      } catch {
+        console.warn(`[Review] ${section.key} — review échoué, Cerebras conservé`);
+      }
+      const parsed = parseJsonSafe(reviewedContent);
       sendEvent(res, {
         type: "section_done",
         key: section.key,
         label: section.label,
-        agent: section.agent,
+        agent: reviewAgent,
         data: parsed ?? {},
-        rawContent: fullContent,
+        rawContent: reviewedContent,
         carouselStyle: section.key === "carousel" ? carouselStyle : undefined,
       });
     } catch (err) {

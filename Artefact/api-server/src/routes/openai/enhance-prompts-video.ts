@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
-import { buildSystemPrompt, buildNegativePrompt } from "../../lib/prompt-utils";
+import { buildSystemPrompt, buildNegativePrompt, reviewPromptQuality, type EnhancedBrief } from "../../lib/prompt-utils";
 
 const router: IRouter = Router();
 
@@ -417,14 +417,33 @@ Retourne UNIQUEMENT ce JSON:
         }
       }
 
-      const parsed = parseJsonSafe(fullContent);
+      let reviewedContent = fullContent;
+      let reviewAgent = section.agent;
+      try {
+        const brief: EnhancedBrief = {
+          brand_name, sector,
+          tone: "professionnel",
+          values: [],
+          product_name,
+          target_demographic: target_audience,
+          colors: brand_colors || undefined,
+        };
+        const review = await reviewPromptQuality(fullContent, brief, section.key);
+        const origIsJson = !!parseJsonSafe(fullContent);
+        const reviewIsJson = !!parseJsonSafe(review.refined);
+        if (!origIsJson || reviewIsJson) reviewedContent = review.refined || fullContent;
+        reviewAgent = `${section.agent} → GPT×2 → Claude (${review.score}/10)`;
+      } catch {
+        console.warn(`[Review] ${section.key} — review échoué, Cerebras conservé`);
+      }
+      const parsed = parseJsonSafe(reviewedContent);
       sendEvent(res, {
         type: "section_done",
         key: section.key,
         label: section.label,
-        agent: section.agent,
+        agent: reviewAgent,
         data: parsed ?? {},
-        rawContent: fullContent,
+        rawContent: reviewedContent,
         meta: {
           teaserStyle: section.key === "teaser" ? teaserStyle : undefined,
           thumbnailType: section.key === "thumbnails" ? thumbnailType : undefined,

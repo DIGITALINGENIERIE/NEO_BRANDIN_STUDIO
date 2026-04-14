@@ -135,15 +135,16 @@ export const FEWSHOT_EXAMPLES: Record<string, string> = {
 "[BRAND] product photography: [PRODUCT] positioned on [SURFACE], [TYPE] lighting (temperature [K], direction [ANGLE]°), [FOCAL LENGTH]mm f/[APERTURE], [INTENSITY] bokeh, [PRIMARY HEX] colors dominant, [TYPE] reflections, [DESCRIPTION] background, [DIMENSIONS]px format, RAW → JPEG 96dpi and PNG transparent export. --ar 1:1 --style raw --v 6"`,
 };
 
-// ─── Quality Review — Débat GPT vs Claude (Mode Ultra-Qualité) ───────────────
+// ─── Quality Review — Pipeline Séquentiel 3 Passes (Mode Ultra-Qualité) ──────
 //
-// Deux agents IA indépendants évaluent chaque prompt en parallèle :
-//   • GPT-5.2  (via Replit OpenAI)    → Agent "Challenger" : technique, précis
-//   • Claude Sonnet 4-6 (via Replit)  → Agent "Critique"   : nuance, voix de marque
+// Pipeline cumulatif : chaque passe s'appuie sur la version précédente.
 //
-// L'agent le plus exigeant (score le plus bas) remporte le débat :
-// sa version raffinée est plus agressive → plus de valeur pour l'utilisateur.
-// Les améliorations des deux agents sont fusionnées pour un retour complet.
+//   Phase 1 — GPT Challenger Pass 1 : 2 corrections techniques sur le brouillon Cerebras
+//   Phase 2 — GPT Challenger Pass 2 : 2 améliorations supplémentaires sur GPT-v1
+//   Phase 3 — Claude Final Validator : validation voix de marque + touche finale vers 10/10
+//
+// Chaque agent reçoit un prompt léger et focalisé → temps de réponse optimisé.
+// Si une phase échoue, la suivante repart de la meilleure version disponible.
 
 export interface ReviewResult {
   score: number;
@@ -289,67 +290,203 @@ export async function reviewWithClaude(
   }
 }
 
+// ─── Helpers internes du pipeline 3 passes ────────────────────────────────────
+
+function buildGptPassPrompt(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string,
+  passNumber: 1 | 2,
+): string {
+  const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
+  const extras = [
+    brief.competitors     ? `Competitors: ${brief.competitors}` : "",
+    brief.forbidden_keywords ? `FORBIDDEN: ${brief.forbidden_keywords}` : "",
+    brief.colors          ? `Brand colors (SACRED — never alter): ${brief.colors}` : "",
+    (brief.target_demographic || (brief as any).target_audience)
+      ? `Audience: ${brief.target_demographic ?? (brief as any).target_audience}` : "",
+    brief.product_name    ? `Product: ${brief.product_name}` : "",
+    brief.price           ? `Price: ${brief.price}` : "",
+  ].filter(Boolean).join(" | ");
+
+  const passLabel = passNumber === 1
+    ? "IMPROVEMENT PASS 1 — Identify the 2 most critical weaknesses and fix them"
+    : "IMPROVEMENT PASS 2 — This prompt was already improved once. Find the 2 remaining gaps and close them";
+
+  return `You are a technical AI prompt specialist for RoboNeo.com.
+
+BRAND: ${brief.brand_name} | Sector: ${brief.sector} | Tone: ${brief.tone} | Values: ${valuesStr}${extras ? ` | ${extras}` : ""}
+Section: ${sectionKey}
+
+${passLabel}:
+"""
+${content}
+"""
+
+Rules: NEVER shorten the prompt. NEVER invent facts absent from the brief. All image/video/audio prompts MUST be in English. Add missing HEX codes, f-stops, focal lengths, color temperatures (Kelvin), pixel dimensions, model parameters where relevant.
+
+JSON only (no markdown):
+{"score":<score BEFORE your fix, 1 decimal, be strict>,"improvements":["exact fix 1","exact fix 2"],"refined_prompt":"<full improved version>"}`;
+}
+
+function buildClaudeFinalPrompt(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string,
+): string {
+  const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
+  const extras = [
+    brief.competitors     ? `Competitors: ${brief.competitors}` : "",
+    brief.forbidden_keywords ? `FORBIDDEN: ${brief.forbidden_keywords}` : "",
+    brief.colors          ? `Brand colors (SACRED): ${brief.colors}` : "",
+    (brief.target_demographic || (brief as any).target_audience)
+      ? `Audience: ${brief.target_demographic ?? (brief as any).target_audience}` : "",
+    brief.product_name    ? `Product: ${brief.product_name}` : "",
+  ].filter(Boolean).join(" | ");
+
+  return `You are a brand voice expert and final quality validator for RoboNeo.com.
+
+BRAND: ${brief.brand_name} | Sector: ${brief.sector} | Tone: ${brief.tone} | Values: ${valuesStr}${extras ? ` | ${extras}` : ""}
+Section: ${sectionKey}
+
+FINAL VALIDATION — This prompt has been through 2 GPT improvement passes. Score it strictly /10.
+• If score ≥ 9.5 → return it as-is with improvements:[]. It's already at the grail.
+• If score < 9.5 → apply up to 2 brand voice / market positioning refinements to push it to 10/10.
+
+NEVER shorten. NEVER invent facts absent from the brand brief. Preserve all technical specs added by GPT. All image/video/audio prompts in English.
+
+"""
+${content}
+"""
+
+JSON only (no markdown):
+{"score":<1 decimal>,"improvements":["brand refinement 1 if any","brand refinement 2 if any"],"refined_prompt":"<final version — identical to input if already 9.5+>"}`;
+}
+
+async function gptRefinementPass(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string,
+  passNumber: 1 | 2,
+): Promise<AgentReviewResult> {
+  const gpt = getGptReviewClient();
+  const prompt = buildGptPassPrompt(content, brief, sectionKey, passNumber);
+  const label = `GPT Pass ${passNumber}`;
+  console.log(`[${label}] ${sectionKey} — démarrage (${prompt.length} chars)`);
+  const t0 = Date.now();
+  try {
+    const response = await withTimeout(
+      gpt.chat.completions.create({
+        model: GPT_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        max_completion_tokens: 3000,
+      }),
+      60_000,
+      label,
+    );
+    console.log(`[${label}] ${sectionKey} — ${Date.now() - t0}ms`);
+    const text = response.choices[0]?.message?.content ?? "{}";
+    return parseAgentReview(text, content, label);
+  } catch (err) {
+    console.error(`[${label}] ${sectionKey} — ERREUR (${Date.now() - t0}ms):`, err instanceof Error ? err.message : err);
+    throw err;
+  }
+}
+
+async function claudeFinalValidation(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string,
+): Promise<AgentReviewResult> {
+  const claude = getClaudeClient();
+  const prompt = buildClaudeFinalPrompt(content, brief, sectionKey);
+  console.log(`[Claude Final] ${sectionKey} — démarrage (${prompt.length} chars)`);
+  const t0 = Date.now();
+  try {
+    const message = await withTimeout(
+      claude.messages.create({
+        model: CLAUDE_MODEL,
+        max_tokens: 3000,
+        messages: [{ role: "user", content: prompt }],
+      }),
+      60_000,
+      "Claude Final",
+    );
+    console.log(`[Claude Final] ${sectionKey} — ${Date.now() - t0}ms`);
+    const block = message.content[0];
+    const raw = block.type === "text" ? block.text : "{}";
+    const clean = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const jsonStart = clean.indexOf("{");
+    const jsonEnd = clean.lastIndexOf("}");
+    const json = jsonStart >= 0 && jsonEnd > jsonStart ? clean.slice(jsonStart, jsonEnd + 1) : clean;
+    const parsed = JSON.parse(json) as { score?: unknown; refined_prompt?: unknown; improvements?: unknown };
+    const score = Math.max(1, Math.min(10, Math.round(Number(parsed.score) * 10) / 10));
+    const refined = typeof parsed.refined_prompt === "string" && parsed.refined_prompt.trim()
+      ? parsed.refined_prompt.trim()
+      : content;
+    const improvements = Array.isArray(parsed.improvements)
+      ? parsed.improvements.map(String).filter(Boolean)
+      : [];
+    return { score, refined, improvements };
+  } catch (err) {
+    console.error(`[Claude Final] ${sectionKey} — ERREUR (${Date.now() - t0}ms):`, err instanceof Error ? err.message : err);
+    throw err;
+  }
+}
+
+// ─── reviewPromptQuality — Pipeline séquentiel GPT×2 → Claude Final ──────────
+
 export async function reviewPromptQuality(
   content: string,
   brief: EnhancedBrief,
-  sectionKey: string
+  sectionKey: string,
 ): Promise<ReviewResult> {
-  // GPT et Claude lancés en parallèle — un seul round
-  const [gptSettled, claudeSettled] = await Promise.allSettled([
-    reviewWithGPT(content, brief, sectionKey),
-    reviewWithClaude(content, brief, sectionKey),
-  ]);
+  let current = content;
+  const allImprovements: string[] = [];
+  let gptScore = 0;
+  let claudeScore = 0;
 
-  if (gptSettled.status === "rejected" && claudeSettled.status === "rejected") {
-    throw new Error("GPT et Claude n'ont pas pu produire de prompt amélioré.");
+  // Phase 1 — GPT Pass 1 (2 corrections critiques sur le brouillon Cerebras)
+  try {
+    const pass1 = await gptRefinementPass(current, brief, sectionKey, 1);
+    current = pass1.refined;
+    gptScore = pass1.score;
+    allImprovements.push(...pass1.improvements.map((i) => `[GPT-1] ${i}`));
+    console.log(`[Review] ${sectionKey} — GPT Pass 1: ${pass1.score}/10 → v1 prête`);
+  } catch {
+    console.warn(`[Review] ${sectionKey} — GPT Pass 1 échoué, poursuite avec brouillon Cerebras`);
   }
 
-  const gptResult =
-    gptSettled.status === "fulfilled"
-      ? gptSettled.value
-      : { score: 0, refined: "", improvements: ["GPT indisponible"] };
-  const claudeResult =
-    claudeSettled.status === "fulfilled"
-      ? claudeSettled.value
-      : { score: 0, refined: "", improvements: ["Claude indisponible"] };
-
-  console.log(`[Review] ${sectionKey} → GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`);
-
-  // L'agent avec le score le plus haut remporte (version la plus améliorée)
-  let winner: "gpt" | "claude" | "tie";
-  let winnerResult: AgentReviewResult;
-
-  if (gptSettled.status === "fulfilled" && claudeSettled.status !== "fulfilled") {
-    winner = "gpt"; winnerResult = gptResult;
-  } else if (claudeSettled.status === "fulfilled" && gptSettled.status !== "fulfilled") {
-    winner = "claude"; winnerResult = claudeResult;
-  } else if (gptResult.score >= claudeResult.score) {
-    winner = gptResult.score > claudeResult.score ? "gpt" : "tie";
-    winnerResult = gptResult;
-  } else {
-    winner = "claude"; winnerResult = claudeResult;
+  // Phase 2 — GPT Pass 2 (2 améliorations supplémentaires sur GPT-v1)
+  try {
+    const pass2 = await gptRefinementPass(current, brief, sectionKey, 2);
+    current = pass2.refined;
+    gptScore = pass2.score;
+    allImprovements.push(...pass2.improvements.map((i) => `[GPT-2] ${i}`));
+    console.log(`[Review] ${sectionKey} — GPT Pass 2: ${pass2.score}/10 → v2 prête`);
+  } catch {
+    console.warn(`[Review] ${sectionKey} — GPT Pass 2 échoué, poursuite avec GPT-v1`);
   }
 
-  const successfulScores = [
-    gptSettled.status === "fulfilled" ? gptResult.score : undefined,
-    claudeSettled.status === "fulfilled" ? claudeResult.score : undefined,
-  ].filter((s): s is number => typeof s === "number");
-  const avgScore = Math.round(
-    (successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length) * 10
-  ) / 10;
-
-  const allImprovements = [
-    ...gptResult.improvements.map((i) => `[GPT] ${i}`),
-    ...claudeResult.improvements.map((i) => `[Claude] ${i}`),
-  ].slice(0, 6);
+  // Phase 3 — Claude Final (validation voix de marque + touche finale vers 10/10)
+  try {
+    const final = await claudeFinalValidation(current, brief, sectionKey);
+    current = final.refined;
+    claudeScore = final.score;
+    allImprovements.push(...final.improvements.map((i) => `[Claude] ${i}`));
+    console.log(`[Review] ${sectionKey} — Claude Final: ${final.score}/10 ✓ GRAAL`);
+  } catch {
+    console.warn(`[Review] ${sectionKey} — Claude Final échoué, utilisation de GPT-v2`);
+    claudeScore = gptScore;
+  }
 
   return {
-    score: avgScore,
-    refined: winnerResult.refined || content,
-    improvements: allImprovements,
-    gpt_score: gptResult.score,
-    claude_score: claudeResult.score,
-    winner,
+    score: claudeScore || gptScore,
+    refined: current,
+    improvements: allImprovements.slice(0, 6),
+    gpt_score: gptScore,
+    claude_score: claudeScore,
+    winner: claudeScore >= gptScore ? "claude" : "gpt",
   };
 }
 

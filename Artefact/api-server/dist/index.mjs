@@ -48033,7 +48033,7 @@ router8.post("/openai/enhance-prompts-copy", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   const systemPrompt = `Tu es un expert copywriter et strat\xE8ge de contenu pour RoboNeo.com.
-Tu g\xE9n\xE8res du contenu textuel ultra-professionnel, optimis\xE9 conversion, en fran\xE7ais.
+Tu g\xE9n\xE8res du contenu textuel ultra-professionnel, optimis\xE9 conversion, en fran\xE7ais impeccable.
 Contexte de la marque:
 - Marque: ${brand_name}
 - Produit: ${product_name}
@@ -48046,6 +48046,25 @@ Contexte de la marque:
 - Audience cible: ${target_audience}
 - Remise promo: ${discount}%
 - Code promo: ${code}
+
+\u26A0\uFE0F R\xC8GLES QUALIT\xC9 FRAN\xC7AISE ABSOLUES \u2014 RELIRE AVANT TOUTE G\xC9N\xC9RATION:
+
+GRAMMAIRE ET ACCORD:
+\u2022 "la peau" est f\xE9minin \u2192 TOUJOURS "ma peau", "sa peau", "la peau" \u2014 JAMAIS "mon peau"
+\u2022 Accorder les adjectifs correctement : "une peau liss\xE9e, hydrat\xE9e" (pas "hydrat\xE9")
+\u2022 Les noms de produits restent invariables
+
+VOCABULAIRE \u2014 MOTS INTERDITS ET LEURS REMPLA\xC7ANTS:
+\u2022 "J'use" (= user des chaussures) \u2192 \xE9crire "J'utilise" ou "Je l'applique"
+\u2022 "m'aveugle" (= emp\xEAche de voir) \u2192 \xE9crire "m'\xE9merveille", "me bluffe", "me surprend"
+\u2022 "s\xE9cheresses" pour d\xE9signer des \xE9pisodes de s\xE9cheresse cutan\xE9e \u2192 \xE9crire "\xE9pisodes de s\xE9cheresse", "temps secs"
+\u2022 "N'oubliez pas votre fid\xE9lit\xE9" \u2192 \xE9crire "Merci pour votre fid\xE9lit\xE9" ou "R\xE9compensons votre fid\xE9lit\xE9"
+\u2022 \xC9viter les tournures robotiques, les faux amis, et les calques de l'anglais
+
+STYLE ET TON:
+\u2022 \xC9crire comme un(e) copywriter humain(e) francophone natif(ve) \u2014 phrases fluides, naturelles
+\u2022 Varier les constructions de phrases \u2014 pas de r\xE9p\xE9titions de structure
+\u2022 Pour les avis clients: reproduire le style spontan\xE9 d'un vrai client, pas d'un r\xE9dacteur professionnel
 
 R\xC8GLE ABSOLUE: R\xE9ponds UNIQUEMENT en JSON valide, sans texte avant ou apr\xE8s.`;
   const sections = [
@@ -48103,6 +48122,14 @@ Code promo \xE0 int\xE9grer (dans certaines captions): ${code}`
       agent: "SEO Social Agent / Hashtag Optimizer",
       prompt: `G\xE9n\xE8re des sets de hashtags ultra-optimis\xE9s pour "${brand_name}" dans le secteur "${sector}".
 
+\u26A0\uFE0F R\xC8GLES TECHNIQUES ABSOLUES POUR LES HASHTAGS:
+\u2022 INTERDIT: espaces dans un hashtag \u2014 "#Skincare africain" est INVALIDE \u2192 \xE9crire "#SkincareAfricain" (CamelCase)
+\u2022 INTERDIT: accents ou caract\xE8res sp\xE9ciaux \u2014 "\xE9, \xE8, \xE0, \xE7, \xEA, \xEF" \u2192 les remplacer sans accent : "e, e, a, c, e, i"
+\u2022 INTERDIT: hashtags de plus de 25 caract\xE8res \u2014 "#S\xE9rum\xE9clataubaobab30ml" est invalide \u2192 \xE9crire "#SerumBaobab"
+\u2022 INTERDIT: doublons \u2014 chaque hashtag doit \xEAtre unique dans l'ensemble de la liste, m\xEAme en variant la casse
+\u2022 FORMAT: CamelCase pour les mots compos\xE9s \u2014 "#PeauLumineuse", "#SkincareNaturel", "#Beaut\xE9Africaine"
+\u2022 Longueur id\xE9ale: 8-20 caract\xE8res (lisibles, m\xE9morisables, performants)
+
 R\xE9ponds en JSON avec exactement cette structure:
 {
   "instagram": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5", "#hashtag6", "#hashtag7", "#hashtag8", "#hashtag9", "#hashtag10", "#hashtag11", "#hashtag12", "#hashtag13", "#hashtag14", "#hashtag15"],
@@ -48112,7 +48139,8 @@ R\xE9ponds en JSON avec exactement cette structure:
 }
 
 Mix: 30% hashtags de niche (500k-2M posts), 50% secteur (2M-10M), 20% trending.
-Inclure: #${brand_name.toLowerCase()}, des hashtags fran\xE7ais ET anglais pertinents pour le secteur ${sector}.`
+Inclure: #${brand_name.toLowerCase().replace(/\s/g, "")}, des hashtags fran\xE7ais ET anglais pertinents pour le secteur ${sector}.
+V\xE9rifier deux fois l'absence de doublons avant de r\xE9pondre.`
     },
     {
       key: "email_sequence",
@@ -48143,13 +48171,35 @@ R\xE9ponds en JSON avec exactement cette structure:
 }
 
 Code promo pour launch et loyalty: ${code} (-${discount}%).
-Ton: ${tone}. Personnalisation: {pr\xE9nom} dans les corps d'emails.`
+Ton: ${tone}. Personnalisation: {pr\xE9nom} dans les corps d'emails.
+
+\u26A0\uFE0F R\xC8GLES EMAIL FID\xC9LIT\xC9 (loyalty) OBLIGATOIRES:
+\u2022 Ouvrir sur de la GRATITUDE \u2014 "Merci pour votre fid\xE9lit\xE9" ou "Votre fid\xE9lit\xE9 nous touche" (JAMAIS "N'oubliez pas votre fid\xE9lit\xE9" qui est maladroit)
+\u2022 Ton chaleureux, personnel, pas commercial \u2014 le client fid\xE8le m\xE9rite une attention sp\xE9ciale
+\u2022 La r\xE9compense (code promo) doit \xEAtre pr\xE9sent\xE9e comme un cadeau, pas comme une obligation
+\u2022 \xC9viter les formules impersonnelles, robotiques ou les injonctions n\xE9gatives ("N'oubliez pas", "Ne manquez pas")`
     },
     {
       key: "client_reviews",
       label: "Reviews Clients (10 avis)",
       agent: "Social Proof Agent / UGC Optimizer",
       prompt: `G\xE9n\xE8re 10 avis clients r\xE9alistes et authentiques pour "${product_name}" de "${brand_name}" (secteur ${sector}).
+
+\u26A0\uFE0F R\xC8GLES QUALIT\xC9 FRAN\xC7AISE POUR LES AVIS \u2014 \xC0 RESPECTER STRICTEMENT:
+
+GRAMMAIRE OBLIGATOIRE:
+\u2022 "la peau" est F\xC9MININ \u2192 "ma peau" (JAMAIS "mon peau")
+\u2022 "J'utilise" ou "J'applique" (JAMAIS "J'use" \u2014 qui signifie "ab\xEEmer par friction")
+\u2022 "m'\xE9merveille" ou "me bluffe" (JAMAIS "m'aveugle" \u2014 qui signifie "m'emp\xEAche de voir")
+\u2022 "par temps sec" ou "en p\xE9riode de s\xE9cheresse cutan\xE9e" (JAMAIS "aux s\xE9cheresses")
+\u2022 Accorder les participes et adjectifs avec le sujet correct
+
+STYLE AVIS AUTHENTIQUE:
+\u2022 \xC9crire comme un vrai client \u2014 spontan\xE9, naturel, pas trop parfait
+\u2022 Utiliser des formules du quotidien: "Je suis bluff\xE9e par", "Franchement je m'attendais pas \xE0...", "Mon verdict apr\xE8s 3 semaines..."
+\u2022 Varier: certains avis courts et directs (2-3 phrases), d'autres plus d\xE9velopp\xE9s
+\u2022 Quelques petites imperfections de style sont OK (mais JAMAIS des fautes de grammaire de genre ou de sens)
+\u2022 \xC9viter les superlatifs en cascade: "absolument incroyable, magnifique, r\xE9volutionnaire" = robotique
 
 R\xE9ponds en JSON avec exactement cette structure:
 {
@@ -48167,9 +48217,9 @@ R\xE9ponds en JSON avec exactement cette structure:
 
 Les 10 avis doivent:
 - Varier entre 4 et 5 \xE9toiles (8 \xE0 5 \xE9toiles, 2 \xE0 4 \xE9toiles)
-- Avoir des pr\xE9noms fran\xE7ais vari\xE9s (hommes et femmes)
-- Mentionner des d\xE9tails sp\xE9cifiques: livraison, emballage, qualit\xE9, usage
-- \xCAtre cr\xE9dibles et diff\xE9renci\xE9s \u2014 \xE9viter la r\xE9p\xE9tition
+- Avoir des pr\xE9noms vari\xE9s adapt\xE9s \xE0 la cible "${target_audience}" (hommes et femmes)
+- Mentionner des d\xE9tails sp\xE9cifiques: livraison, emballage, texture, odeur, r\xE9sultat apr\xE8s X jours
+- \xCAtre cr\xE9dibles et diff\xE9renci\xE9s \u2014 \xE9viter la r\xE9p\xE9tition de structure
 - Int\xE9grer naturellement "${product_name}" dans certains avis
 - Varier les dates (de 2 jours \xE0 3 mois)`
     }

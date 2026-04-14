@@ -62,7 +62,7 @@ router.post("/openai/enhance-prompts-copy", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   const systemPrompt = `Tu es un expert copywriter et stratège de contenu pour RoboNeo.com.
-Tu génères du contenu textuel ultra-professionnel, optimisé conversion, en français.
+Tu génères du contenu textuel ultra-professionnel, optimisé conversion, en français impeccable.
 Contexte de la marque:
 - Marque: ${brand_name}
 - Produit: ${product_name}
@@ -75,6 +75,25 @@ Contexte de la marque:
 - Audience cible: ${target_audience}
 - Remise promo: ${discount}%
 - Code promo: ${code}
+
+⚠️ RÈGLES QUALITÉ FRANÇAISE ABSOLUES — RELIRE AVANT TOUTE GÉNÉRATION:
+
+GRAMMAIRE ET ACCORD:
+• "la peau" est féminin → TOUJOURS "ma peau", "sa peau", "la peau" — JAMAIS "mon peau"
+• Accorder les adjectifs correctement : "une peau lissée, hydratée" (pas "hydraté")
+• Les noms de produits restent invariables
+
+VOCABULAIRE — MOTS INTERDITS ET LEURS REMPLAÇANTS:
+• "J'use" (= user des chaussures) → écrire "J'utilise" ou "Je l'applique"
+• "m'aveugle" (= empêche de voir) → écrire "m'émerveille", "me bluffe", "me surprend"
+• "sécheresses" pour désigner des épisodes de sécheresse cutanée → écrire "épisodes de sécheresse", "temps secs"
+• "N'oubliez pas votre fidélité" → écrire "Merci pour votre fidélité" ou "Récompensons votre fidélité"
+• Éviter les tournures robotiques, les faux amis, et les calques de l'anglais
+
+STYLE ET TON:
+• Écrire comme un(e) copywriter humain(e) francophone natif(ve) — phrases fluides, naturelles
+• Varier les constructions de phrases — pas de répétitions de structure
+• Pour les avis clients: reproduire le style spontané d'un vrai client, pas d'un rédacteur professionnel
 
 RÈGLE ABSOLUE: Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.`;
 
@@ -135,6 +154,14 @@ Code promo à intégrer (dans certaines captions): ${code}`,
       agent: "SEO Social Agent / Hashtag Optimizer",
       prompt: `Génère des sets de hashtags ultra-optimisés pour "${brand_name}" dans le secteur "${sector}".
 
+⚠️ RÈGLES TECHNIQUES ABSOLUES POUR LES HASHTAGS:
+• INTERDIT: espaces dans un hashtag — "#Skincare africain" est INVALIDE → écrire "#SkincareAfricain" (CamelCase)
+• INTERDIT: accents ou caractères spéciaux — "é, è, à, ç, ê, ï" → les remplacer sans accent : "e, e, a, c, e, i"
+• INTERDIT: hashtags de plus de 25 caractères — "#Séruméclataubaobab30ml" est invalide → écrire "#SerumBaobab"
+• INTERDIT: doublons — chaque hashtag doit être unique dans l'ensemble de la liste, même en variant la casse
+• FORMAT: CamelCase pour les mots composés — "#PeauLumineuse", "#SkincareNaturel", "#BeautéAfricaine"
+• Longueur idéale: 8-20 caractères (lisibles, mémorisables, performants)
+
 Réponds en JSON avec exactement cette structure:
 {
   "instagram": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5", "#hashtag6", "#hashtag7", "#hashtag8", "#hashtag9", "#hashtag10", "#hashtag11", "#hashtag12", "#hashtag13", "#hashtag14", "#hashtag15"],
@@ -144,7 +171,8 @@ Réponds en JSON avec exactement cette structure:
 }
 
 Mix: 30% hashtags de niche (500k-2M posts), 50% secteur (2M-10M), 20% trending.
-Inclure: #${brand_name.toLowerCase()}, des hashtags français ET anglais pertinents pour le secteur ${sector}.`,
+Inclure: #${brand_name.toLowerCase().replace(/\s/g, "")}, des hashtags français ET anglais pertinents pour le secteur ${sector}.
+Vérifier deux fois l'absence de doublons avant de répondre.`,
     },
     {
       key: "email_sequence",
@@ -175,13 +203,35 @@ Réponds en JSON avec exactement cette structure:
 }
 
 Code promo pour launch et loyalty: ${code} (-${discount}%).
-Ton: ${tone}. Personnalisation: {prénom} dans les corps d'emails.`,
+Ton: ${tone}. Personnalisation: {prénom} dans les corps d'emails.
+
+⚠️ RÈGLES EMAIL FIDÉLITÉ (loyalty) OBLIGATOIRES:
+• Ouvrir sur de la GRATITUDE — "Merci pour votre fidélité" ou "Votre fidélité nous touche" (JAMAIS "N'oubliez pas votre fidélité" qui est maladroit)
+• Ton chaleureux, personnel, pas commercial — le client fidèle mérite une attention spéciale
+• La récompense (code promo) doit être présentée comme un cadeau, pas comme une obligation
+• Éviter les formules impersonnelles, robotiques ou les injonctions négatives ("N'oubliez pas", "Ne manquez pas")`,
     },
     {
       key: "client_reviews",
       label: "Reviews Clients (10 avis)",
       agent: "Social Proof Agent / UGC Optimizer",
       prompt: `Génère 10 avis clients réalistes et authentiques pour "${product_name}" de "${brand_name}" (secteur ${sector}).
+
+⚠️ RÈGLES QUALITÉ FRANÇAISE POUR LES AVIS — À RESPECTER STRICTEMENT:
+
+GRAMMAIRE OBLIGATOIRE:
+• "la peau" est FÉMININ → "ma peau" (JAMAIS "mon peau")
+• "J'utilise" ou "J'applique" (JAMAIS "J'use" — qui signifie "abîmer par friction")
+• "m'émerveille" ou "me bluffe" (JAMAIS "m'aveugle" — qui signifie "m'empêche de voir")
+• "par temps sec" ou "en période de sécheresse cutanée" (JAMAIS "aux sécheresses")
+• Accorder les participes et adjectifs avec le sujet correct
+
+STYLE AVIS AUTHENTIQUE:
+• Écrire comme un vrai client — spontané, naturel, pas trop parfait
+• Utiliser des formules du quotidien: "Je suis bluffée par", "Franchement je m'attendais pas à...", "Mon verdict après 3 semaines..."
+• Varier: certains avis courts et directs (2-3 phrases), d'autres plus développés
+• Quelques petites imperfections de style sont OK (mais JAMAIS des fautes de grammaire de genre ou de sens)
+• Éviter les superlatifs en cascade: "absolument incroyable, magnifique, révolutionnaire" = robotique
 
 Réponds en JSON avec exactement cette structure:
 {
@@ -199,9 +249,9 @@ Réponds en JSON avec exactement cette structure:
 
 Les 10 avis doivent:
 - Varier entre 4 et 5 étoiles (8 à 5 étoiles, 2 à 4 étoiles)
-- Avoir des prénoms français variés (hommes et femmes)
-- Mentionner des détails spécifiques: livraison, emballage, qualité, usage
-- Être crédibles et différenciés — éviter la répétition
+- Avoir des prénoms variés adaptés à la cible "${target_audience}" (hommes et femmes)
+- Mentionner des détails spécifiques: livraison, emballage, texture, odeur, résultat après X jours
+- Être crédibles et différenciés — éviter la répétition de structure
 - Intégrer naturellement "${product_name}" dans certains avis
 - Varier les dates (de 2 jours à 3 mois)`,
     },

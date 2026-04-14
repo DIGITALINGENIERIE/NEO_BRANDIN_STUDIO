@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Download, Sparkles, ChevronRight, Check, RefreshCw, Brain, FileText, Zap, Star, Users, AlertTriangle } from "lucide-react";
+import { Copy, Download, Sparkles, ChevronRight, Check, RefreshCw, Brain, FileText, Zap, Star, Users, AlertTriangle, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { generatePrompts, type BrandBrief, type GenerationResult, generateTxtExport } from "@/lib/prompt-generator";
@@ -68,6 +68,8 @@ export default function Module01() {
   const [personaVariants, setPersonaVariants] = useState<Partial<Record<SectionKey, PersonaVariant[]>>>({});
   const [loadingPersonas, setLoadingPersonas] = useState<Partial<Record<SectionKey, boolean>>>({});
   const [openPersonas, setOpenPersonas] = useState<Partial<Record<SectionKey, boolean>>>({});
+  const [loadingReview, setLoadingReview] = useState<Partial<Record<SectionKey, boolean>>>({});
+  const [improvedPrompts, setImprovedPrompts] = useState<Partial<Record<SectionKey, string>>>({});
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -200,11 +202,56 @@ export default function Module01() {
     }
   };
 
+  const handleImproveWithAI = async (key: SectionKey) => {
+    const currentPrompt = getPromptText(key);
+    if (!currentPrompt) return;
+    setLoadingReview((p) => ({ ...p, [key]: true }));
+    try {
+      const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
+      const res = await fetch(`${import.meta.env.BASE_URL}api/openai/review-prompt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: currentPrompt,
+          section_key: key,
+          brand_name: brief.brand_name,
+          sector: brief.sector,
+          tone: brief.tone,
+          values,
+          target_demographic: brief.target_demographic || undefined,
+          competitors: brief.competitors || undefined,
+          forbidden_keywords: brief.forbidden_keywords || undefined,
+          colors: brief.colors || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error("Erreur API review");
+      const data = await res.json();
+      const review: ReviewData = {
+        score: data.score,
+        improvements: data.improvements,
+        gpt_score: data.gpt_score,
+        claude_score: data.claude_score,
+        winner: data.winner,
+      };
+      setStreamState((p) => ({ ...p, reviews: { ...p.reviews, [key]: review } }));
+      if (data.refined && data.refined !== currentPrompt) {
+        setImprovedPrompts((p) => ({ ...p, [key]: data.refined }));
+      }
+      toast({ title: `Score obtenu : ${data.score}/10 — ${data.winner === "gpt" ? "GPT ⚡ gagne" : data.winner === "claude" ? "Claude 🧠 gagne" : "Égalité 🤝"}` });
+    } catch {
+      toast({ title: "Erreur", description: "Impossible de lancer la review IA.", variant: "destructive" });
+    } finally {
+      setLoadingReview((p) => ({ ...p, [key]: false }));
+    }
+  };
+
   const onSubmit = async (data: FormValues) => {
     setIsGenerating(true);
     setFormData(data);
     setPersonaVariants({});
     setOpenPersonas({});
+    setImprovedPrompts({});
+    setLoadingReview({});
     try {
       const generated = useAI ? await generateWithAI(data) : generatePrompts({ brand_name: brief.brand_name, sector: brief.sector, tone: brief.tone, values: brief.values, style_pref: data.style_pref } as BrandBrief);
       if (!useAI) await new Promise((r) => setTimeout(r, 400));
@@ -246,6 +293,7 @@ export default function Module01() {
   const showResultsView = result !== null || isStreaming;
 
   const getPromptText = (key: SectionKey): string => {
+    if (improvedPrompts[key]) return improvedPrompts[key]!;
     if (result) return result.modules.brand_identity[key].prompt;
     if (isStreaming) return streamState.prompts[key] ?? "";
     return "";
@@ -354,7 +402,7 @@ export default function Module01() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() }); setPersonaVariants({}); setOpenPersonas({}); }} disabled={isStreaming}>
+              <Button variant="outline" onClick={() => { setResult(null); setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() }); setPersonaVariants({}); setOpenPersonas({}); setImprovedPrompts({}); setLoadingReview({}); }} disabled={isStreaming}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Nouveau
               </Button>
               {result && (
@@ -450,15 +498,29 @@ export default function Module01() {
                         {Object.entries(SECTION_PARAMS[key]).map(([k, v]) => `${k}=${Array.isArray(v) ? v.length : v}`).join(" | ")}
                       </p>
                       {(isDone || (!isStreaming && !!result)) && prompt && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => showVariants ? setOpenPersonas((p) => ({ ...p, [key]: false })) : handleGeneratePersonas(key)}
-                          disabled={!!isLoadingVariants}
-                          className="h-7 text-xs gap-1.5 border-violet-400/30 text-violet-400 hover:bg-violet-400/10"
-                        >
-                          {isLoadingVariants ? <><RefreshCw className="w-3 h-3 animate-spin" />Génération personas...</> : <><Users className="w-3 h-3" />{showVariants ? "Masquer les variantes" : "3 Variantes Personas"}</>}
-                        </Button>
+                        <div className="flex flex-wrap gap-2 w-full">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImproveWithAI(key)}
+                            disabled={!!loadingReview[key] || !!isLoadingVariants}
+                            className="h-7 text-xs gap-1.5 border-amber-400/40 text-amber-300 hover:bg-amber-400/10 hover:border-amber-400/60"
+                          >
+                            {loadingReview[key]
+                              ? <><RefreshCw className="w-3 h-3 animate-spin" />GPT & Claude analysent...</>
+                              : <><Wand2 className="w-3 h-3" />{improvedPrompts[key] ? "Ré-améliorer" : "Améliorer avec GPT & Claude"}</>
+                            }
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => showVariants ? setOpenPersonas((p) => ({ ...p, [key]: false })) : handleGeneratePersonas(key)}
+                            disabled={!!isLoadingVariants || !!loadingReview[key]}
+                            className="h-7 text-xs gap-1.5 border-violet-400/30 text-violet-400 hover:bg-violet-400/10"
+                          >
+                            {isLoadingVariants ? <><RefreshCw className="w-3 h-3 animate-spin" />Génération personas...</> : <><Users className="w-3 h-3" />{showVariants ? "Masquer les variantes" : "3 Variantes Personas"}</>}
+                          </Button>
+                        </div>
                       )}
                     </CardFooter>
                   </Card>

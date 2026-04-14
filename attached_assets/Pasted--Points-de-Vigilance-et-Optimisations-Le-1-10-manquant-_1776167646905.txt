@@ -1,0 +1,39 @@
+🟡 Points de Vigilance et Optimisations (Le 1/10 manquant)
+1. Le "Teaser Animé Style Cinematic" est Vide
+
+Fichier : --- TEASER ANIMÉ — STYLE CINEMATIC ---
+
+Contenu : Vide (juste le titre de l'agent).
+
+Impact : C'est le seul trou dans la raquette.
+
+Suggestion : Soit c'est une section en construction, soit il faudrait un prompt du type : "Génère une vidéo de 5 secondes en boucle : macro de la texture du sérum, bokeh de lumière dorée, logo Lumiski en transparence. Format 1080x1920. Idéal pour fond d'écran de site web ou Stories."
+
+2. La Musique : Un Besoin de Précision pour les Outils IA
+
+Prompt actuel : Musique douce Afro-soul acoustique, BPM 85.
+
+Réalité : Pour un outil comme Suno AI ou Udio, ce prompt est un peu court. Pour un humain cherchant sur Artlist/Epidemic Sound, c'est parfait.
+
+Amélioration IA : Ajouter des références d'instruments : "Instruments : Kora (harpe africaine), balafon doux, nappe de piano électrique, percussions shaker légères." L'IA musicale a besoin de noms d'instruments pour ne pas partir en pop commerciale générique.
+
+3. La Voix Off ElevenLabs (Le Piège de la Langue)
+
+Fichier : [recommended_voice] Rachel
+
+Problème Majeur : La voix Rachel d'ElevenLabs est une voix Anglaise (US). Si vous lui donnez un script Français (Découvrez le sérum...), elle va le lire avec un accent américain très fort (style "Dé-cou-vrez le sé-rumm").
+
+Correction Urgente : Il faut spécifier une voix du catalogue ElevenLabs Multilingue v2 optimisée pour le Français.
+
+Voix recommandée pour le français (luxe) : Grace (voix féminine américaine mais avec un excellent modèle français) ou Josephine (voix française native, chaude).
+
+Paramètre à ajouter : model_id: eleven_multilingual_v2.
+
+4. Les Miniatures (Limite des Générateurs d'Images Actuels)
+
+Prompt : Texte overlay : 'AVANT / APRÈS' en haut centré, police sans-serif semi-gras, 48px.
+
+Problème : Midjourney / DALL-E vont écrire "AVVANT / APRESSS".
+
+Solution Robuste : Il faudrait préciser dans l'en-tête du module : "Note : Ces prompts génèrent le fond visuel et l'ambiance. Le texte devra être ajouté en post-production sur Canva/Photoshop pour garantir une typographie parfaite."
+

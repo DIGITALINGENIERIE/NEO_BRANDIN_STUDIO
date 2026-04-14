@@ -96,14 +96,14 @@ const SECTIONS = [
     label: "SAV",
     color: "text-orange-400",
     dot: "bg-orange-400",
-    fields: ["warranty", "delivery_days", "express_delivery_days", "express_price", "return_days", "support_email", "unique_feature", "best_seller_1", "best_seller_2"],
+    fields: ["warranty", "delivery_days", "express_delivery_days", "express_price", "return_days", "support_email", "contact_channel", "sav_response_time", "sav_message", "best_seller_1", "best_seller_2"],
   },
   {
     key: "visual",
     label: "Visuel",
     color: "text-pink-400",
     dot: "bg-pink-400",
-    fields: ["primary_color", "heading_font", "body_font"],
+    fields: ["primary_color", "secondary_color", "accent_color", "visual_style", "heading_font", "body_font"],
   },
   {
     key: "performance",
@@ -117,7 +117,7 @@ const SECTIONS = [
     label: "Stratégie",
     color: "text-red-400",
     dot: "bg-red-400",
-    fields: ["target_demographic", "competitors", "forbidden_keywords"],
+    fields: ["target_demographic", "competitors", "forbidden_keywords", "usp"],
   },
 ] as const;
 
@@ -209,6 +209,9 @@ function CommerceSection({ form }: { form: any }) {
       <FieldRow label="Prix de vente (€)">
         <Input {...form.register("price")} type="number" placeholder="299" className="bg-black/20 h-9 text-sm" />
       </FieldRow>
+      <FieldRow label="Prix barré avant remise (€)">
+        <Input {...form.register("old_price")} type="number" placeholder="399" className="bg-black/20 h-9 text-sm" />
+      </FieldRow>
       <FieldRow label="Réduction (%)">
         <Input {...form.register("discount")} type="number" placeholder="20" className="bg-black/20 h-9 text-sm" />
       </FieldRow>
@@ -218,30 +221,136 @@ function CommerceSection({ form }: { form: any }) {
       <FieldRow label="Livraison offerte dès (€)">
         <Input {...form.register("free_shipping")} type="number" placeholder="100" className="bg-black/20 h-9 text-sm" />
       </FieldRow>
-      <div className="col-span-2">
-        <FieldRow label="Info livraison">
-          <Input {...form.register("shipping_info")} placeholder="ex: Livraison offerte dès 100€ · Retours 30 jours" className="bg-black/20 h-9 text-sm" />
+      <FieldRow label="Stock disponible">
+        <Input {...form.register("stock")} type="number" placeholder="50" className="bg-black/20 h-9 text-sm" />
+      </FieldRow>
+      <div className="col-span-2 sm:col-span-3">
+        <FieldRow label="Info livraison (texte affiché)">
+          <Input {...form.register("shipping_info")} placeholder="ex: Livraison offerte dès 120€ — 2-4 jours ouvrés (Colissimo)" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+      </div>
+      <div className="col-span-2 sm:col-span-3">
+        <FieldRow label="URL page de commande / checkout">
+          <Input {...form.register("checkout_url")} placeholder="ex: https://masite.com/checkout" className="bg-black/20 h-9 text-sm" />
         </FieldRow>
       </div>
     </div>
   );
 }
 
+const VISUAL_STYLES = [
+  { value: "", label: "Sélectionner un style…" },
+  { value: "luxe-premium", label: "Luxe & Premium" },
+  { value: "editorial", label: "Éditorial & Magazine" },
+  { value: "minimaliste", label: "Minimaliste & Épuré" },
+  { value: "moderne", label: "Moderne & Tech" },
+  { value: "chaud-naturel", label: "Chaud & Naturel" },
+  { value: "streetwear", label: "Streetwear & Urban" },
+  { value: "artisanal", label: "Artisanal & Craft" },
+  { value: "ecologique", label: "Écologique & Organique" },
+];
+
 function VisualSection({ form }: { form: any }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <FieldRow label="Couleur principale">
-        <div className="flex gap-2">
-          <input type="color" {...form.register("primary_color")} className="w-10 h-9 rounded cursor-pointer border border-white/10 bg-transparent flex-shrink-0" />
-          <Input {...form.register("primary_color")} className="bg-black/20 h-9 text-sm font-mono" />
-        </div>
-      </FieldRow>
-      <FieldRow label="Police titres">
-        <Input {...form.register("heading_font")} placeholder="Playfair Display" className="bg-black/20 h-9 text-sm" />
-      </FieldRow>
-      <FieldRow label="Police texte">
-        <Input {...form.register("body_font")} placeholder="Montserrat" className="bg-black/20 h-9 text-sm" />
-      </FieldRow>
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <FieldRow label="Couleur principale (HEX) *">
+          <div className="flex gap-2">
+            <input type="color" {...form.register("primary_color")} className="w-10 h-9 rounded cursor-pointer border border-white/10 bg-transparent flex-shrink-0" />
+            <Input {...form.register("primary_color")} className="bg-black/20 h-9 text-sm font-mono" placeholder="#D4AF37" />
+          </div>
+        </FieldRow>
+        <FieldRow label="Couleur secondaire (HEX)">
+          <div className="flex gap-2">
+            <input type="color" {...form.register("secondary_color")} className="w-10 h-9 rounded cursor-pointer border border-white/10 bg-transparent flex-shrink-0" />
+            <Input {...form.register("secondary_color")} className="bg-black/20 h-9 text-sm font-mono" placeholder="#9CAF88" />
+          </div>
+        </FieldRow>
+        <FieldRow label="Couleur d'accent (HEX)">
+          <div className="flex gap-2">
+            <input type="color" {...form.register("accent_color")} className="w-10 h-9 rounded cursor-pointer border border-white/10 bg-transparent flex-shrink-0" />
+            <Input {...form.register("accent_color")} className="bg-black/20 h-9 text-sm font-mono" placeholder="#D4A5A5" />
+          </div>
+        </FieldRow>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <FieldRow label="Style visuel global">
+          <select {...form.register("visual_style")} className={selectCls()}>
+            {VISUAL_STYLES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+        </FieldRow>
+        <FieldRow label="Police titres">
+          <Input {...form.register("heading_font")} placeholder="Playfair Display" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Police texte">
+          <Input {...form.register("body_font")} placeholder="Montserrat" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+      </div>
+    </div>
+  );
+}
+
+const CONTACT_CHANNELS = [
+  { value: "", label: "Sélectionner un canal…" },
+  { value: "email", label: "Email" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "instagram", label: "Instagram DM" },
+  { value: "email-instagram", label: "Email + Instagram DM" },
+  { value: "email-whatsapp", label: "Email + WhatsApp" },
+  { value: "chat-live", label: "Chat en direct (site)" },
+  { value: "telephone", label: "Téléphone" },
+  { value: "tous", label: "Tous les canaux" },
+];
+
+function SavSection({ form }: { form: any }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <FieldRow label="Garantie (années)">
+          <Input {...form.register("warranty")} type="number" step="any" placeholder="2" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Délai livraison standard (j)">
+          <Input {...form.register("delivery_days")} type="number" placeholder="3" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Délai livraison express (j)">
+          <Input {...form.register("express_delivery_days")} type="number" placeholder="1" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Prix livraison express (€)">
+          <Input {...form.register("express_price")} type="number" step="any" placeholder="9.90" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Politique de retour (jours)">
+          <Input {...form.register("return_days")} type="number" placeholder="30" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Délai réponse SAV">
+          <Input {...form.register("sav_response_time")} placeholder="ex: Sous 24h ouvrées" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <FieldRow label="Email support">
+          <Input {...form.register("support_email")} type="email" placeholder="ex: support@mamarque.com" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Canal de contact principal">
+          <select {...form.register("contact_channel")} className={selectCls()}>
+            {CONTACT_CHANNELS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+          </select>
+        </FieldRow>
+        <FieldRow label="Best-seller 1">
+          <Input {...form.register("best_seller_1")} placeholder="ex: Robe Sorelle Signature" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+        <FieldRow label="Best-seller 2">
+          <Input {...form.register("best_seller_2")} placeholder="ex: Ensemble Lin Premium" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+      </div>
+      <div>
+        <FieldRow label="Message type SAV (modèle de réponse client)">
+          <textarea
+            {...form.register("sav_message")}
+            rows={3}
+            placeholder="ex: Bonjour [Prénom], merci pour votre confiance ! Votre commande #[NUM] est en cours de préparation. Notre équipe revient vers vous sous 24h. — L'équipe MAISON SORELLE"
+            className="flex w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary resize-none"
+          />
+        </FieldRow>
+      </div>
     </div>
   );
 }

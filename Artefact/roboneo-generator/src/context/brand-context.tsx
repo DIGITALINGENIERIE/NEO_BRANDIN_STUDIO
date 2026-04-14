@@ -38,11 +38,17 @@ export interface BrandBrief {
   return_days: string;
   warranty: string;
   support_email: string;
+  contact_channel: string;
+  sav_response_time: string;
+  sav_message: string;
   best_seller_1: string;
   best_seller_2: string;
 
   // Visuel (modules 04, 07)
   primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  visual_style: string;
   heading_font: string;
   body_font: string;
 
@@ -57,6 +63,7 @@ export interface BrandBrief {
   target_demographic: string;
   competitors: string;
   forbidden_keywords: string;
+  usp: string;
 
   // Couleurs de marque (priorité absolue sur auto-détection)
   colors: string;
@@ -105,9 +112,15 @@ export const BRIEF_DEFAULTS: BrandBrief = {
   return_days: "30",
   warranty: "2",
   support_email: "",
+  contact_channel: "",
+  sav_response_time: "24h",
+  sav_message: "",
   best_seller_1: "",
   best_seller_2: "",
   primary_color: "#D4AF37",
+  secondary_color: "",
+  accent_color: "",
+  visual_style: "",
   heading_font: "Playfair Display",
   body_font: "Montserrat",
   ca_target: "",
@@ -118,6 +131,7 @@ export const BRIEF_DEFAULTS: BrandBrief = {
   target_demographic: "",
   competitors: "",
   forbidden_keywords: "",
+  usp: "",
   colors: "",
   market: "international",
 };
@@ -126,7 +140,7 @@ export const BRIEF_DEFAULTS: BrandBrief = {
 export const COMPLETION_FIELDS: BriefField[] = [
   "brand_name", "sector", "tone", "values",
   "product_name", "product_description", "product_features", "benefits",
-  "price", "discount",
+  "price", "discount", "target_demographic", "usp",
 ];
 
 // ─── Context ───────────────────────────────────────────────────────────────────

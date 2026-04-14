@@ -46830,7 +46830,7 @@ Chaque prompt visuel doit inclure un champ "negative_prompt" avec les \xE9l\xE9m
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildUserPrompt() }
         ],
-        max_tokens: 2e3
+        max_tokens: 4096
       });
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content ?? "";
@@ -47254,7 +47254,7 @@ Retourne UNIQUEMENT ce JSON:
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildPrompt() }
         ],
-        max_tokens: 2e3
+        max_tokens: 4096
       });
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content ?? "";
@@ -47675,7 +47675,7 @@ Retourne UNIQUEMENT ce JSON:
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildPrompt() }
         ],
-        max_tokens: 2500
+        max_tokens: 4096
       });
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content ?? "";
@@ -48041,7 +48041,7 @@ Retourne UNIQUEMENT ce JSON:
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildPrompt() }
         ],
-        max_tokens: 2e3
+        max_tokens: 4096
       });
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content ?? "";

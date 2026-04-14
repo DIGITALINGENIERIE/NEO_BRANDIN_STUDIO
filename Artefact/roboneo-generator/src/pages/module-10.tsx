@@ -625,6 +625,180 @@ function SectionView({ sectionKey, data, streamBuffer, streaming, isActive }: {
   }
 }
 
+// ─── HTML Export ──────────────────────────────────────────────────────────────
+
+function generateModule10Html(brandName: string, sstate: StreamState): string {
+  const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const css = `
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0d0d;color:#e5e5e5;font-family:'Segoe UI',system-ui,sans-serif;padding:2rem;line-height:1.6}
+    h1{font-size:1.5rem;font-weight:700;margin-bottom:.25rem;color:#fff}
+    .subtitle{color:#666;font-size:.875rem;margin-bottom:2rem}
+    details{background:#141414;border:1px solid #222;border-radius:.75rem;margin-bottom:1rem;overflow:hidden}
+    details[open]>summary{border-bottom:1px solid #222}
+    summary{cursor:pointer;padding:1rem 1.25rem;font-weight:600;font-size:.95rem;list-style:none;display:flex;align-items:center;gap:.75rem;user-select:none}
+    summary::after{content:'▸';margin-left:auto;transition:transform .2s}
+    details[open]>summary::after{transform:rotate(90deg)}
+    .sc{padding:1.25rem}
+    .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:.5rem;padding:1rem;margin-bottom:.75rem}
+    .label{font-size:.625rem;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.35rem}
+    .val{font-size:.875rem;color:#ccc}
+    .blue{color:#60a5fa}.violet{color:#a78bfa}.orange{color:#fb923c}.green{color:#4ade80}.red{color:#f87171}.yellow{color:#facc15}.emerald{color:#34d399}
+    .badge{font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:.3rem;background:#222;color:#aaa}
+    .mono{font-family:monospace;font-size:.75rem;background:#0a0a0a;border:1px solid #222;border-radius:.3rem;padding:.2rem .5rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+    table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.5rem}
+    th{text-align:left;padding:.4rem .5rem;color:#777;font-weight:400;border-bottom:1px solid #222}
+    td{padding:.4rem .5rem;border-bottom:1px solid #1a1a1a;color:#ccc}
+    .tag{display:inline-block;font-size:.7rem;padding:.1rem .4rem;border-radius:.25rem;background:#222;color:#aaa;margin:.1rem}
+    .section-wrap{background:#1a1a1a;border:1px solid #222;border-radius:.75rem;margin-bottom:2rem;overflow:hidden}
+    .section-title{padding:1rem 1.25rem;font-weight:700;font-size:1rem;border-bottom:1px solid #222}
+    @media print{body{background:#fff;color:#000}details{border-color:#ccc}}
+  `;
+
+  const getSec = (key: string) => sstate.sections[key];
+
+  const renderDashboard = () => {
+    const sec = getSec("dashboard");
+    if (!sec?.done) return "<p style='color:#666'>Section non générée.</p>";
+    const d = sec.data;
+    const tabs = (d.tabs as any[]) ?? [];
+    const setup = (d.setup_instructions as string[]) ?? [];
+    const alerts = (d.alert_system as any[]) ?? [];
+    let html = "";
+    if (setup.length) html += `<div class="card"><div class="label">Configuration</div><ol style="padding-left:1.2rem">${setup.map((s: string, i: number) => `<li style="margin:.3rem 0;font-size:.875rem">${i + 1}. ${esc(s)}</li>`).join("")}</ol></div>`;
+    html += tabs.map((tab: any, i: number) => `
+      <details open>
+        <summary><span class="blue">${i + 1}</span> ${esc(tab.name)} ${tab.description ? `<span class="badge">${esc(tab.description)}</span>` : ""}</summary>
+        <div class="sc">
+          ${tab.columns?.length ? `<div class="card"><div class="label">Colonnes</div><div>${(tab.columns as string[]).map((c: string) => `<span class="tag">${esc(c)}</span>`).join("")}</div></div>` : ""}
+          ${tab.formulas?.length ? `<div class="card"><div class="label">Formules</div>${(tab.formulas as string[]).map((f: string) => `<code class="mono" style="display:block;margin:.3rem 0;padding:.3rem .6rem">${esc(f)}</code>`).join("")}</div>` : ""}
+          ${tab.notes ? `<div class="card" style="border-style:dashed"><div class="label">Notes</div><div class="val" style="font-style:italic">${esc(tab.notes)}</div></div>` : ""}
+        </div>
+      </details>`).join("");
+    if (alerts.length) {
+      html += `<div class="card"><div class="label" style="margin-bottom:.75rem">Système d'alertes</div>`;
+      html += alerts.map((a: any) => `<div style="margin-bottom:.75rem;padding:.75rem;background:#111;border-radius:.5rem;border:1px solid #2a2a2a"><strong style="font-size:.875rem">${esc(a.metric)}</strong><div class="grid2" style="margin-top:.5rem"><div style="background:#1f0a0a;border:1px solid #4b0000;border-radius:.3rem;padding:.5rem;text-align:center"><div class="red" style="font-family:monospace;font-size:.75rem">🔴 ${esc(a.red_threshold)}</div><div style="color:#aaa;font-size:.7rem;margin-top:.25rem">${esc(a.action_red ?? "")}</div></div><div style="background:#0a1f0a;border:1px solid #004b00;border-radius:.3rem;padding:.5rem;text-align:center"><div class="green" style="font-family:monospace;font-size:.75rem">🟢 ${esc(a.green_threshold)}</div><div style="color:#aaa;font-size:.7rem;margin-top:.25rem">${esc(a.action_green ?? "")}</div></div></div></div>`).join("");
+      html += "</div>";
+    }
+    return html;
+  };
+
+  const renderKpiGuide = () => {
+    const sec = getSec("kpi_guide");
+    if (!sec?.done) return "<p style='color:#666'>Section non générée.</p>";
+    const d = sec.data;
+    const platforms = (d.platforms as any[]) ?? [];
+    const globalRules = (d.global_rules as string[]) ?? [];
+    let html = platforms.map((p: any) => `
+      <details open>
+        <summary>${esc(p.name)} ${p.priority_kpi ? `<span class="badge violet">🎯 ${esc(p.priority_kpi)}</span>` : ""}</summary>
+        <div class="sc">
+          <table><thead><tr><th>KPI</th><th>Formule</th><th class="green">Bon</th><th class="blue">Très bon</th><th class="violet">Excellent</th></tr></thead><tbody>
+            ${(p.kpis ?? []).map((k: any) => `<tr><td><strong>${esc(k.name)}</strong></td><td class="mono">${esc(k.formula)}</td><td class="green">${esc(k.good)}</td><td class="blue">${esc(k.very_good)}</td><td class="violet">${esc(k.excellent)}</td></tr>`).join("")}
+          </tbody></table>
+          ${p.common_mistakes?.length ? `<div class="card" style="margin-top:.75rem;border-color:#4b0000;background:#1a0a0a"><div class="label red">Erreurs fréquentes</div><ul style="padding-left:1.2rem">${(p.common_mistakes as string[]).map((m: string) => `<li style="font-size:.8rem;margin:.2rem 0;color:#ccc">⚠ ${esc(m)}</li>`).join("")}</ul></div>` : ""}
+        </div>
+      </details>`).join("");
+    if (globalRules.length) html += `<div class="card"><div class="label">Règles globales</div><ul style="padding-left:1.2rem">${globalRules.map((r: string) => `<li style="font-size:.875rem;margin:.3rem 0;color:#ccc">${esc(r)}</li>`).join("")}</ul></div>`;
+    return html;
+  };
+
+  const renderScalingGuide = () => {
+    const sec = getSec("scaling_guide");
+    if (!sec?.done) return "<p style='color:#666'>Section non générée.</p>";
+    const d = sec.data;
+    const stop = (d.stop_criteria as any[]) ?? [];
+    const scale = (d.scale_criteria as any[]) ?? [];
+    const phases = (d.phases as any[]) ?? [];
+    const algo = (d.decision_algorithm as any[]) ?? [];
+    const qw = (d.quick_wins as string[]) ?? [];
+    const sev = (s: string) => s === "immédiat" ? "red" : s === "urgent" ? "orange" : "yellow";
+    return `
+      ${stop.length ? `<details open><summary class="red">Critères d'arrêt</summary><div class="sc">${stop.map((c: any) => `<div class="card" style="border-left:3px solid currentColor;border-color:#${c.severity==="immédiat"?"ef4444":c.severity==="urgent"?"f97316":"eab308"}"><div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><strong>${esc(c.condition)}</strong><span class="badge ${sev(c.severity)}">${esc(c.severity)}</span></div>${c.delay?`<div style="font-size:.8rem;color:#999">Après : ${esc(c.delay)}</div>`:""}<div style="margin-top:.5rem;font-size:.8rem;color:#aaa">→ ${esc(c.action)}</div></div>`).join("")}</div></details>` : ""}
+      ${scale.length ? `<details open><summary class="green">Critères de scaling</summary><div class="sc">${scale.map((c: any) => `<div class="card" style="border-left:3px solid #22c55e"><strong>${esc(c.condition)}</strong>${c.increase_percent?`<span class="badge green" style="margin-left:.5rem">+${esc(c.increase_percent)}% budget</span>`:""}<div style="margin-top:.4rem;font-size:.8rem;color:#aaa">→ ${esc(c.action)}</div>${c.monitoring?`<div style="font-size:.75rem;color:#777;margin-top:.3rem">Surveiller : ${esc(c.monitoring)}</div>`:""}</div>`).join("")}</div></details>` : ""}
+      ${phases.length ? `<details open><summary class="blue">Phases de scaling</summary><div class="sc">${phases.map((p: any) => `<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><div><strong>${esc(p.name)}</strong><div style="font-size:.8rem;color:#777">${esc(p.duration)}</div></div><div style="text-align:right"><div class="blue">${esc(p.budget_per_campaign)}</div><div style="font-size:.75rem;color:#aaa">ROAS cible : ${esc(p.roas_target)}x</div></div></div>${p.actions?.length?`<ul style="font-size:.8rem;padding-left:1.2rem;margin-bottom:.4rem">${(p.actions as string[]).map((a: string) => `<li style="margin:.2rem 0;color:#ccc">${esc(a)}</li>`).join("")}</ul>`:""} ${p.kpis_to_watch?.length?`<div>${(p.kpis_to_watch as string[]).map((k: string) => `<span class="tag">${esc(k)}</span>`).join("")}</div>`:""}</div>`).join("")}</div></details>` : ""}
+      ${algo.length ? `<details open><summary class="violet">Algorithme décisionnel</summary><div class="sc">${algo.map((r: any) => `<div class="card" style="display:flex;gap:.75rem"><span class="badge ${r.priority==="haute"?"green":r.priority==="critique"?"red":""}">SI</span><div><div class="mono" style="display:inline">${esc(r.if)}</div><div style="font-size:.8rem;color:#aaa;margin-top:.3rem">→ ${esc(r.then)}</div></div></div>`).join("")}</div></details>` : ""}
+      ${qw.length ? `<div class="card" style="border-color:#4b1d7f;background:#1a0a2a"><div class="label violet">Quick Wins</div><ul style="padding-left:1.2rem">${qw.map((w: string) => `<li style="font-size:.875rem;margin:.3rem 0;color:#ccc">⚡ ${esc(w)}</li>`).join("")}</ul></div>` : ""}`;
+  };
+
+  const renderWeeklyReview = () => {
+    const sec = getSec("weekly_review");
+    if (!sec?.done) return "<p style='color:#666'>Section non générée.</p>";
+    const d = sec.data;
+    const sections = (d.sections as any[]) ?? [];
+    const kpiTargets = d.kpi_targets as Record<string, number> ?? {};
+    const checklist = d.checklist_actions as Record<string, string[]> ?? {};
+    const questions = (d.questions_of_the_week as string[]) ?? [];
+    const DAYS: Record<string, string> = { monday: "Lundi", wednesday: "Mercredi", friday: "Vendredi", sunday: "Dimanche" };
+    let html = "";
+    if (Object.keys(kpiTargets).length) {
+      const metrics = [
+        { key: "ca_weekly", label: "CA/sem", unit: "€" }, { key: "roas_min", label: "ROAS min", unit: "x" },
+        { key: "cpa_target", label: "CPA cible", unit: "€" }, { key: "cpa_max", label: "CPA max", unit: "€" },
+        { key: "conv_rate_min", label: "Conv. min", unit: "%" },
+      ];
+      html += `<div class="grid2" style="margin-bottom:1rem">${metrics.filter(m => kpiTargets[m.key] != null).map(m => `<div class="card" style="text-align:center"><div style="font-size:1.25rem;font-weight:700;color:#34d399">${kpiTargets[m.key]}${m.unit}</div><div class="label" style="margin-top:.25rem">${m.label}</div></div>`).join("")}</div>`;
+    }
+    html += sections.map((s: any) => `
+      <details open>
+        <summary>${esc(s.title)}</summary>
+        <div class="sc">${(s.fields ?? []).map((f: any) => `<div class="card"><div class="label">${esc(f.label)}</div><div class="val" style="font-style:italic;color:#888">${esc(f.placeholder)}</div>${f.formula ? `<code class="mono" style="display:block;margin-top:.4rem">${esc(f.formula)}</code>` : ""}${f.insight_prompt ? `<div style="font-size:.75rem;color:#60a5fa;margin-top:.5rem;padding-top:.5rem;border-top:1px solid #222">💡 ${esc(f.insight_prompt)}</div>` : ""}</div>`).join("")}</div>
+      </details>`).join("");
+    if (Object.keys(checklist).length) {
+      html += `<div class="card"><div class="label" style="margin-bottom:.75rem">Checklist Hebdomadaire</div><div class="grid4">`;
+      for (const [day, actions] of Object.entries(checklist)) {
+        html += `<div><div class="emerald" style="font-size:.8rem;font-weight:600;margin-bottom:.5rem">📅 ${esc(DAYS[day] ?? day)}</div><ul style="list-style:none">${(actions as string[]).map((a: string) => `<li style="font-size:.75rem;color:#ccc;margin:.2rem 0">□ ${esc(a)}</li>`).join("")}</ul></div>`;
+      }
+      html += `</div></div>`;
+    }
+    if (questions.length) html += `<div class="card" style="border-color:#1e3a5f;background:#0a1525"><div class="label blue" style="margin-bottom:.5rem">Questions Stratégiques</div><ol style="padding-left:1.2rem">${questions.map((q: string) => `<li style="font-size:.875rem;margin:.35rem 0;color:#ccc">${esc(q)}</li>`).join("")}</ol></div>`;
+    return html;
+  };
+
+  const now = new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" });
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Performance Tracker — ${esc(brandName)}</title>
+<style>${css}</style>
+</head>
+<body>
+<h1>📊 Performance Tracker</h1>
+<p class="subtitle">Marque : <strong>${esc(brandName)}</strong> · Généré le ${now} · RoboNeo Branding Studio</p>
+
+<div class="section-wrap">
+  <div class="section-title"><span style="color:#60a5fa">①</span> ${esc(SECTION_LABELS.dashboard)}</div>
+  <div style="padding:1.25rem">${renderDashboard()}</div>
+</div>
+<div class="section-wrap">
+  <div class="section-title"><span style="color:#a78bfa">②</span> ${esc(SECTION_LABELS.kpi_guide)}</div>
+  <div style="padding:1.25rem">${renderKpiGuide()}</div>
+</div>
+<div class="section-wrap">
+  <div class="section-title"><span style="color:#fb923c">③</span> ${esc(SECTION_LABELS.scaling_guide)}</div>
+  <div style="padding:1.25rem">${renderScalingGuide()}</div>
+</div>
+<div class="section-wrap">
+  <div class="section-title"><span style="color:#34d399">④</span> ${esc(SECTION_LABELS.weekly_review)}</div>
+  <div style="padding:1.25rem">${renderWeeklyReview()}</div>
+</div>
+</body>
+</html>`;
+}
+
+function downloadHtml(filename: string, html: string) {
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function Module10() {
@@ -855,15 +1029,29 @@ export default function Module10() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-3 bg-green-500/8 border border-green-500/20 rounded-2xl px-5 py-4"
+                className="flex items-center justify-between gap-3 bg-green-500/8 border border-green-500/20 rounded-2xl px-5 py-4"
               >
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Performance Tracker complet ✓</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Dashboard · KPIs · Guide Scaling · Analyse Hebdo — tous vos outils sont prêts.
-                  </p>
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Performance Tracker complet ✓</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Dashboard · KPIs · Guide Scaling · Analyse Hebdo — tous vos outils sont prêts.
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-blue-500/30 text-blue-400 hover:bg-blue-500/10 flex-shrink-0"
+                  onClick={() => downloadHtml(
+                    `performance-tracker-${brief.brand_name?.toLowerCase().replace(/\s+/g, "-") ?? "rapport"}.html`,
+                    generateModule10Html(brief.brand_name ?? "Marque", streamState)
+                  )}
+                >
+                  <Download className="w-4 h-4" />
+                  Rapport HTML
+                </Button>
               </motion.div>
             )}
           </motion.div>

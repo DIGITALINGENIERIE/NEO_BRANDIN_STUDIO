@@ -382,7 +382,7 @@ Chaque prompt visuel doit inclure un champ "negative_prompt" avec les éléments
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildUserPrompt() },
         ],
-        max_tokens: 2000,
+        max_tokens: 4096,
       });
 
       for await (const chunk of stream) {

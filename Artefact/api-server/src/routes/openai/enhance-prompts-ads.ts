@@ -427,7 +427,7 @@ Retourne UNIQUEMENT ce JSON:
           { role: "system", content: systemPrompt },
           { role: "user", content: section.buildPrompt() },
         ],
-        max_tokens: 2500,
+        max_tokens: 4096,
       });
 
       for await (const chunk of stream) {

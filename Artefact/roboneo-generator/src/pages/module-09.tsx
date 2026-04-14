@@ -604,7 +604,178 @@ function EmailSequencesView({ data, streamBuffer, streaming, isActive }: {
   );
 }
 
-// ─── Formulaire ───────────────────────────────────────────────────────────────
+// ─── HTML Export ──────────────────────────────────────────────────────────────
+
+function generateModule09Html(brandName: string, sects: SectionResult[]): string {
+  const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  const css = `
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0d0d;color:#e5e5e5;font-family:'Segoe UI',system-ui,sans-serif;padding:2rem;line-height:1.6}
+    h1{font-size:1.5rem;font-weight:700;margin-bottom:.25rem;color:#fff}
+    .subtitle{color:#666;font-size:.875rem;margin-bottom:2rem}
+    details{background:#141414;border:1px solid #222;border-radius:.75rem;margin-bottom:1rem;overflow:hidden}
+    details[open]>summary{border-bottom:1px solid #222}
+    summary{cursor:pointer;padding:1rem 1.25rem;font-weight:600;font-size:.95rem;list-style:none;display:flex;align-items:center;gap:.75rem;user-select:none}
+    summary::after{content:'▸';margin-left:auto;transition:transform .2s}
+    details[open]>summary::after{transform:rotate(90deg)}
+    .sc{padding:1.25rem}
+    .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:.5rem;padding:1rem;margin-bottom:.75rem}
+    .label{font-size:.625rem;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.35rem}
+    .val{font-size:.875rem;color:#ccc}
+    .tag{display:inline-block;font-size:.7rem;padding:.15rem .5rem;border-radius:99px;margin:.1rem}
+    .green{color:#4ade80}.yellow{color:#facc15}.pink{color:#f472b6}.blue{color:#60a5fa}.mono{font-family:monospace;font-size:.75rem;background:#0d0d0d;border:1px solid #222;border-radius:.3rem;padding:.3rem .6rem;display:block;margin-top:.4rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .row{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-bottom:.4rem}
+    .badge{font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:.3rem;background:#222;color:#aaa}
+    table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.5rem}
+    th{text-align:left;padding:.4rem .5rem;color:#777;font-weight:400;border-bottom:1px solid #222}
+    td{padding:.4rem .5rem;border-bottom:1px solid #1a1a1a;color:#ccc}
+    hr{border:none;border-top:1px solid #222;margin:.75rem 0}
+    .section-badge{font-size:.7rem;padding:.15rem .5rem;border-radius:.3rem;margin-left:.5rem}
+    @media print{body{background:#fff;color:#000}.card{border-color:#ccc}details{border-color:#ccc}details[open]{display:block}}
+  `;
+
+  const getSection = (key: string) => sects.find(s => s.key === key);
+
+  const renderCrossSell = () => {
+    const sec = getSection("cross_sell");
+    if (!sec) return "<p style='color:#666'>Section non générée.</p>";
+    const ideas = (sec.data.ideas as any[]) ?? [];
+    if (!ideas.length) return "<p style='color:#666'>Aucune donnée.</p>";
+    return ideas.map((idea: any, i: number) => `
+      <details open>
+        <summary><span class="green">#${i + 1}</span> ${esc(idea.product_name)} <span class="badge">${esc(idea.price_range)}</span></summary>
+        <div class="sc">
+          <div class="card"><div class="label">Description</div><div class="val">${esc(idea.description)}</div></div>
+          <div class="grid2">
+            <div class="card"><div class="label">Marge</div><div class="val green">${esc(idea.margin)}</div></div>
+            <div class="card"><div class="label">Réduction bundle</div><div class="val yellow">-${esc(idea.bundle_discount)}%</div></div>
+          </div>
+          ${idea.placement ? `<div class="card"><div class="label">Placement</div><div class="val">${esc(idea.placement)}</div></div>` : ""}
+          <div class="card"><div class="label">Justification</div><div class="val">${esc(idea.justification)}</div></div>
+          ${idea.visual_prompt ? `<div class="card"><div class="label">Prompt visuel RoboNeo</div><code class="mono">${esc(idea.visual_prompt)}</code></div>` : ""}
+        </div>
+      </details>`).join("");
+  };
+
+  const renderBundles = () => {
+    const sec = getSection("bundles");
+    if (!sec) return "<p style='color:#666'>Section non générée.</p>";
+    const offers = (sec.data.offers as any[]) ?? [];
+    if (!offers.length) return "<p style='color:#666'>Aucune donnée.</p>";
+    return offers.map((offer: any, i: number) => `
+      <details open>
+        <summary><span class="yellow">${esc(offer.name)}</span> <span class="badge">${esc(offer.type ?? "standard")}</span></summary>
+        <div class="sc">
+          ${offer.tagline ? `<p style="color:#aaa;margin-bottom:.75rem;font-style:italic">${esc(offer.tagline)}</p>` : ""}
+          <div class="grid2">
+            <div class="card"><div class="label">Prix bundle</div><div class="val yellow" style="font-size:1.25rem;font-weight:700">${esc(offer.bundle_price)}€</div><div style="color:#555;text-decoration:line-through;font-size:.8rem">${esc(offer.original_price)}€</div></div>
+            <div class="card"><div class="label">Économie</div><div class="val green">-${esc(offer.discount_percent)}% · ${esc(offer.savings)}€ économisés</div></div>
+          </div>
+          ${offer.products?.length ? `<div class="card"><div class="label">Contenu du pack</div>${(offer.products as string[]).map((p: string, pi: number) => `<div style="margin:.3rem 0;font-size:.875rem"><span class="badge">${pi + 1}</span> ${esc(p)}</div>`).join("")}</div>` : ""}
+          <div class="grid2">
+            <div class="card"><div class="label">Bouton CTA</div><div class="val">"${esc(offer.cta)}"</div></div>
+            <div class="card"><div class="label">Idéal pour</div><div class="val">${esc(offer.best_for)}</div></div>
+          </div>
+          ${offer.visual_prompt ? `<div class="card"><div class="label">Prompt visuel RoboNeo</div><code class="mono">${esc(offer.visual_prompt)}</code></div>` : ""}
+        </div>
+      </details>`).join("");
+  };
+
+  const renderUpsellCopy = () => {
+    const sec = getSection("upsell_copy");
+    if (!sec) return "<p style='color:#666'>Section non générée.</p>";
+    const d = sec.data;
+    const fieldHtml = (label: string, val: unknown) =>
+      val ? `<div class="card"><div class="label">${esc(label)}</div><div class="val">${esc(val)}</div></div>` : "";
+
+    const pp = d.product_page as any;
+    const cp = d.cart_page as any[];
+    const ppa = d.post_purchase as any;
+    const cb = d.checkout_bump as any;
+
+    return `
+      <details open><summary class="pink">Page Produit</summary><div class="sc">
+        ${pp ? [fieldHtml("Titre", pp.title), fieldHtml("Sous-titre", pp.subtitle), fieldHtml("Bouton CTA", pp.cta), fieldHtml("Badge", pp.badge), fieldHtml("Bénéfice", pp.benefit)].join("") : ""}
+      </div></details>
+      <details open><summary class="pink">Panier (Cross-sell Cart)</summary><div class="sc">
+        ${cp?.length ? cp.map((item: any, i: number) => `<div class="card"><div class="label">Suggestion #${i + 1}</div>${[fieldHtml("Titre", item.title), fieldHtml("Description", item.description), fieldHtml("Bouton", item.cta), fieldHtml("Urgence", item.urgency)].join("")}</div>`).join("") : "<p style='color:#666'>Aucune donnée.</p>"}
+      </div></details>
+      <details open><summary class="pink">Post-Achat</summary><div class="sc">
+        ${ppa ? [fieldHtml("Titre", ppa.title), fieldHtml("Description", ppa.description), fieldHtml("CTA", ppa.cta), fieldHtml("Durée validité", ppa.expiry), fieldHtml("Objet email", ppa.subject_email), ppa.discount ? `<div class="card"><div class="label">Réduction</div><div class="val pink">-${esc(ppa.discount)}%</div></div>` : ""].join("") : ""}
+      </div></details>
+      <details open><summary class="pink">Order Bump (Checkout)</summary><div class="sc">
+        ${cb ? [fieldHtml("Titre", cb.title), fieldHtml("Description", cb.description), fieldHtml("Affichage prix", cb.price_display), fieldHtml("Oui (j'accepte)", cb.cta), fieldHtml("Non (je refuse)", cb.not_interested)].join("") : ""}
+      </div></details>`;
+  };
+
+  const renderEmailSequences = () => {
+    const sec = getSection("email_sequences");
+    if (!sec) return "<p style='color:#666'>Section non générée.</p>";
+    const seqs = (sec.data.sequences as any[]) ?? [];
+    if (!seqs.length) return "<p style='color:#666'>Aucune donnée.</p>";
+    return seqs.map((s: any, i: number) => `
+      <details open>
+        <summary><span class="blue">Email #${s.id ?? i + 1}</span> — ${esc(s.timing)}</summary>
+        <div class="sc">
+          <div class="grid2">
+            <div class="card"><div class="label">Envoi</div><div class="val blue">${esc(s.timing)}</div></div>
+            <div class="card"><div class="label">Déclencheur</div><div class="val">${esc(s.trigger)}</div></div>
+          </div>
+          <div class="card" style="border-color:#1e3a5f"><div class="label">Objet</div><div class="val" style="font-weight:600">${esc(s.subject)}</div>${s.preview ? `<div style="color:#777;font-size:.8rem;margin-top:.25rem;font-style:italic">${esc(s.preview)}</div>` : ""}</div>
+          ${s.headline ? `<div class="card"><div class="label">Titre / Headline</div><div class="val" style="font-weight:600">${esc(s.headline)}</div></div>` : ""}
+          ${s.body ? `<div class="card"><div class="label">Corps de l'email</div><div class="val">${esc(s.body)}</div></div>` : ""}
+          <div class="grid2">
+            <div class="card"><div class="label">CTA Principal</div><div class="val blue">${esc(s.cta)}</div></div>
+            <div class="card"><div class="label">Lien secondaire</div><div class="val">${esc(s.secondary_cta)}</div></div>
+          </div>
+          ${s.goal ? `<div class="card"><div class="label">Objectif</div><div class="val green">${esc(s.goal)}</div></div>` : ""}
+        </div>
+      </details>`).join("");
+  };
+
+  const now = new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" });
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upsell &amp; Cross-sell Kit — ${esc(brandName)}</title>
+<style>${css}</style>
+</head>
+<body>
+<h1>🛒 Upsell &amp; Cross-sell Kit</h1>
+<p class="subtitle">Marque : <strong>${esc(brandName)}</strong> · Généré le ${now} · RoboNeo Branding Studio</p>
+
+<details open>
+  <summary><span class="green">①</span> ${esc(SECTION_LABELS.cross_sell)}</summary>
+  <div class="sc">${renderCrossSell()}</div>
+</details>
+<details open>
+  <summary><span class="yellow">②</span> ${esc(SECTION_LABELS.bundles)}</summary>
+  <div class="sc">${renderBundles()}</div>
+</details>
+<details open>
+  <summary><span class="pink">③</span> ${esc(SECTION_LABELS.upsell_copy)}</summary>
+  <div class="sc">${renderUpsellCopy()}</div>
+</details>
+<details open>
+  <summary><span class="blue">④</span> ${esc(SECTION_LABELS.email_sequences)}</summary>
+  <div class="sc">${renderEmailSequences()}</div>
+</details>
+</body>
+</html>`;
+}
+
+function downloadHtml(filename: string, html: string) {
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ─── Composant principal ──────────────────────────────────────────────────────
 
@@ -868,6 +1039,27 @@ export default function Module09() {
                 </motion.div>
               );
             })}
+
+            {sections.length === SECTION_ORDER.length && !isGenerating && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-end pt-2"
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-green-500/30 text-green-400 hover:bg-green-500/10"
+                  onClick={() => downloadHtml(
+                    `upsell-crosssell-${brief.brand_name?.toLowerCase().replace(/\s+/g, "-") ?? "kit"}.html`,
+                    generateModule09Html(brief.brand_name ?? "Marque", sections)
+                  )}
+                >
+                  <Download className="w-4 h-4" />
+                  Télécharger le rapport HTML
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

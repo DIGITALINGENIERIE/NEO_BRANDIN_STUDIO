@@ -116,11 +116,12 @@ router.post("/openai/enhance-prompts-visual", async (req, res) => {
     brand_name, sector, product_type, product_name,
     product_colors = [], product_materials = [],
     target_audience, carousel_style: carousel_style_override = null,
+    brand_colors = "",
   } = req.body as {
     brand_name: string; sector: string; product_type: string;
     product_name: string; product_colors?: string[];
     product_materials?: string[]; target_audience: string;
-    carousel_style?: string | null;
+    carousel_style?: string | null; brand_colors?: string;
   };
 
   if (!brand_name || !sector || !product_type || !product_name || !target_audience) {
@@ -324,15 +325,19 @@ Retourne UNIQUEMENT un JSON valide:
   const sectorTone = body.tone ?? "professionnel";
   const sectorValues = body.values ?? sector;
   const negativePart = buildNegativePrompt(sector, sectorTone);
+  const colorPriorityBlock = brand_colors
+    ? `\n\n⚠️ RÈGLE ABSOLUE COULEURS: Le client a fourni ces couleurs de marque: ${brand_colors}\nCes couleurs sont SACRÉES — les utiliser EXACTEMENT dans tous les visuels. L'auto-détection par secteur est DÉSACTIVÉE.`
+    : "";
   const baseSysPrompt = buildSystemPrompt(
     { brand_name, sector, tone: sectorTone, values: sectorValues,
       target_demographic: body.target_demographic ?? undefined,
       competitors: body.competitors ?? undefined,
       forbidden_keywords: body.forbidden_keywords ?? undefined,
+      colors: brand_colors || undefined,
     },
     "MODULE 02 — Visual Content (Photos Produit, Lifestyle, Détail, Before/After, Try-On, Carrousel)"
   );
-  const systemPrompt = `${baseSysPrompt}
+  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}
 
 IMPORTANT: Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans texte avant ou après le JSON.
 Chaque prompt visuel doit inclure un champ "negative_prompt" avec les éléments à éviter: "${negativePart}"`;

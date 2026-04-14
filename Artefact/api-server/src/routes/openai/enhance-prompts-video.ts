@@ -78,12 +78,14 @@ router.post("/openai/enhance-prompts-video", async (req, res) => {
     duration_days = "7",
     teaser_style: teaser_style_override = null,
     thumbnail_type: thumbnail_type_override = null,
+    brand_colors = "",
   } = req.body as {
     brand_name: string; sector: string; product_name: string;
     product_description?: string; product_features?: string[];
     benefits?: string[]; target_audience?: string; year?: string;
     promo_code?: string; duration_days?: string;
     teaser_style?: string | null; thumbnail_type?: string | null;
+    brand_colors?: string;
   };
 
   if (!brand_name || !sector || !product_name) {
@@ -101,20 +103,24 @@ router.post("/openai/enhance-prompts-video", async (req, res) => {
   const benefit1 = benefits[0] ?? "qualité supérieure";
   const benefit2 = benefits[1] ?? "expérience unique";
 
+  const colorsLine = brand_colors ? `\nCouleurs de marque (IMPOSÉES): ${brand_colors}` : "";
   const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Produit: ${product_name}
 Description: ${product_description || "produit premium de qualité"}
 Caractéristiques: ${product_features.join(", ") || material}
 Bénéfices: ${benefits.join(", ") || benefit1}
-Cible: ${target_audience} | Année fondation: ${year} | Code promo: ${promoCode} | Durée promo: ${duration_days} jours`;
+Cible: ${target_audience} | Année fondation: ${year} | Code promo: ${promoCode} | Durée promo: ${duration_days} jours${colorsLine}`;
 
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
+  const colorPriorityBlock = brand_colors
+    ? `\n⚠️ RÈGLE ABSOLUE COULEURS: Le client impose ces couleurs de marque: ${brand_colors}. Ces couleurs sont SACRÉES — les utiliser EXACTEMENT dans tous les visuels vidéo décrits.`
+    : "";
   const systemPrompt = `Tu es un expert senior en création de scripts publicitaires et prompts vidéo pour RoboNeo.com.
 Tu rédiges des scripts punchy, adaptés au secteur ${sector}, en français. Formule courte, efficace, copywriting direct.
-Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou après.`;
+Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou après.${colorPriorityBlock}`;
 
   const SECTIONS = [
     {

@@ -195,6 +195,7 @@ export default function Module02() {
         target_demographic: brief.target_demographic || undefined,
         competitors: brief.competitors || undefined,
         forbidden_keywords: brief.forbidden_keywords || undefined,
+        brand_colors: brief.colors || undefined,
       }),
     });
 

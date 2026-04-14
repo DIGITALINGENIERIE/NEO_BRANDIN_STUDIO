@@ -55,7 +55,7 @@ const SECTIONS = [
     label: "Identité",
     color: "text-amber-400",
     dot: "bg-amber-400",
-    fields: ["brand_name", "sector", "tone", "values"],
+    fields: ["brand_name", "sector", "tone", "values", "colors"],
   },
   {
     key: "product",
@@ -131,6 +131,11 @@ function IdentitySection({ form }: { form: any }) {
       <FieldRow label="Valeurs de marque">
         <Input {...form.register("values")} placeholder="ex: excellence, prestige, authenticité" className="bg-black/20 h-9 text-sm" />
       </FieldRow>
+      <div className="sm:col-span-2">
+        <FieldRow label="Couleurs de marque (HEX ou description)">
+          <Input {...form.register("colors")} placeholder="ex: #D4AF37, #1A1A1A, #FFFFFF — ou: or, noir profond, blanc" className="bg-black/20 h-9 text-sm" />
+        </FieldRow>
+      </div>
     </div>
   );
 }

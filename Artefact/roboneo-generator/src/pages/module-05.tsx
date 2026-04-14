@@ -253,6 +253,7 @@ export default function Module05() {
           target_audience: brief.target_audience,
           has_ugc_audio: data.has_ugc_audio,
           needs_vocal_separation: data.needs_vocal_separation,
+          brand_colors: brief.colors || undefined,
         }),
       });
 

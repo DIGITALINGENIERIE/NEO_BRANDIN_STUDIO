@@ -90,6 +90,7 @@ export default function Module01() {
         target_demographic: brief.target_demographic || undefined,
         competitors: brief.competitors || undefined,
         forbidden_keywords: brief.forbidden_keywords || undefined,
+        colors: brief.colors || undefined,
       }),
     });
 

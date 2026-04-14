@@ -76,6 +76,7 @@ router.post("/openai/enhance-prompts-sound", async (req, res) => {
     target_audience = "mixte",
     has_ugc_audio = false,
     needs_vocal_separation = false,
+    brand_colors = "",
   } = req.body as {
     brand_name: string;
     sector: string;
@@ -84,6 +85,7 @@ router.post("/openai/enhance-prompts-sound", async (req, res) => {
     target_audience?: string;
     has_ugc_audio?: boolean;
     needs_vocal_separation?: boolean;
+    brand_colors?: string;
   };
 
   if (!brand_name || !sector) {
@@ -96,8 +98,9 @@ router.post("/openai/enhance-prompts-sound", async (req, res) => {
   const recommendedVoice = pickVoice(sector);
   const valuesStr = values.length > 0 ? values.join(", ") : "qualité, confiance, excellence";
 
+  const colorsLine = brand_colors ? ` | Couleurs de marque (identité): ${brand_colors}` : "";
   const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Ton: ${tone}
-Valeurs: ${valuesStr} | Cible: ${target_audience}
+Valeurs: ${valuesStr} | Cible: ${target_audience}${colorsLine}
 Style sonore jingle: ${jingleStyle}
 Style musiques de fond: ${bgmStyle}`;
 
@@ -106,10 +109,13 @@ Style musiques de fond: ${bgmStyle}`;
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
+  const colorPriorityBlock = brand_colors
+    ? `\nL'identité visuelle de la marque utilise ces couleurs: ${brand_colors}. Le rendu sonore doit traduire cette palette chromatique en émotions musicales cohérentes.`
+    : "";
   const systemPrompt = `Tu es un directeur artistique sonore expert en identité sonore de marque et en génération de prompts pour des outils de création audio (Suno, Udio, ElevenLabs, Adobe Podcast).
 Tu génères des prompts audio ultra-précis et des briefs créatifs complets pour chaque actif sonore d'une marque.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou après.
-Tous les textes sont en français, créatifs, adaptés au secteur ${sector} et au style ${tone}.`;
+Tous les textes sont en français, créatifs, adaptés au secteur ${sector} et au style ${tone}.${colorPriorityBlock}`;
 
   const SECTIONS = [
     {

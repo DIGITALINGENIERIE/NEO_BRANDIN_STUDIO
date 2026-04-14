@@ -1,0 +1,33 @@
+BUG FIX — Module 01 & tous les modules : les couleurs du brief client sont ignorées
+
+PROBLÈME IDENTIFIÉ :
+Actuellement, les routes enhance-prompts.ts (et toutes les routes modules) génèrent une palette de couleurs depuis zéro en se basant uniquement sur le secteur auto-détecté. Les couleurs fournies par le client dans le brief (champ "couleurs") sont ignorées ou écrasées par la logique d'auto-détection.
+
+RÈGLE MÉTIER À IMPLÉMENTER :
+Les couleurs fournies explicitement par le client dans le brief sont PRIORITAIRES et ne doivent JAMAIS être remplacées ou modifiées par l'IA.
+
+LOGIQUE DE PRIORITÉ (à appliquer dans le system prompt de CHAQUE route) :
+
+1. SI le champ "couleurs" du brief contient des valeurs HEX ou des descriptions de couleurs → utiliser EXACTEMENT ces couleurs comme palette primaire/secondaire/accent. L'IA doit construire tout le système de couleurs (neutres, WCAG, hover states) AUTOUR de ces couleurs fournies, sans jamais les remplacer.
+
+2. SI le champ "couleurs" est vide ou absent → alors seulement, activer l'auto-détection par secteur pour proposer une palette.
+
+MODIFICATIONS À APPLIQUER dans les fichiers suivants :
+- Artefact/api-server/src/routes/openai/enhance-prompts.ts (Module 01)
+- Artefact/api-server/src/routes/openai/enhance-prompts-visual.ts (Module 02)
+- Artefact/api-server/src/routes/openai/enhance-prompts-video.ts (Module 03)
+- Artefact/api-server/src/routes/openai/enhance-prompts-ads.ts (Module 04)
+- Artefact/api-server/src/routes/openai/enhance-prompts-sound.ts (Module 05)
+
+DANS CHAQUE FICHIER, modifier le system prompt injecté à l'IA pour ajouter cette instruction AVANT toute logique de génération :
+
+"RÈGLE ABSOLUE COULEURS : Si le brief client contient un champ 'couleurs' non vide, ces couleurs sont sacrées et immuables. Tu dois construire l'ensemble du système de couleurs (palette complète, neutres, WCAG, hover states, dark mode) en utilisant ces couleurs comme base. Tu n'as JAMAIS le droit de les remplacer par d'autres couleurs, même si tu estimes qu'elles ne correspondent pas au secteur. L'auto-détection couleur ne s'active QUE si le champ 'couleurs' est vide."
+
+AUSSI : Dans le frontend (module-01.tsx, module-02.tsx, etc.), vérifier que le champ "couleurs" du formulaire brief est bien transmis au payload de la requête API. Si ce champ n'existe pas encore dans un formulaire, l'ajouter avec le label "Couleurs de marque (HEX ou description)" et le rendre optionnel.
+
+VALIDATION : Après correction, tester avec ce brief :
+- Marque : Lumiski
+- Secteur : Cosmétique / Skincare
+- Couleurs : Ivoire #F5F0E8 · Or doux #C8A96E · Vert forêt #2D5016
+→ Le Module 01 doit générer une palette basée sur ces 3 couleurs exactes, PAS un bleu marine #003087.
+  

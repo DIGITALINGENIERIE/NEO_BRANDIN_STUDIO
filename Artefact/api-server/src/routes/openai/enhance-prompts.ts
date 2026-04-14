@@ -15,6 +15,7 @@ const ExtendedBody = EnhancePromptsBody.extend({
   competitors: zod.string().nullish(),
   forbidden_keywords: zod.string().nullish(),
   enable_review: zod.boolean().nullish(),
+  colors: zod.string().nullish(),
 });
 
 // ─── Style mappings (enriched) ───────────────────────────────────────────────
@@ -64,7 +65,7 @@ router.post("/openai/enhance-prompts", async (req, res) => {
   const {
     brand_name, sector, tone, values, style_pref,
     target_demographic, competitors, forbidden_keywords,
-    enable_review,
+    enable_review, colors,
   } = parsed.data;
 
   // ── Style detection (ton overrides secteur si cohérent) ──────────────────
@@ -78,6 +79,7 @@ router.post("/openai/enhance-prompts", async (req, res) => {
     target_demographic: target_demographic ?? undefined,
     competitors: competitors ?? undefined,
     forbidden_keywords: forbidden_keywords ?? undefined,
+    colors: colors ?? undefined,
   };
 
   const negativeBlock = buildNegativePrompt(sector, tone);
@@ -94,6 +96,7 @@ router.post("/openai/enhance-prompts", async (req, res) => {
     tone,
     values,
     logoStyle: style_pref ?? undefined,
+    brandColors: colors ?? undefined,
   });
 
   const paletteOptimizedPrompt = buildPalettePrompt({
@@ -101,6 +104,7 @@ router.post("/openai/enhance-prompts", async (req, res) => {
     sector,
     tone,
     values,
+    brandColors: colors ?? undefined,
   });
 
   const sections = [

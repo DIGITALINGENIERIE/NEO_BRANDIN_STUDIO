@@ -4,6 +4,7 @@ interface BrandBrief {
   tone: string;
   values: string[];
   logoStyle?: string;
+  brandColors?: string;
 }
 
 interface SectorMapping {
@@ -169,12 +170,25 @@ function buildNegativePromptSuffix(sector: string): string {
   return base;
 }
 
+function parseHexColors(colorStr: string): string[] {
+  return (colorStr.match(/#[0-9A-Fa-f]{6}/g) ?? []).slice(0, 3);
+}
+
 export function buildLogoPrompt(brief: BrandBrief): string {
   const sector = brief.sector.toLowerCase();
   const mapping = SECTOR_MAPPINGS[sector] ?? SECTOR_MAPPINGS["tech"];
 
   const style = brief.logoStyle ?? mapping.style;
-  const { ambiance, symbolConcept, primaryColor, secondaryColor, accentColor } = mapping;
+  const { ambiance, symbolConcept } = mapping;
+
+  const clientHexes = brief.brandColors ? parseHexColors(brief.brandColors) : [];
+  const primaryColor = clientHexes[0] ?? mapping.primaryColor;
+  const secondaryColor = clientHexes[1] ?? mapping.secondaryColor;
+  const accentColor = clientHexes[2] ?? mapping.accentColor;
+
+  const clientColorsBlock = brief.brandColors
+    ? `\n⚠️ COULEURS CLIENT IMPOSÉES — PRIORITÉ ABSOLUE:\nLe client a fourni: ${brief.brandColors}\nUtilise EXCLUSIVEMENT ces couleurs. NE PAS les remplacer par d'autres teintes.`
+    : "";
 
   const valuesText = brief.values.join(", ");
   const v0 = brief.values[0] ?? "stabilité";
@@ -217,6 +231,13 @@ export function buildLogoPrompt(brief: BrandBrief): string {
     /vieux, obsolète, rétro, vintage[\s\S]*?low-res/,
     negativePrompt
   );
+
+  if (clientColorsBlock) {
+    prompt = prompt.replace(
+      /(\*\*Palette chromatique\*\*)/,
+      `**Palette chromatique**${clientColorsBlock}`
+    );
+  }
 
   return prompt;
 }

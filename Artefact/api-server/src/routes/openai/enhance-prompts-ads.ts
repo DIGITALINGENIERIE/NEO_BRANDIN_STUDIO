@@ -100,10 +100,13 @@ Couleurs: ${colorStr} | Code promo: ${promoCode} | Remise: ${discount}% | Livrai
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
+  const colorPriorityBlock = colors.length > 0
+    ? `\n⚠️ RÈGLE ABSOLUE COULEURS: Le client impose ces couleurs: ${colorStr}. Ces couleurs sont IMMUABLES — les utiliser EXACTEMENT dans toutes les créations publicitaires. L'auto-détection par secteur est DÉSACTIVÉE.`
+    : "";
   const systemPrompt = `Tu es un expert senior en publicité digitale et création de prompts pour RoboNeo.com.
 Tu génères des prompts de création publicitaire ultra-précis (Meta Ads, Google Display, TikTok, Carousel) et des copies publicitaires prêtes à l'emploi.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou après.
-Tous les textes sont en français, percutants, adaptés au secteur ${sector} et au style ${style}.`;
+Tous les textes sont en français, percutants, adaptés au secteur ${sector} et au style ${style}.${colorPriorityBlock}`;
 
   const SECTIONS = [
     {

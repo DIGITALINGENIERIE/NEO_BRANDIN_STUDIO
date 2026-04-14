@@ -4,6 +4,7 @@ interface BrandBrief {
   tone: string;
   values: string[];
   primaryColorHint?: string;
+  brandColors?: string;
 }
 
 interface ColorEntry {
@@ -66,6 +67,10 @@ const SECTOR_PALETTES: Record<string, SectorPalette> = {
   },
 };
 
+function parseHexColors(colorStr: string): string[] {
+  return (colorStr.match(/#[0-9A-Fa-f]{6}/g) ?? []).slice(0, 3);
+}
+
 function hexToRgb(hex: string): string {
   const clean = hex.replace("#", "");
   const r = parseInt(clean.slice(0, 2), 16);
@@ -122,17 +127,33 @@ export function buildPalettePrompt(brief: BrandBrief): string {
   const sector = brief.sector.toLowerCase();
   const palette = SECTOR_PALETTES[sector] ?? SECTOR_PALETTES["tech"];
 
-  const primary: ColorEntry = brief.primaryColorHint
+  const clientHexes = brief.brandColors ? parseHexColors(brief.brandColors) : [];
+
+  const primary: ColorEntry = clientHexes[0]
+    ? { ...palette.primary, hex: clientHexes[0], rgb: hexToRgb(clientHexes[0]) }
+    : brief.primaryColorHint
     ? { ...palette.primary, hex: brief.primaryColorHint, rgb: hexToRgb(brief.primaryColorHint) }
     : palette.primary;
 
-  const { secondary, accent, neutrals } = palette;
+  const secondary: SecondaryEntry = clientHexes[1]
+    ? { ...palette.secondary, hex: clientHexes[1], rgb: hexToRgb(clientHexes[1]) }
+    : palette.secondary;
+
+  const accent: AccentEntry = clientHexes[2]
+    ? { ...palette.accent, hex: clientHexes[2], rgb: hexToRgb(clientHexes[2]) }
+    : palette.accent;
+
+  const { neutrals } = palette;
+
+  const clientColorsInstruction = brief.brandColors
+    ? `⚠️ RÈGLE ABSOLUE — COULEURS CLIENT IMPOSÉES:\nLe client a défini ces couleurs pour sa marque: ${brief.brandColors}\nCes couleurs sont SACRÉES et IMMUABLES. Tu dois:\n1. Les utiliser EXACTEMENT comme base (primaire, secondaire, accent) — ne jamais les remplacer\n2. Construire les neutres, WCAG et hover states AUTOUR de ces couleurs\n3. Ignorer toute suggestion de palette sectorielle automatique\nL'auto-détection couleur est DÉSACTIVÉE.\n\n`
+    : "";
   const valuesText = brief.values.join(", ");
   const toneModifier = getToneModifier(brief.tone);
   const colorDesc = getSectorColorDescription(sector);
   const seasonalLabel = getSeasonalLabel(sector);
 
-  return `Génère la palette de couleurs complète pour ${brief.brandName} (secteur ${brief.sector}), ton ${brief.tone}, valeurs: ${valuesText}. Livre une palette "brand-ready" structurée pour UI/UX, web et print, avec usages 60/30/10, neutres, et contrôles d'accessibilité. Style visuel: moderne, précis, premium, sans effet "gadget". ZÉRO élément obsolète, ZÉRO interface confuse, ZÉRO watermark, ZÉRO texte illisible, ZÉRO palette aléatoire non justifiée.
+  return `${clientColorsInstruction}Génère la palette de couleurs complète pour ${brief.brandName} (secteur ${brief.sector}), ton ${brief.tone}, valeurs: ${valuesText}. Livre une palette "brand-ready" structurée pour UI/UX, web et print, avec usages 60/30/10, neutres, et contrôles d'accessibilité. Style visuel: moderne, précis, premium, sans effet "gadget". ZÉRO élément obsolète, ZÉRO interface confuse, ZÉRO watermark, ZÉRO texte illisible, ZÉRO palette aléatoire non justifiée.
 
 1) Couleur primaire (60% usage)
 - Propose 1 couleur primaire "${colorDesc}" avec code HEX + RGB.

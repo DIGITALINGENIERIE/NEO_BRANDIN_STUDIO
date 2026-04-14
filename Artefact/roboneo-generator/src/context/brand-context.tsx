@@ -57,6 +57,9 @@ export interface BrandBrief {
   target_demographic: string;
   competitors: string;
   forbidden_keywords: string;
+
+  // Couleurs de marque (priorité absolue sur auto-détection)
+  colors: string;
 }
 
 export type BriefField = keyof BrandBrief;
@@ -112,6 +115,7 @@ export const BRIEF_DEFAULTS: BrandBrief = {
   target_demographic: "",
   competitors: "",
   forbidden_keywords: "",
+  colors: "",
 };
 
 // Champs "importants" dont la complétude est mesurée

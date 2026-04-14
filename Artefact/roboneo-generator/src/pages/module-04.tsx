@@ -257,7 +257,7 @@ export default function Module04() {
           product_description: brief.product_description,
           benefits: benefitsList,
           target_audience: brief.target_audience,
-          colors: colorsList,
+          colors: colorsList.length > 0 ? colorsList : brief.colors ? [brief.colors] : [],
           promo_code: brief.promo_code,
           discount: Number(brief.discount) || 20,
           duration_days: data.duration_days,

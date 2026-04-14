@@ -279,6 +279,7 @@ export default function Module03() {
           duration_days: data.duration_days,
           teaser_style: data.teaser_style === "auto" ? null : data.teaser_style,
           thumbnail_type: data.thumbnail_type === "auto" ? null : data.thumbnail_type,
+          brand_colors: brief.colors || undefined,
         }),
       });
 

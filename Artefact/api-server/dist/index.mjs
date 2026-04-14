@@ -39518,6 +39518,13 @@ Concurrents directs: ${brief.competitors} \u2014 se diff\xE9rencier d'eux est es
 D\xE9mographie cible pr\xE9cise: ${brief.target_demographic}` : "";
   const forbiddenContext = brief.forbidden_keywords ? `
 Mots-cl\xE9s et \xE9l\xE9ments INTERDITS: ${brief.forbidden_keywords} \u2014 ne jamais les inclure.` : "";
+  const colorsContext = brief.colors ? `
+
+\u26A0\uFE0F R\xC8GLE ABSOLUE \u2014 COULEURS CLIENT SACR\xC9ES \u26A0\uFE0F
+Le client a d\xE9fini ces couleurs pour sa marque: ${brief.colors}
+Ces couleurs sont IMMUABLES et ont PRIORIT\xC9 ABSOLUE sur toute palette sectorielle.
+Tu DOIS les utiliser telles quelles dans tous les visuels et prompts g\xE9n\xE9r\xE9s.
+L'auto-d\xE9tection de couleurs par secteur est D\xC9SACTIV\xC9E pour cette session.` : "";
   return `Tu es un expert senior en cr\xE9ation de prompts cr\xE9atifs pour RoboNeo.com \u2014 la plateforme d'IA g\xE9n\xE9rative pour cr\xE9er des assets de marque professionnels.
 
 \u2550\u2550\u2550 IDENTIT\xC9 DE LA MARQUE \u2550\u2550\u2550
@@ -39548,7 +39555,7 @@ Exemple de prompt EXCELLENCE (niveau attendu):
 \u2022 Inclure des codes HEX, dimensions, et sp\xE9cifications techniques pr\xE9cises
 \u2022 Adapter chaque prompt au secteur "${brief.sector}" et au ton "${brief.tone}"
 \u2022 R\xE9diger en fran\xE7ais, avec terminologie technique anglaise pour les param\xE8tres IA
-\u2022 Terminer chaque prompt avec un bloc [PARAM\xC8TRES TECHNIQUES] structur\xE9`;
+\u2022 Terminer chaque prompt avec un bloc [PARAM\xC8TRES TECHNIQUES] structur\xE9${colorsContext}`;
 }
 async function reviewPromptQuality(content, brief, sectionKey) {
   const reviewPrompt = `Tu es un expert QA pour des prompts cr\xE9atifs IA destin\xE9s \xE0 RoboNeo.com.
@@ -39763,11 +39770,22 @@ function buildNegativePromptSuffix(sector) {
   if (sector === "cosmetic") return `${base}, agressif, angulaire, synth\xE9tique, artificiel`;
   return base;
 }
+function parseHexColors(colorStr) {
+  return (colorStr.match(/#[0-9A-Fa-f]{6}/g) ?? []).slice(0, 3);
+}
 function buildLogoPrompt(brief) {
   const sector = brief.sector.toLowerCase();
   const mapping = SECTOR_MAPPINGS[sector] ?? SECTOR_MAPPINGS["tech"];
   const style = brief.logoStyle ?? mapping.style;
-  const { ambiance, symbolConcept, primaryColor, secondaryColor, accentColor } = mapping;
+  const { ambiance, symbolConcept } = mapping;
+  const clientHexes = brief.brandColors ? parseHexColors(brief.brandColors) : [];
+  const primaryColor = clientHexes[0] ?? mapping.primaryColor;
+  const secondaryColor = clientHexes[1] ?? mapping.secondaryColor;
+  const accentColor = clientHexes[2] ?? mapping.accentColor;
+  const clientColorsBlock = brief.brandColors ? `
+\u26A0\uFE0F COULEURS CLIENT IMPOS\xC9ES \u2014 PRIORIT\xC9 ABSOLUE:
+Le client a fourni: ${brief.brandColors}
+Utilise EXCLUSIVEMENT ces couleurs. NE PAS les remplacer par d'autres teintes.` : "";
   const valuesText = brief.values.join(", ");
   const v0 = brief.values[0] ?? "stabilit\xE9";
   const v1 = brief.values[1] ?? "confiance";
@@ -39807,6 +39825,12 @@ function buildLogoPrompt(brief) {
     /vieux, obsolète, rétro, vintage[\s\S]*?low-res/,
     negativePrompt
   );
+  if (clientColorsBlock) {
+    prompt = prompt.replace(
+      /(\*\*Palette chromatique\*\*)/,
+      `**Palette chromatique**${clientColorsBlock}`
+    );
+  }
   return prompt;
 }
 
@@ -39843,6 +39867,9 @@ var SECTOR_PALETTES = {
     neutrals: { "01": "#FFFFFF", "02": "#F9F7F5", "03": "#E8E2DA", "04": "#B8A99A", "05": "#5C4E3D" }
   }
 };
+function parseHexColors2(colorStr) {
+  return (colorStr.match(/#[0-9A-Fa-f]{6}/g) ?? []).slice(0, 3);
+}
 function hexToRgb(hex) {
   const clean = hex.replace("#", "");
   const r = parseInt(clean.slice(0, 2), 16);
@@ -39893,13 +39920,25 @@ function getSeasonalLabel(sector) {
 function buildPalettePrompt(brief) {
   const sector = brief.sector.toLowerCase();
   const palette = SECTOR_PALETTES[sector] ?? SECTOR_PALETTES["tech"];
-  const primary = brief.primaryColorHint ? { ...palette.primary, hex: brief.primaryColorHint, rgb: hexToRgb(brief.primaryColorHint) } : palette.primary;
-  const { secondary, accent, neutrals } = palette;
+  const clientHexes = brief.brandColors ? parseHexColors2(brief.brandColors) : [];
+  const primary = clientHexes[0] ? { ...palette.primary, hex: clientHexes[0], rgb: hexToRgb(clientHexes[0]) } : brief.primaryColorHint ? { ...palette.primary, hex: brief.primaryColorHint, rgb: hexToRgb(brief.primaryColorHint) } : palette.primary;
+  const secondary = clientHexes[1] ? { ...palette.secondary, hex: clientHexes[1], rgb: hexToRgb(clientHexes[1]) } : palette.secondary;
+  const accent = clientHexes[2] ? { ...palette.accent, hex: clientHexes[2], rgb: hexToRgb(clientHexes[2]) } : palette.accent;
+  const { neutrals } = palette;
+  const clientColorsInstruction = brief.brandColors ? `\u26A0\uFE0F R\xC8GLE ABSOLUE \u2014 COULEURS CLIENT IMPOS\xC9ES:
+Le client a d\xE9fini ces couleurs pour sa marque: ${brief.brandColors}
+Ces couleurs sont SACR\xC9ES et IMMUABLES. Tu dois:
+1. Les utiliser EXACTEMENT comme base (primaire, secondaire, accent) \u2014 ne jamais les remplacer
+2. Construire les neutres, WCAG et hover states AUTOUR de ces couleurs
+3. Ignorer toute suggestion de palette sectorielle automatique
+L'auto-d\xE9tection couleur est D\xC9SACTIV\xC9E.
+
+` : "";
   const valuesText = brief.values.join(", ");
   const toneModifier = getToneModifier(brief.tone);
   const colorDesc = getSectorColorDescription(sector);
   const seasonalLabel = getSeasonalLabel(sector);
-  return `G\xE9n\xE8re la palette de couleurs compl\xE8te pour ${brief.brandName} (secteur ${brief.sector}), ton ${brief.tone}, valeurs: ${valuesText}. Livre une palette "brand-ready" structur\xE9e pour UI/UX, web et print, avec usages 60/30/10, neutres, et contr\xF4les d'accessibilit\xE9. Style visuel: moderne, pr\xE9cis, premium, sans effet "gadget". Z\xC9RO \xE9l\xE9ment obsol\xE8te, Z\xC9RO interface confuse, Z\xC9RO watermark, Z\xC9RO texte illisible, Z\xC9RO palette al\xE9atoire non justifi\xE9e.
+  return `${clientColorsInstruction}G\xE9n\xE8re la palette de couleurs compl\xE8te pour ${brief.brandName} (secteur ${brief.sector}), ton ${brief.tone}, valeurs: ${valuesText}. Livre une palette "brand-ready" structur\xE9e pour UI/UX, web et print, avec usages 60/30/10, neutres, et contr\xF4les d'accessibilit\xE9. Style visuel: moderne, pr\xE9cis, premium, sans effet "gadget". Z\xC9RO \xE9l\xE9ment obsol\xE8te, Z\xC9RO interface confuse, Z\xC9RO watermark, Z\xC9RO texte illisible, Z\xC9RO palette al\xE9atoire non justifi\xE9e.
 
 1) Couleur primaire (60% usage)
 - Propose 1 couleur primaire "${colorDesc}" avec code HEX + RGB.
@@ -40005,7 +40044,8 @@ var ExtendedBody = EnhancePromptsBody.extend({
   target_demographic: stringType().nullish(),
   competitors: stringType().nullish(),
   forbidden_keywords: stringType().nullish(),
-  enable_review: booleanType().nullish()
+  enable_review: booleanType().nullish(),
+  colors: stringType().nullish()
 });
 var LOGO_STYLE_MAP = {
   bijou: "luxe",
@@ -40069,7 +40109,8 @@ router3.post("/openai/enhance-prompts", async (req, res) => {
     target_demographic,
     competitors,
     forbidden_keywords,
-    enable_review
+    enable_review,
+    colors
   } = parsed.data;
   const toneStyle = TONE_STYLE_OVERRIDE[tone.toLowerCase()];
   const style = style_pref || toneStyle || LOGO_STYLE_MAP[sector.toLowerCase()] || "minimal";
@@ -40082,7 +40123,8 @@ router3.post("/openai/enhance-prompts", async (req, res) => {
     values,
     target_demographic: target_demographic ?? void 0,
     competitors: competitors ?? void 0,
-    forbidden_keywords: forbidden_keywords ?? void 0
+    forbidden_keywords: forbidden_keywords ?? void 0,
+    colors: colors ?? void 0
   };
   const negativeBlock = buildNegativePrompt(sector, tone);
   const moduleLabel = "MODULE 01 \u2014 Brand Identity (Logo, Palette, Typographie, Charte Graphique)";
@@ -40095,13 +40137,15 @@ router3.post("/openai/enhance-prompts", async (req, res) => {
     sector,
     tone,
     values,
-    logoStyle: style_pref ?? void 0
+    logoStyle: style_pref ?? void 0,
+    brandColors: colors ?? void 0
   });
   const paletteOptimizedPrompt = buildPalettePrompt({
     brandName: brand_name,
     sector,
     tone,
-    values
+    values,
+    brandColors: colors ?? void 0
   });
   const sections = [
     {
@@ -40353,7 +40397,8 @@ router4.post("/openai/enhance-prompts-visual", async (req, res) => {
     product_colors = [],
     product_materials = [],
     target_audience,
-    carousel_style: carousel_style_override = null
+    carousel_style: carousel_style_override = null,
+    brand_colors = ""
   } = req.body;
   if (!brand_name || !sector || !product_type || !product_name || !target_audience) {
     res.status(400).json({ error: "Champs requis manquants" });
@@ -40552,6 +40597,10 @@ Retourne UNIQUEMENT un JSON valide:
   const sectorTone = body.tone ?? "professionnel";
   const sectorValues = body.values ?? sector;
   const negativePart = buildNegativePrompt(sector, sectorTone);
+  const colorPriorityBlock = brand_colors ? `
+
+\u26A0\uFE0F R\xC8GLE ABSOLUE COULEURS: Le client a fourni ces couleurs de marque: ${brand_colors}
+Ces couleurs sont SACR\xC9ES \u2014 les utiliser EXACTEMENT dans tous les visuels. L'auto-d\xE9tection par secteur est D\xC9SACTIV\xC9E.` : "";
   const baseSysPrompt = buildSystemPrompt(
     {
       brand_name,
@@ -40560,11 +40609,12 @@ Retourne UNIQUEMENT un JSON valide:
       values: sectorValues,
       target_demographic: body.target_demographic ?? void 0,
       competitors: body.competitors ?? void 0,
-      forbidden_keywords: body.forbidden_keywords ?? void 0
+      forbidden_keywords: body.forbidden_keywords ?? void 0,
+      colors: brand_colors || void 0
     },
     "MODULE 02 \u2014 Visual Content (Photos Produit, Lifestyle, D\xE9tail, Before/After, Try-On, Carrousel)"
   );
-  const systemPrompt = `${baseSysPrompt}
+  const systemPrompt = `${baseSysPrompt}${colorPriorityBlock}
 
 IMPORTANT: Tu retournes UNIQUEMENT du JSON valide, sans aucun markdown, sans texte avant ou apr\xE8s le JSON.
 Chaque prompt visuel doit inclure un champ "negative_prompt" avec les \xE9l\xE9ments \xE0 \xE9viter: "${negativePart}"`;
@@ -40696,7 +40746,8 @@ router5.post("/openai/enhance-prompts-video", async (req, res) => {
     promo_code = "",
     duration_days = "7",
     teaser_style: teaser_style_override = null,
-    thumbnail_type: thumbnail_type_override = null
+    thumbnail_type: thumbnail_type_override = null,
+    brand_colors = ""
   } = req.body;
   if (!brand_name || !sector || !product_name) {
     res.status(400).json({ error: "Champs requis manquants" });
@@ -40710,18 +40761,22 @@ router5.post("/openai/enhance-prompts-video", async (req, res) => {
   const detail = product_features[1] ?? "finitions soign\xE9es";
   const benefit1 = benefits[0] ?? "qualit\xE9 sup\xE9rieure";
   const benefit2 = benefits[1] ?? "exp\xE9rience unique";
+  const colorsLine = brand_colors ? `
+Couleurs de marque (IMPOS\xC9ES): ${brand_colors}` : "";
   const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Produit: ${product_name}
 Description: ${product_description || "produit premium de qualit\xE9"}
 Caract\xE9ristiques: ${product_features.join(", ") || material}
 B\xE9n\xE9fices: ${benefits.join(", ") || benefit1}
-Cible: ${target_audience} | Ann\xE9e fondation: ${year} | Code promo: ${promoCode} | Dur\xE9e promo: ${duration_days} jours`;
+Cible: ${target_audience} | Ann\xE9e fondation: ${year} | Code promo: ${promoCode} | Dur\xE9e promo: ${duration_days} jours${colorsLine}`;
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
+  const colorPriorityBlock = brand_colors ? `
+\u26A0\uFE0F R\xC8GLE ABSOLUE COULEURS: Le client impose ces couleurs de marque: ${brand_colors}. Ces couleurs sont SACR\xC9ES \u2014 les utiliser EXACTEMENT dans tous les visuels vid\xE9o d\xE9crits.` : "";
   const systemPrompt = `Tu es un expert senior en cr\xE9ation de scripts publicitaires et prompts vid\xE9o pour RoboNeo.com.
 Tu r\xE9diges des scripts punchy, adapt\xE9s au secteur ${sector}, en fran\xE7ais. Formule courte, efficace, copywriting direct.
-Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.`;
+Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.${colorPriorityBlock}`;
   const SECTIONS = [
     {
       key: "scripts",
@@ -41052,10 +41107,12 @@ Couleurs: ${colorStr} | Code promo: ${promoCode} | Remise: ${discount}% | Livrai
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
+  const colorPriorityBlock = colors.length > 0 ? `
+\u26A0\uFE0F R\xC8GLE ABSOLUE COULEURS: Le client impose ces couleurs: ${colorStr}. Ces couleurs sont IMMUABLES \u2014 les utiliser EXACTEMENT dans toutes les cr\xE9ations publicitaires. L'auto-d\xE9tection par secteur est D\xC9SACTIV\xC9E.` : "";
   const systemPrompt = `Tu es un expert senior en publicit\xE9 digitale et cr\xE9ation de prompts pour RoboNeo.com.
 Tu g\xE9n\xE8res des prompts de cr\xE9ation publicitaire ultra-pr\xE9cis (Meta Ads, Google Display, TikTok, Carousel) et des copies publicitaires pr\xEAtes \xE0 l'emploi.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.
-Tous les textes sont en fran\xE7ais, percutants, adapt\xE9s au secteur ${sector} et au style ${style}.`;
+Tous les textes sont en fran\xE7ais, percutants, adapt\xE9s au secteur ${sector} et au style ${style}.${colorPriorityBlock}`;
   const SECTIONS = [
     {
       key: "meta_ads",
@@ -41445,7 +41502,8 @@ router7.post("/openai/enhance-prompts-sound", async (req, res) => {
     values = [],
     target_audience = "mixte",
     has_ugc_audio = false,
-    needs_vocal_separation = false
+    needs_vocal_separation = false,
+    brand_colors = ""
   } = req.body;
   if (!brand_name || !sector) {
     res.status(400).json({ error: "Champs requis manquants" });
@@ -41455,18 +41513,21 @@ router7.post("/openai/enhance-prompts-sound", async (req, res) => {
   const bgmStyle = BGM_STYLE_MAP[sector] ?? "moderne, professionnel";
   const recommendedVoice = pickVoice(sector);
   const valuesStr = values.length > 0 ? values.join(", ") : "qualit\xE9, confiance, excellence";
+  const colorsLine = brand_colors ? ` | Couleurs de marque (identit\xE9): ${brand_colors}` : "";
   const contextBlock = `Marque: ${brand_name} | Secteur: ${sector} | Ton: ${tone}
-Valeurs: ${valuesStr} | Cible: ${target_audience}
+Valeurs: ${valuesStr} | Cible: ${target_audience}${colorsLine}
 Style sonore jingle: ${jingleStyle}
 Style musiques de fond: ${bgmStyle}`;
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
+  const colorPriorityBlock = brand_colors ? `
+L'identit\xE9 visuelle de la marque utilise ces couleurs: ${brand_colors}. Le rendu sonore doit traduire cette palette chromatique en \xE9motions musicales coh\xE9rentes.` : "";
   const systemPrompt = `Tu es un directeur artistique sonore expert en identit\xE9 sonore de marque et en g\xE9n\xE9ration de prompts pour des outils de cr\xE9ation audio (Suno, Udio, ElevenLabs, Adobe Podcast).
 Tu g\xE9n\xE8res des prompts audio ultra-pr\xE9cis et des briefs cr\xE9atifs complets pour chaque actif sonore d'une marque.
 Tu retournes TOUJOURS du JSON valide uniquement, sans markdown, sans texte avant ou apr\xE8s.
-Tous les textes sont en fran\xE7ais, cr\xE9atifs, adapt\xE9s au secteur ${sector} et au style ${tone}.`;
+Tous les textes sont en fran\xE7ais, cr\xE9atifs, adapt\xE9s au secteur ${sector} et au style ${tone}.${colorPriorityBlock}`;
   const SECTIONS = [
     {
       key: "jingle",

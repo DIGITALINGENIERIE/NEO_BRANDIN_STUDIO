@@ -21,6 +21,7 @@ export interface EnhancedBrief {
   forbidden_keywords?: string;
   primary_color?: string;
   price?: string;
+  colors?: string;
 }
 
 // ─── Negative Prompt Engine ──────────────────────────────────────────────────
@@ -73,6 +74,10 @@ export function buildSystemPrompt(brief: EnhancedBrief, moduleLabel: string): st
     ? `\nMots-clés et éléments INTERDITS: ${brief.forbidden_keywords} — ne jamais les inclure.`
     : "";
 
+  const colorsContext = brief.colors
+    ? `\n\n⚠️ RÈGLE ABSOLUE — COULEURS CLIENT SACRÉES ⚠️\nLe client a défini ces couleurs pour sa marque: ${brief.colors}\nCes couleurs sont IMMUABLES et ont PRIORITÉ ABSOLUE sur toute palette sectorielle.\nTu DOIS les utiliser telles quelles dans tous les visuels et prompts générés.\nL'auto-détection de couleurs par secteur est DÉSACTIVÉE pour cette session.`
+    : "";
+
   return `Tu es un expert senior en création de prompts créatifs pour RoboNeo.com — la plateforme d'IA générative pour créer des assets de marque professionnels.
 
 ═══ IDENTITÉ DE LA MARQUE ═══
@@ -103,7 +108,7 @@ Exemple de prompt EXCELLENCE (niveau attendu):
 • Inclure des codes HEX, dimensions, et spécifications techniques précises
 • Adapter chaque prompt au secteur "${brief.sector}" et au ton "${brief.tone}"
 • Rédiger en français, avec terminologie technique anglaise pour les paramètres IA
-• Terminer chaque prompt avec un bloc [PARAMÈTRES TECHNIQUES] structuré`;
+• Terminer chaque prompt avec un bloc [PARAMÈTRES TECHNIQUES] structuré${colorsContext}`;
 }
 
 // ─── Few-Shot Examples by Module ─────────────────────────────────────────────

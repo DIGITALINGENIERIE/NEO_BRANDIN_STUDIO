@@ -146,6 +146,58 @@ const getQualityBadge = (score?: number) => {
   };
 };
 
+const adaptPromptForModel = (modelName: string, sectionKey: SectionKey, prompt: string, brandName: string, sector: string, tone: string) => {
+  const context = `Marque : ${brandName || "à préciser"}\nSecteur : ${sector || "à préciser"}\nTon : ${tone || "à préciser"}\nType de prompt : ${SECTION_LABELS[sectionKey].title}`;
+  const base = `${context}\n\nPrompt source optimisé :\n${prompt.trim()}`;
+  const name = modelName.toLowerCase();
+
+  if (name.includes("midjourney")) {
+    return `/imagine prompt: premium brand logo system for ${brandName || "the brand"}, ${sector || "modern business"}, ${tone || "refined"} tone, ${prompt.trim()} --style raw --v 7 --ar 1:1 --q 2`;
+  }
+
+  if (name.includes("ideogram")) {
+    return `Create a premium brand logo with clean readable typography.\nRequired brand text: "${brandName || "BRAND NAME"}"\nStyle direction: ${tone || "premium and coherent"}\nSector: ${sector || "brand identity"}\n\nUse this creative brief exactly:\n${prompt.trim()}\n\nOutput requirements: readable lettering, balanced icon/text lockup, no misspellings, no extra words, professional brand identity presentation.`;
+  }
+
+  if (name.includes("recraft")) {
+    return `Vector brand asset brief for Recraft.\n${context}\n\nCreate a clean vector-ready result with precise geometry, controlled palette, scalable shapes, transparent background and export-friendly SVG logic.\n\nSource prompt:\n${prompt.trim()}\n\nDeliverable: polished vector asset, brand-safe composition, usable for logo systems, icons, packaging and digital UI.`;
+  }
+
+  if (name.includes("flux")) {
+    return `FLUX.1 Kontext Pro editing/generation brief.\n${context}\n\nPreserve the brand strategy and visual identity. Generate coherent variations without changing the core concept.\n\nReference prompt:\n${prompt.trim()}\n\nInstruction: produce 4 controlled variations, each changing only one creative axis: composition, contrast, detail level or premium finish.`;
+  }
+
+  if (name.includes("gpt-image")) {
+    return `Create a premium visual concept sheet for ${brandName || "this brand"}.\n${context}\n\nUse this optimized creative prompt:\n${prompt.trim()}\n\nOutput: 4 distinct directions in one clean presentation board, with consistent brand logic, professional spacing, refined composition and no unrelated elements.`;
+  }
+
+  if (name.includes("figma")) {
+    return `Figma AI instruction.\n${context}\n\nTransform the following prompt into a practical brand/design-system setup inside Figma:\n${prompt.trim()}\n\nCreate structured styles, tokens, components or documentation sections depending on the prompt type. Keep names clear, production-ready and easy for a design team to reuse.`;
+  }
+
+  if (name.includes("canva")) {
+    return `Canva Magic Studio brief.\n${context}\n\nUse this content to create a polished brand book or presentation template:\n${prompt.trim()}\n\nStructure the output as editable pages with clear titles, premium spacing, brand-safe examples and practical usage rules.`;
+  }
+
+  if (name.includes("perplexity")) {
+    return `Research and verify the following brand typography recommendations.\n${context}\n\nPrompt to analyze:\n${prompt.trim()}\n\nReturn official links, license notes, reliable alternatives, Google Fonts equivalents when possible, and any practical risks before production use.`;
+  }
+
+  if (name.includes("claude")) {
+    return `Tu es un directeur de marque senior. À partir du prompt optimisé ci-dessous, transforme le contenu en livrable clair, nuancé et directement exploitable par une équipe créative.\n\n${base}\n\nRéponds en français avec une structure professionnelle, des règles concrètes, des exemples Do/Don't si pertinent, et les points de vigilance avant livraison client.`;
+  }
+
+  if (name.includes("gpt")) {
+    return `Tu es un expert brand design et design system. Convertis le prompt optimisé ci-dessous en livrable opérationnel, précis et prêt à intégrer dans une production.\n\n${base}\n\nFournis une réponse structurée, avec recommandations, contraintes techniques, tokens ou checklist si pertinent.`;
+  }
+
+  if (name.includes("gemini")) {
+    return `Analyse comparative pour Gemini.\n${context}\n\nPrompt à comparer et challenger :\n${prompt.trim()}\n\nProduis 3 options stratégiques, compare avantages/risques, puis recommande la meilleure direction selon cohérence de marque, différenciation et facilité d'exécution.`;
+  }
+
+  return `${base}\n\nAdapte ce prompt au format attendu par ${modelName}, en gardant la cohérence de marque et les contraintes premium.`;
+};
+
 export default function Module01() {
   const { toast } = useToast();
   const { brief, updateBrief } = useBrand();
@@ -681,6 +733,16 @@ export default function Module01() {
                                           <span className="text-muted-foreground"> — {model.useCase}</span>
                                         </p>
                                         <p className="text-[10px] leading-snug text-muted-foreground/75">{model.howToUse}</p>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleCopy(adaptPromptForModel(model.name, key, prompt, brief.brand_name, brief.sector, brief.tone), `${key}_${idx}_${model.name}`)}
+                                          className="h-6 px-2 text-[10px] text-muted-foreground hover:text-primary"
+                                        >
+                                          {copiedStates[`${key}_${idx}_${model.name}`] ? <Check className="mr-1 h-3 w-3 text-green-500" /> : <Copy className="mr-1 h-3 w-3" />}
+                                          Copier pour ce modèle
+                                        </Button>
                                       </div>
                                     </div>
                                   ))}

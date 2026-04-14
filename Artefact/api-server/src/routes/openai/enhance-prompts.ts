@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { cerebrasStream, CEREBRAS_MODEL } from "../../lib/cerebras-client";
 import { EnhancePromptsBody } from "@workspace/api-zod";
-import { buildSystemPrompt, buildNegativePrompt, reviewPromptQuality, type EnhancedBrief } from "../../lib/prompt-utils";
+import { buildSystemPrompt, buildNegativePrompt, reviewWithGPT, reviewWithClaude, type EnhancedBrief } from "../../lib/prompt-utils";
 import { buildLogoPrompt } from "../../prompts/modules/module-01-1-logo/prompt-builder";
 import { buildPalettePrompt } from "../../prompts/modules/module-01-2-palette/prompt-builder";
 import * as zod from "zod";
@@ -203,7 +203,7 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
         }
       }
 
-      // ── Optional quality review pass (Débat GPT vs Claude) ───────────────
+      // ── Optional quality review pass (Séquence : Cerebras → GPT → Claude) ──
       let reviewData: {
         score: number;
         improvements: string[];
@@ -213,17 +213,33 @@ Commence directement par: "Rédige le contenu structuré de la charte graphique 
       } | null = null;
       if (enable_review && fullContent.length > 100) {
         try {
-          const review = await reviewPromptQuality(fullContent, brief, section.key);
-          reviewData = {
-            score: review.score,
-            improvements: review.improvements,
-            gpt_score: review.gpt_score,
-            claude_score: review.claude_score,
-            winner: review.winner,
-          };
-          // Si le prompt raffiné est meilleur, on l'utilise
-          if (review.score < 8 && review.refined !== fullContent) {
-            fullContent = review.refined;
+          // Phase 2 — GPT-5.2 démarre en premier
+          res.write(`data: ${JSON.stringify({ type: "review_start", key: section.key, agent: "gpt" })}\n\n`);
+          const gptResult = await reviewWithGPT(fullContent, brief, section.key);
+          res.write(`data: ${JSON.stringify({ type: "review_agent_done", key: section.key, agent: "gpt", score: gptResult.score })}\n\n`);
+
+          // Phase 3 — Claude démarre après GPT
+          res.write(`data: ${JSON.stringify({ type: "review_start", key: section.key, agent: "claude" })}\n\n`);
+          const claudeResult = await reviewWithClaude(fullContent, brief, section.key);
+          res.write(`data: ${JSON.stringify({ type: "review_agent_done", key: section.key, agent: "claude", score: claudeResult.score })}\n\n`);
+
+          // Fusion des résultats
+          let winner: "gpt" | "claude" | "tie";
+          let winnerResult: typeof gptResult;
+          if (gptResult.score < claudeResult.score) { winner = "gpt"; winnerResult = gptResult; }
+          else if (claudeResult.score < gptResult.score) { winner = "claude"; winnerResult = claudeResult; }
+          else { winner = "tie"; winnerResult = claudeResult; }
+
+          const allImprovements = [
+            ...gptResult.improvements.map((i) => `[GPT] ${i}`),
+            ...claudeResult.improvements.map((i) => `[Claude] ${i}`),
+          ].slice(0, 6);
+
+          const avgScore = Math.round(((gptResult.score + claudeResult.score) / 2) * 10) / 10;
+          reviewData = { score: avgScore, improvements: allImprovements, gpt_score: gptResult.score, claude_score: claudeResult.score, winner };
+
+          if (avgScore < 8 && winnerResult.refined !== fullContent) {
+            fullContent = winnerResult.refined;
           }
         } catch {
           // La review est optionnelle — on ignore silencieusement en cas d'erreur

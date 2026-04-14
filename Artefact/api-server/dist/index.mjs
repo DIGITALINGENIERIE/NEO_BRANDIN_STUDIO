@@ -46333,16 +46333,40 @@ Commence directement par: "R\xE9dige le contenu structur\xE9 de la charte graphi
       let reviewData = null;
       if (enable_review && fullContent.length > 100) {
         try {
-          const review = await reviewPromptQuality(fullContent, brief, section.key);
-          reviewData = {
-            score: review.score,
-            improvements: review.improvements,
-            gpt_score: review.gpt_score,
-            claude_score: review.claude_score,
-            winner: review.winner
-          };
-          if (review.score < 8 && review.refined !== fullContent) {
-            fullContent = review.refined;
+          res.write(`data: ${JSON.stringify({ type: "review_start", key: section.key, agent: "gpt" })}
+
+`);
+          const gptResult = await reviewWithGPT(fullContent, brief, section.key);
+          res.write(`data: ${JSON.stringify({ type: "review_agent_done", key: section.key, agent: "gpt", score: gptResult.score })}
+
+`);
+          res.write(`data: ${JSON.stringify({ type: "review_start", key: section.key, agent: "claude" })}
+
+`);
+          const claudeResult = await reviewWithClaude(fullContent, brief, section.key);
+          res.write(`data: ${JSON.stringify({ type: "review_agent_done", key: section.key, agent: "claude", score: claudeResult.score })}
+
+`);
+          let winner;
+          let winnerResult;
+          if (gptResult.score < claudeResult.score) {
+            winner = "gpt";
+            winnerResult = gptResult;
+          } else if (claudeResult.score < gptResult.score) {
+            winner = "claude";
+            winnerResult = claudeResult;
+          } else {
+            winner = "tie";
+            winnerResult = claudeResult;
+          }
+          const allImprovements = [
+            ...gptResult.improvements.map((i) => `[GPT] ${i}`),
+            ...claudeResult.improvements.map((i) => `[Claude] ${i}`)
+          ].slice(0, 6);
+          const avgScore = Math.round((gptResult.score + claudeResult.score) / 2 * 10) / 10;
+          reviewData = { score: avgScore, improvements: allImprovements, gpt_score: gptResult.score, claude_score: claudeResult.score, winner };
+          if (avgScore < 8 && winnerResult.refined !== fullContent) {
+            fullContent = winnerResult.refined;
           }
         } catch {
         }

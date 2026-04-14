@@ -209,7 +209,7 @@ Réponds en JSON strictement valide (sans bloc markdown) :
 }`;
 }
 
-async function reviewWithGPT(
+export async function reviewWithGPT(
   content: string,
   brief: EnhancedBrief,
   sectionKey: string
@@ -238,7 +238,7 @@ async function reviewWithGPT(
   }
 }
 
-async function reviewWithClaude(
+export async function reviewWithClaude(
   content: string,
   brief: EnhancedBrief,
   sectionKey: string

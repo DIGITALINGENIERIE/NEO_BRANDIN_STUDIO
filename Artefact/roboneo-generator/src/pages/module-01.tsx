@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -56,6 +56,21 @@ interface StreamState {
   completedSections: Set<SectionKey>;
 }
 
+interface SectionTiming {
+  cerebrasStart?: number;
+  cerebrasEnd?: number;
+  gptStart?: number;
+  gptEnd?: number;
+  claudeStart?: number;
+  claudeEnd?: number;
+}
+
+const fmtMs = (ms: number) => ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
+const elapsed = (start?: number, end?: number): string | null => {
+  if (!start) return null;
+  return fmtMs((end ?? Date.now()) - start);
+};
+
 export default function Module01() {
   const { toast } = useToast();
   const { brief, updateBrief } = useBrand();
@@ -70,6 +85,9 @@ export default function Module01() {
   const [openPersonas, setOpenPersonas] = useState<Partial<Record<SectionKey, boolean>>>({});
   const [loadingReview, setLoadingReview] = useState<Partial<Record<SectionKey, boolean>>>({});
   const [improvedPrompts, setImprovedPrompts] = useState<Partial<Record<SectionKey, string>>>({});
+  const [sectionTimings, setSectionTimings] = useState<Partial<Record<SectionKey, SectionTiming>>>({});
+  const tickRef = useRef(0);
+  const [, setTick] = useState(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -78,9 +96,20 @@ export default function Module01() {
 
   const enableReview = form.watch("enable_review");
 
+  // Ticker — force re-render toutes les 100ms pendant la génération pour les chronomètres live
+  useEffect(() => {
+    if (!isGenerating) return;
+    const id = setInterval(() => {
+      tickRef.current += 1;
+      setTick(tickRef.current);
+    }, 100);
+    return () => clearInterval(id);
+  }, [isGenerating]);
+
   const generateWithAI = async (data: FormValues) => {
     const values = brief.values.split(",").map((v) => v.trim()).filter(Boolean);
     setStreamState({ prompts: {}, reviews: {}, activeSection: null, completedSections: new Set() });
+    setSectionTimings({});
 
     const response = await fetch(`${import.meta.env.BASE_URL}api/openai/enhance-prompts`, {
       method: "POST",
@@ -119,15 +148,48 @@ export default function Module01() {
         try {
           const event = JSON.parse(line.slice(6));
           if (event.type === "section_start") {
+            const now = Date.now();
             setStreamState((p) => ({ ...p, activeSection: event.key }));
+            setSectionTimings((p) => ({ ...p, [event.key]: { cerebrasStart: now } }));
           } else if (event.type === "chunk") {
             finalPrompts[event.key as SectionKey] = (finalPrompts[event.key as SectionKey] ?? "") + event.content;
             setStreamState((p) => ({ ...p, prompts: { ...p.prompts, [event.key]: finalPrompts[event.key as SectionKey] } }));
+          } else if (event.type === "review_start") {
+            const now = Date.now();
+            if (event.agent === "gpt") {
+              setSectionTimings((p) => {
+                const t = p[event.key as SectionKey] ?? {};
+                return { ...p, [event.key]: { ...t, cerebrasEnd: now, gptStart: now } };
+              });
+            } else if (event.agent === "claude") {
+              setSectionTimings((p) => {
+                const t = p[event.key as SectionKey] ?? {};
+                return { ...p, [event.key]: { ...t, gptEnd: t.gptEnd ?? now, claudeStart: now } };
+              });
+            }
+          } else if (event.type === "review_agent_done") {
+            const now = Date.now();
+            if (event.agent === "gpt") {
+              setSectionTimings((p) => {
+                const t = p[event.key as SectionKey] ?? {};
+                return { ...p, [event.key]: { ...t, gptEnd: now } };
+              });
+            } else if (event.agent === "claude") {
+              setSectionTimings((p) => {
+                const t = p[event.key as SectionKey] ?? {};
+                return { ...p, [event.key]: { ...t, claudeEnd: now } };
+              });
+            }
           } else if (event.type === "section_done") {
             finalPrompts[event.key as SectionKey] = event.fullContent;
             if (event.review) {
               finalReviews[event.key as SectionKey] = event.review;
             }
+            // Figer le chrono Cerebras si pas de review
+            setSectionTimings((p) => {
+              const t = p[event.key as SectionKey] ?? {};
+              return { ...p, [event.key]: { ...t, cerebrasEnd: t.cerebrasEnd ?? Date.now() } };
+            });
             setStreamState((p) => {
               const next = new Set(p.completedSections);
               next.add(event.key);
@@ -380,7 +442,7 @@ export default function Module01() {
 
                 <Button type="submit" variant="luxury" size="lg" className="w-full sm:w-auto" disabled={isGenerating}>
                   {isGenerating
-                    ? <><RefreshCw className="mr-2 h-5 w-5 animate-spin" />{useAI ? "GPT génère..." : "Génération..."}</>
+                    ? <><RefreshCw className="mr-2 h-5 w-5 animate-spin" />{useAI ? "Qwen-3 génère..." : "Génération..."}</>
                     : <>{useAI ? <Brain className="mr-2 h-5 w-5" /> : <Zap className="mr-2 h-5 w-5" />}{useAI ? `Générer avec l'IA${enableReview ? " (Ultra-Qualité)" : ""}` : "Générer les Prompts"}</>}
                 </Button>
               </form>
@@ -462,6 +524,59 @@ export default function Module01() {
                       <div className="bg-black/30 rounded-md p-4 h-56 overflow-y-auto font-mono text-sm text-foreground/80 leading-relaxed border border-white/5 whitespace-pre-wrap">
                         {isPending ? <span className="text-muted-foreground/40 italic">En attente...</span> : <>{prompt}{isActive && <span className="inline-block w-2 h-4 bg-primary/80 animate-pulse ml-0.5 align-middle" />}</>}
                       </div>
+
+                      {/* ── Chronos par phase IA ──────────────────────────────── */}
+                      {(() => {
+                        const t = sectionTimings[key];
+                        if (!t?.cerebrasStart) return null;
+                        const cerebrasActive = !!t.cerebrasStart && !t.cerebrasEnd;
+                        const gptActive = !!t.gptStart && !t.gptEnd;
+                        const claudeActive = !!t.claudeStart && !t.claudeEnd;
+                        const showGpt = !!t.gptStart;
+                        const showClaude = !!t.claudeStart;
+                        return (
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            {/* Cerebras */}
+                            <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[11px] font-mono transition-colors ${cerebrasActive ? "border-green-500/40 bg-green-500/10 text-green-400" : "border-white/10 bg-black/20 text-green-400/70"}`}>
+                              {cerebrasActive
+                                ? <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
+                                : <span className="text-green-500 text-[10px] flex-shrink-0">✓</span>}
+                              <span className="text-muted-foreground/60">Qwen-3</span>
+                              <span className="font-bold tabular-nums">{elapsed(t.cerebrasStart, t.cerebrasEnd)}</span>
+                            </div>
+                            {/* GPT */}
+                            {showGpt ? (
+                              <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[11px] font-mono transition-colors ${gptActive ? "border-blue-500/40 bg-blue-500/10 text-blue-400" : "border-white/10 bg-black/20 text-blue-400/70"}`}>
+                                {gptActive
+                                  ? <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse flex-shrink-0" />
+                                  : <span className="text-blue-400 text-[10px] flex-shrink-0">✓</span>}
+                                <span className="text-muted-foreground/60">GPT-5.2</span>
+                                <span className="font-bold tabular-nums">{elapsed(t.gptStart, t.gptEnd)}</span>
+                              </div>
+                            ) : (enableReview && !t.cerebrasEnd) ? null : enableReview ? (
+                              <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-white/5 text-[11px] font-mono text-muted-foreground/30">
+                                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20 flex-shrink-0" />
+                                <span>GPT-5.2</span>
+                              </div>
+                            ) : null}
+                            {/* Claude */}
+                            {showClaude ? (
+                              <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[11px] font-mono transition-colors ${claudeActive ? "border-orange-500/40 bg-orange-500/10 text-orange-400" : "border-white/10 bg-black/20 text-orange-400/70"}`}>
+                                {claudeActive
+                                  ? <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse flex-shrink-0" />
+                                  : <span className="text-orange-400 text-[10px] flex-shrink-0">✓</span>}
+                                <span className="text-muted-foreground/60">Claude</span>
+                                <span className="font-bold tabular-nums">{elapsed(t.claudeStart, t.claudeEnd)}</span>
+                              </div>
+                            ) : (showGpt && !t.gptEnd) ? null : enableReview && showGpt ? (
+                              <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-white/5 text-[11px] font-mono text-muted-foreground/30">
+                                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20 flex-shrink-0" />
+                                <span>Claude</span>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })()}
 
                       {/* Résultat du débat GPT vs Claude */}
                       {review && (review.gpt_score !== undefined || review.improvements.length > 0) && (

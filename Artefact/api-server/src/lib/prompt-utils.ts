@@ -3,7 +3,8 @@
  * Implements: Chain-of-Thought, Few-Shot Calibration, Negative Prompts, Quality Review
  */
 
-import { cerebrasAI, CEREBRAS_MODEL } from "./cerebras-client";
+import { getClaudeClient, CLAUDE_MODEL } from "./anthropic-client";
+import { getGptReviewClient, GPT_MODEL } from "./openai-review-client";
 import { geminiAI, GEMINI_MODEL_PRO } from "./gemini-client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -131,57 +132,100 @@ export const FEWSHOT_EXAMPLES: Record<string, string> = {
 "Photo produit [MARQUE]: [PRODUIT] positionné sur [SURFACE], éclairage [TYPE] (température [K], direction [ANGLE]°), [OBJECTIF] mm f/[APERTURE], bokeh [INTENSITÉ], couleurs [HEX primaire] dominant, reflets [TYPE], fond [DESCRIPTION], format [DIMENSIONS]px, RAW → export JPEG 96dpi et PNG transparent."`,
 };
 
-// ─── Quality Review (Mode Ultra-Qualité — Gemini) ─────────────────────────────
+// ─── Quality Review — Débat GPT vs Claude (Mode Ultra-Qualité) ───────────────
 //
-// Cette fonction est exclusivement appelée quand enable_review = true.
-// Elle utilise Gemini (rotation 5 clés) pour un second passage de qualité
-// indépendant de la génération Cerebras initiale.
+// Deux agents IA indépendants évaluent chaque prompt en parallèle :
+//   • GPT-5.2  (via Replit OpenAI)    → Agent "Challenger" : technique, précis
+//   • Claude Sonnet 4-6 (via Replit)  → Agent "Critique"   : nuance, voix de marque
+//
+// L'agent le plus exigeant (score le plus bas) remporte le débat :
+// sa version raffinée est plus agressive → plus de valeur pour l'utilisateur.
+// Les améliorations des deux agents sont fusionnées pour un retour complet.
 
-export async function reviewPromptQuality(
+export interface ReviewResult {
+  score: number;
+  refined: string;
+  improvements: string[];
+  gpt_score: number;
+  claude_score: number;
+  winner: "gpt" | "claude" | "tie";
+}
+
+function buildReviewPrompt(
   content: string,
   brief: EnhancedBrief,
-  sectionKey: string
-): Promise<{ score: number; refined: string; improvements: string[] }> {
-  const reviewPrompt = `Tu es un expert QA senior pour des prompts créatifs IA destinés à RoboNeo.com.
-Tu analyses des prompts générés par un premier modèle et tu les améliores avec une exigence maximale.
+  sectionKey: string,
+  agentRole: string
+): string {
+  const valuesStr = Array.isArray(brief.values) ? brief.values.join(", ") : brief.values;
+  const competitorsStr = brief.competitors
+    ? `\nConcurrents à différencier : ${brief.competitors}`
+    : "";
+  const forbiddenStr = brief.forbidden_keywords
+    ? `\nMots/concepts INTERDITS : ${brief.forbidden_keywords}`
+    : "";
+  const colorsStr = brief.colors
+    ? `\nCouleurs de la marque : ${brief.colors}`
+    : "";
+  const targetStr = (brief.target_demographic || brief.target_audience)
+    ? `\nCible : ${brief.target_demographic || brief.target_audience}`
+    : "";
 
-Évalue ce prompt (section: ${sectionKey}) pour la marque "${brief.brand_name}" (secteur: ${brief.sector}, ton: ${brief.tone}):
+  return `Tu es ${agentRole} pour RoboNeo.com — plateforme de génération de prompts IA pour des marques professionnelles.
 
+═══ BRIEF DE LA MARQUE ════════════════════════════════════════
+Marque        : ${brief.brand_name}
+Secteur       : ${brief.sector}
+Ton / Voix    : ${brief.tone}
+Valeurs       : ${valuesStr}${targetStr}${competitorsStr}${colorsStr}${forbiddenStr}
+Module évalué : ${sectionKey}
+═══════════════════════════════════════════════════════════════
+
+PROMPT À ÉVALUER :
 """
 ${content}
 """
 
-CRITÈRES D'ÉVALUATION (note /10 chacun — sois strict et exigeant):
-1. Spécificité à la marque (nom "${brief.brand_name}" mentionné, secteur "${brief.sector}" reflété dans chaque détail)
-2. Précision technique (codes HEX exacts, dimensions px, paramètres IA comme f/stop, ISO, BPM, etc.)
-3. Utilisabilité directe dans RoboNeo (0 modification nécessaire par l'utilisateur)
-4. Richesse des détails visuels/créatifs (chaque élément est décrit avec précision chirurgicale)
-5. Cohérence avec le ton "${brief.tone}" et la voix de marque (aucun glissement de registre)
+CRITÈRES D'ÉVALUATION (note /10 — sois STRICT, exige 9-10/10 pour valider) :
+1. Ancrage marque   — "${brief.brand_name}" est nommé, le secteur "${brief.sector}" transparaît dans chaque détail
+2. Précision tech   — codes HEX, dimensions px, f/stop, ISO, BPM, ms : toutes les valeurs sont exactes
+3. Prêt à l'emploi — 0 modification nécessaire, prompt directement utilisable dans RoboNeo
+4. Richesse créative — chaque élément visuel/sonore/copy est décrit avec précision chirurgicale
+5. Voix de marque  — ton "${brief.tone}" tenu du début à la fin, aucun mot interdit${forbiddenStr ? ` (${brief.forbidden_keywords})` : ""}
 
-RÈGLES D'AMÉLIORATION:
-• Si score < 9: proposer une version raffinée qui atteint 9-10/10
-• Ajouter les codes HEX manquants, préciser les valeurs vagues
-• Éliminer toute donnée inventée non présente dans le brief (dates, stats, certifications)
-• Maintenir la longueur et la structure — améliorer la précision, pas réduire
+RÈGLES D'AMÉLIORATION :
+• Score < 9 → générer une version améliorée qui atteint 9-10/10
+• Ajouter les HEX manquants, remplacer toute valeur vague par une valeur exacte
+• Ne JAMAIS inventer de données absentes du brief (dates, certifications, stats)
+• Maintenir la structure — améliorer la précision et la richesse, ne pas raccourcir
 
-Réponds en JSON valide uniquement (sans markdown):
+Réponds en JSON strictement valide (sans bloc markdown) :
 {
-  "score": <moyenne sur 10, nombre décimal>,
-  "improvements": ["amélioration précise 1", "amélioration précise 2", "amélioration précise 3"],
-  "refined_prompt": "<version ultra-améliorée si score < 9, sinon copie l'original>"
+  "score": <note moyenne sur 10, 1 décimale>,
+  "improvements": ["point précis 1", "point précis 2", "point précis 3"],
+  "refined_prompt": "<version améliorée complète si score < 9, sinon copie exacte de l'original>"
 }`;
+}
 
+async function reviewWithGPT(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string
+): Promise<{ score: number; refined: string; improvements: string[] }> {
   try {
-    const response = await geminiAI.chat.completions.create({
-      model: GEMINI_MODEL_PRO,
-      messages: [{ role: "user", content: reviewPrompt }],
+    const gpt = getGptReviewClient();
+    const prompt = buildReviewPrompt(
+      content, brief, sectionKey,
+      "un expert en précision technique et cohérence IA (Agent GPT — Challenger)"
+    );
+    const response = await gpt.chat.completions.create({
+      model: GPT_MODEL,
+      messages: [{ role: "user", content: prompt }],
       max_tokens: 4096,
     });
-
     const text = response.choices[0]?.message?.content ?? "{}";
     const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const parsed = JSON.parse(clean);
-
     return {
       score: parsed.score ?? 7,
       refined: parsed.refined_prompt ?? content,
@@ -190,6 +234,86 @@ Réponds en JSON valide uniquement (sans markdown):
   } catch {
     return { score: 7, refined: content, improvements: [] };
   }
+}
+
+async function reviewWithClaude(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string
+): Promise<{ score: number; refined: string; improvements: string[] }> {
+  try {
+    const claude = getClaudeClient();
+    const prompt = buildReviewPrompt(
+      content, brief, sectionKey,
+      "un expert en voix de marque, nuance créative et cohérence stratégique (Agent Claude — Critique)"
+    );
+    const message = await claude.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4096,
+      messages: [{ role: "user", content: prompt }],
+    });
+    const block = message.content[0];
+    const text = block.type === "text" ? block.text : "{}";
+    const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const parsed = JSON.parse(clean);
+    return {
+      score: parsed.score ?? 7,
+      refined: parsed.refined_prompt ?? content,
+      improvements: parsed.improvements ?? [],
+    };
+  } catch {
+    return { score: 7, refined: content, improvements: [] };
+  }
+}
+
+export async function reviewPromptQuality(
+  content: string,
+  brief: EnhancedBrief,
+  sectionKey: string
+): Promise<ReviewResult> {
+  // Les deux agents tournent en parallèle — aucun ne voit l'évaluation de l'autre
+  const [gptResult, claudeResult] = await Promise.all([
+    reviewWithGPT(content, brief, sectionKey),
+    reviewWithClaude(content, brief, sectionKey),
+  ]);
+
+  console.log(
+    `[Review] ${sectionKey} → GPT: ${gptResult.score}/10 | Claude: ${claudeResult.score}/10`
+  );
+
+  // L'agent le plus exigeant (score bas) remporte le débat —
+  // sa version raffinée corrige davantage de problèmes
+  let winner: "gpt" | "claude" | "tie";
+  let winnerResult: typeof gptResult;
+
+  if (gptResult.score < claudeResult.score) {
+    winner = "gpt";
+    winnerResult = gptResult;
+  } else if (claudeResult.score < gptResult.score) {
+    winner = "claude";
+    winnerResult = claudeResult;
+  } else {
+    winner = "tie";
+    // En cas d'égalité, on préfère Claude pour la voix de marque
+    winnerResult = claudeResult;
+  }
+
+  // Fusionner les améliorations des deux agents (dédupliquer)
+  const allImprovements = [
+    ...gptResult.improvements.map((i) => `[GPT] ${i}`),
+    ...claudeResult.improvements.map((i) => `[Claude] ${i}`),
+  ].slice(0, 6);
+
+  const avgScore = Math.round(((gptResult.score + claudeResult.score) / 2) * 10) / 10;
+
+  return {
+    score: avgScore,
+    refined: winnerResult.refined,
+    improvements: allImprovements,
+    gpt_score: gptResult.score,
+    claude_score: claudeResult.score,
+    winner,
+  };
 }
 
 // ─── Persona Variants (Mode Ultra-Qualité — Gemini) ───────────────────────────
